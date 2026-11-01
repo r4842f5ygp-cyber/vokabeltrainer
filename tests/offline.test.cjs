@@ -11,7 +11,7 @@ function worker(){
 test('offline installation includes every required local asset',async()=>{
  const w=worker();let promise;w.handlers.install({waitUntil:p=>promise=p});await promise;
  for(const url of w.cache.keys()){const file=new URL(url).pathname.split('/').pop()||'index.html';assert.ok(fs.existsSync(path.join(root,file)),file);}
- assert.equal(w.cache.size,12);
+ assert.equal(w.cache.size,13);
 });
 test('cached navigation and scripts work with network unavailable',async()=>{
  const w=worker();let p;w.handlers.install({waitUntil:q=>p=q});await p;

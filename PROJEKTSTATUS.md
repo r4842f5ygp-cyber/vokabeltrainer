@@ -15,7 +15,7 @@ Stand: 1. November 2026. Umsetzung der Haupt-App und der isolierten Vorschau fer
 
 ## Validierung
 
-55 Node-Tests bestanden. Abgedeckt sind App-Start, Import/Undo, Runden, Neustart, Alternativen einschließlich Bearbeiten und Löschen, deren Backup/CSV-Unterstützung, konkurrierende Ergänzungen, simulierte Geräte-Synchronisation und Netz-/Speicherfehler. Service-Worker-Tests prüfen vollständige Dateien, Navigation ohne Netzwerk im Testmodell, Scope-Trennung, API-Ausschluss und ausdrückliche Update-Aktivierung. Syntax und HTML-Struktur geprüft.
+57 Node-Tests bestanden. Abgedeckt sind App-Start, Import/Undo, Runden, Neustart, Alternativen einschließlich Bearbeiten und Löschen, deren Backup/CSV-Unterstützung, konkurrierende Ergänzungen, simulierte Geräte-Synchronisation und Netz-/Speicherfehler. Service-Worker-Tests prüfen vollständige Dateien, Navigation ohne Netzwerk im Testmodell, Scope-Trennung, API-Ausschluss und ausdrückliche Update-Aktivierung. Syntax und HTML-Struktur geprüft.
 
 Die veröffentlichte Vorschau wurde zuvor im Browser geöffnet. Die finale Version wird nach Veröffentlichung nochmals geprüft. Ein echter Flugmodus-Neustart und Live-Gist-Abgleich auf den persönlichen Geräten sind aus dieser Umgebung nicht nachgewiesen. Tests mit simulierten Browser-/Netzfunktionen ersetzen keine native Safari-/iPhone-Prüfung.
 
@@ -31,7 +31,15 @@ Die veröffentlichte Vorschau wurde zuvor im Browser geöffnet. Die finale Versi
 - Alt-Daten enthalten keine verlässliche Änderungschronologie. Bei abweichenden alten Basisständen wird der spätere Fälligkeitstermin bevorzugt. Neue Ereignisse bleiben einzeln erhalten.
 - Korrekte Geräteuhren sind für chronologische Bewertungen wichtig. Große Gist-Archive benötigen später Aufteilung; unvollständige Antworten stoppen den Sync.
 - Browser können lokale Speicher und Offline-Caches löschen. Audio-/Spracherkennung hängt von Browser und vorhandenen Stimmen ab.
-- Keine automatische KI-Prüfung selbst eingetragener Synonyme. Die ursprünglichen 41 importierten Karten sind nicht vollständig fachlich redigiert.
+- Keine automatische KI-Prüfung selbst eingetragener Synonyme. Alle 41 Originalkarten wurden vollständig sprachlich redigiert; die Übernahmefunktion erhält Lernstände und überspringt eigene Bearbeitungen.
 - Eigene Hörverständnis- und Rollenspielaufgaben bleiben optionale Erweiterungen, keine Voraussetzung für diesen Abschluss.
 
 Vor weiteren Arbeitspaketen Modell und Denkstärke nennen. Empfehlung für Codeänderungen: GPT-6.1-sol, hoch, sofern verfügbar.
+
+## Update: kompakter Einstieg und redigierte Originalkarten
+
+Der obere Bereich hat eine einzeilige mobile Navigation ohne Logo/Untertitel und ohne zusätzliche Statistikzeile. Verbindungs- und Offline-Details sind in einer ausklappbaren Statusanzeige gebündelt; Fehler werden automatisch sichtbar gemacht. Ein Update benötigt nur einen kleinen Aktualisieren-Button. Die Startkarte verwendet einen kurzen Titel und geringere Abstände. Bei leerer Sammlung wird kein inaktiver Startbutton gezeigt.
+
+Alle 41 Quellzeilen aus therapie-vokabeln.csv sind in therapy-originals.json dokumentiert und je einer vollständig überarbeiteten Karte in therapy.js zugeordnet. Eindeutiges Lernziel pro Karte; unterschiedliche Wörter werden in der Notiz unterschieden, nicht als Synonyme gewertet. Pauschale somatische Deutungen und unbelegte Heller-Zuschreibungen wurden entfernt. Beispiel- und Notiztexte sind eigene Formulierungen. Wortbedeutungen zusätzlich mit Cambridge Dictionary abgeglichen (u. a. resentful, zone out).
+
+Unter Karten → 41 importierte Therapiekarten überarbeiten → Originalkarten sprachlich aktualisieren können erkennbare unveränderte Originale aktualisiert werden. Eigene Notizen oder eigene Themenzuordnungen werden übersprungen. IDs, Bewertungen und Lernstände bleiben erhalten; vor Übernahme wird gesichert. Die redigierten 41 Karten lassen sich als optionales Paket hinzufügen oder als CSV herunterladen. Kein automatischer Eingriff in die lokale Sammlung beim Seitenaufruf.

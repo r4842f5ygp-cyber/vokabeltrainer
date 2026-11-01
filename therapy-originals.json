@@ -1,0 +1,207 @@
+[
+  {
+    "front": "die Praxis gut finden",
+    "back": "to find the office okay",
+    "notes": "[Modul 1: Intake] Beispiel: \"Did you find the office okay?\""
+  },
+  {
+    "front": "es sich bequem machen",
+    "back": "to make oneself comfortable",
+    "notes": "[Modul 1: Intake] Beispiel: \"Make yourself comfortable. Would you like a glass of water?\""
+  },
+  {
+    "front": "auf Selbstzahlerbasis / Privatpraxis",
+    "back": "self-pay basis / private practice",
+    "notes": "[Modul 1: Intake] Beispiel: \"Since I work as a private practice under the Heilpraktiker law, it's on a self-pay basis.\""
+  },
+  {
+    "front": "Absageregelung / 24 Stunden im Voraus",
+    "back": "cancellation policy / 24-hour advance",
+    "notes": "[Modul 1: Intake] Beispiel: \"Please let me know at least 24 hours in advance if you need to reschedule.\""
+  },
+  {
+    "front": "streng vertraulich / Datenschutz",
+    "back": "strictly confidential / privacy policy",
+    "notes": "[Modul 1: Intake] Beispiel: \"Everything we talk about here is strictly confidential to protect client data.\""
+  },
+  {
+    "front": "die Sitzung abschließen / zusammenfassen",
+    "back": "to wrap up",
+    "notes": "[Modul 1: Intake] Beispiel: \"We have about ten minutes left, so let's slowly start wrapping up.\""
+  },
+  {
+    "front": "etwas (aus der Sitzung) mitnehmen",
+    "back": "to take away from today",
+    "notes": "[Modul 1: Intake] Beispiel: \"What is one thing you'd like to take away from today?\""
+  },
+  {
+    "front": "den nächsten Termin vereinbaren",
+    "back": "to schedule the next appointment",
+    "notes": "[Modul 1: Intake] Organisatorischer Standardausdruck am Ende der Sitzung."
+  },
+  {
+    "front": "sicherstellen, dass ich richtig verstehe",
+    "back": "to make sure I understand",
+    "notes": "[Modul 2: Basis-Intervention] Beispiel: \"I want to make sure I understand correctly...\""
+  },
+  {
+    "front": "es klingt nach / es kommt mir so vor als",
+    "back": "to sound like",
+    "notes": "[Modul 2: Basis-Intervention] Beispiel: \"So, what I'm hearing is that...\""
+  },
+  {
+    "front": "in Resonanz gehen / ansprechen",
+    "back": "to resonate",
+    "notes": "[Modul 2: Basis-Intervention] Nuance: Sanfte Einladung, um zu prüfen, ob eine Intervention stimmig ist."
+  },
+  {
+    "front": "jemanden kurz unterbrechen",
+    "back": "to pause someone right there",
+    "notes": "[Modul 2: Basis-Intervention] Beispiel: \"Can I pause you right there for a moment?\""
+  },
+  {
+    "front": "bei etwas bleiben (Fokus halten)",
+    "back": "to stay with something",
+    "notes": "[Modul 2: Basis-Intervention] Nuance: Wichtig, um nicht in kognitive Geschichten abzudriften."
+  },
+  {
+    "front": "Geschichte vs. gegenwärtiges Erleben",
+    "back": "story vs. present experience",
+    "notes": "[Modul 2: Basis-Intervention] Beispiel: \"I notice we're going into a lot of details about the story. Let's check what's happening inside you right now.\""
+  },
+  {
+    "front": "Nervensystem / Kampf-Flucht-Erstarrung",
+    "back": "nervous system / fight, flight, freeze",
+    "notes": "[Modul 2: Basis-Intervention] Beispiel: \"Your nervous system is trying to protect you.\""
+  },
+  {
+    "front": "Selbstregulation / Überlebensstil / sich anpassen",
+    "back": "self-regulation / survival style / to adapt",
+    "notes": "[Modul 2: Basis-Intervention] Beispiel: \"What used to be a smart solution in childhood is now getting in your way.\""
+  },
+  {
+    "front": "neugierig sein (Auftragsklärung)",
+    "back": "to be curious",
+    "notes": "[Modul 3: NARM] Beispiel: \"I'm curious what you'd most like for yourself from our session today.\""
+  },
+  {
+    "front": "etwas für sich selbst wollen",
+    "back": "to want for oneself",
+    "notes": "[Modul 3: NARM] Zentrale Inquiry nach Laurence Heller."
+  },
+  {
+    "front": "aktuelles Beispiel statt allgemeinem Reden",
+    "back": "recent example instead of general talk",
+    "notes": "[Modul 3: NARM] Beispiel: \"Where I generally invite people to start is a recent example.\""
+  },
+  {
+    "front": "verlangsamen / entschleunigen",
+    "back": "to slow down",
+    "notes": "[Modul 3: NARM] Beispiel: \"Let's slow down for a moment to feel the impact of those words.\""
+  },
+  {
+    "front": "wahrnehmen / bemerken (ganzer Körper)",
+    "back": "to notice / whole body",
+    "notes": "[Modul 3: NARM] Beispiel: \"As you say that, what do you notice in your body?\""
+  },
+  {
+    "front": "die Wirkung von Worten (spüren) / weicher werden",
+    "back": "impact of words / to soften",
+    "notes": "[Modul 3: NARM] Fokus auf die somatische Resonanz nach einer Intervention."
+  },
+  {
+    "front": "Selbstverurteilung / Nebelkerze",
+    "back": "judgment / smokescreen",
+    "notes": "[Modul 3: NARM] Beispiel: \"The judgment is a smokescreen so you don't have to feel the sadness underneath.\""
+  },
+  {
+    "front": "sich selbst verurteilen",
+    "back": "to judge oneself",
+    "notes": "[Modul 3: NARM] Beispiel: \"So again I hear a judgment coming in.\""
+  },
+  {
+    "front": "eine Freundin mit Mitgefühl behandeln",
+    "back": "to treat a friend with compassion",
+    "notes": "[Modul 3: NARM] Beispiel: \"If you had a friend dealing with the same thing, how would you feel toward her?\""
+  },
+  {
+    "front": "ein kleines Experiment ausprobieren",
+    "back": "to try a little experiment",
+    "notes": "[Modul 3: NARM] Beispiel: \"Do you want to try a little experiment with me?\""
+  },
+  {
+    "front": "ein Bild aufsteigen lassen / bereit sein",
+    "back": "to bring up an image / to be willing",
+    "notes": "[Modul 3: NARM] Beispiel: \"Just bring up an image of him and notice your reaction.\""
+  },
+  {
+    "front": "Enge / Zuschnürung / Druck",
+    "back": "tightness / constriction / pressure",
+    "notes": "[Modul 4: Somatics] Physische Körperempfindungen (Sympathikus-Aktivierung)."
+  },
+  {
+    "front": "Knoten im Bauch / Kloß im Hals",
+    "back": "a knot in the stomach / a lump in the throat",
+    "notes": "[Modul 4: Somatics] Häufige Klientenbeschreibungen für lokalisierte Anspannung."
+  },
+  {
+    "front": "Ausdehnung / Schwere",
+    "back": "expansion / heaviness",
+    "notes": "[Modul 4: Somatics] Physische Empfindungen von Regulation oder dorsalem Vagus."
+  },
+  {
+    "front": "Taubheit / Kribbeln / geerdet",
+    "back": "numbness / tingling / grounded",
+    "notes": "[Modul 4: Somatics] Physische Empfindungen (Dissoziation vs. Präsenz)."
+  },
+  {
+    "front": "genervt / frustriert / verbittert (Ärger)",
+    "back": "annoyed / frustrated / resentful",
+    "notes": "[Modul 4: Emotionen] Abstufungen von Ärger und Wut."
+  },
+  {
+    "front": "unbehagen / ängstlich / panisch (Angst)",
+    "back": "uneasy / anxious / terrified",
+    "notes": "[Modul 4: Emotionen] Abstufungen von Angst und Panik."
+  },
+  {
+    "front": "verletzt / traurig (Trauer) / einsam",
+    "back": "hurt / grief / lonely",
+    "notes": "[Modul 4: Emotionen] Traurigkeit und Schmerz."
+  },
+  {
+    "front": "verlegen / befangen / beschämt",
+    "back": "embarrassed / self-conscious / ashamed",
+    "notes": "[Modul 4: Emotionen] Nuancen von Scham."
+  },
+  {
+    "front": "für sich einstehen / die Meinung sagen",
+    "back": "to speak up",
+    "notes": "[Modul 4: Phrasal Verbs] Typischer Klienten-Ausdruck (Autonomie-Thema)."
+  },
+  {
+    "front": "innerlich zumachen / blockieren",
+    "back": "to shut down",
+    "notes": "[Modul 4: Phrasal Verbs] Typischer Klienten-Ausdruck (Rückzug / Erstarrung)."
+  },
+  {
+    "front": "dissoziieren / wegtreten (alltagsnah)",
+    "back": "to space out / to zone out",
+    "notes": "[Modul 4: Phrasal Verbs] Alltagsnahe Begriffe für leichte Dissoziation."
+  },
+  {
+    "front": "wie auf Eierschalen gehen",
+    "back": "to walk on eggshells",
+    "notes": "[Modul 4: Phrasal Verbs] Metapher für starke Anpassung an andere (Kontakt-Stil)."
+  },
+  {
+    "front": "etwas schönreden / überspielen",
+    "back": "to gloss over something",
+    "notes": "[Modul 4: Phrasal Verbs] Abwehrmechanismus, um Schmerz nicht zu spüren."
+  },
+  {
+    "front": "streng mit sich sein",
+    "back": "to be hard on oneself",
+    "notes": "[Modul 4: Phrasal Verbs] Typischer Klienten-Ausdruck für harten inneren Kritiker."
+  }
+]

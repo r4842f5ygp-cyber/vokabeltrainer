@@ -69,7 +69,8 @@ function renderStudy() {
   $('round-top').classList.toggle('hidden',!active);
   $('round-complete').classList.toggle('hidden',!complete);
   $('resume-round').classList.toggle('hidden',!round || complete);
-  $('start-round').classList.toggle('hidden',!!round);
+  $('start-round').classList.toggle('hidden',!!round || !cards.length);
+  $('study-module').classList.toggle('hidden',!cards.length);$('study-label').classList.toggle('hidden',!cards.length);
   if (complete) {
     currentCard=null;
     const rs=roundReviews(), secure=rs.filter(r=>r.rating>=2).length;
@@ -81,8 +82,8 @@ function renderStudy() {
     currentCard=null;
     const available=availableCards();
     $('start-round').disabled=storageBlocked || !available.length;
-    $('home-title').textContent=!cards.length?'Dein Englisch. Für echte Begegnungen.':round?'Deine Runde wartet auf Dich.':'Ein kleiner Schritt für Dein Englisch.';
-    $('home-detail').textContent=round?'Du kannst genau dort weitermachen, wo Du aufgehört hast.':available.length?Math.min(6,available.length)+' Aufgaben · in Deinem Tempo':'Gerade ist keine Aufgabe verfügbar. Pro Tag kommen höchstens fünf neue Karten hinzu.';
+    $('home-title').textContent=!cards.length?'Deine erste Runde':round?'Deine Runde fortsetzen':'Deine kleine Praxisrunde';
+    $('home-detail').textContent=round?'Weiter an Deiner letzten Stelle.':!cards.length?'Englisch für Deinen Praxisalltag.':available.length?Math.min(6,available.length)+' Aufgaben · in Deinem Tempo':'Für jetzt erledigt. Neue Aufgaben kommen später.';
     $('empty-study').classList.toggle('hidden',!!cards.length);
     return;
   }
@@ -124,6 +125,7 @@ function saveEdit() {
   if(commit(next)){$('edit-dialog').close();renderCardList();updateTopics();}
 }
 function addPack(name) {
+  if(name==='Therapie-Wortschatz · redigiert')return applyTherapyRevision(true);
   const pack=VOCAB_PACKS.find(p=>p.name===name);if(!pack)return;
   const entries=pack.entries.map(([front,back,notes,alternatives])=>({front,back,notes,alternatives:alternatives||[],module:name}));
   const plan=C.planImport(state,entries,uuid,Date.now());
