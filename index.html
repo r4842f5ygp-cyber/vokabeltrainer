@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Vokabeln">
@@ -140,6 +140,19 @@
     .sync-status.ok { background: rgba(52, 199, 89, 0.15); color: var(--good); }
     .sync-status.error { background: rgba(255, 59, 48, 0.15); color: var(--again); }
     .sync-status.pending { background: rgba(255, 149, 0, 0.15); color: var(--hard); }
+    .status-line { display: block; max-width: 640px; width: 100%; margin: 0 auto 12px; }
+    .help { font-size: 14px; line-height: 1.5; color: var(--text-secondary); }
+    details { margin-top: 16px; } summary { cursor: pointer; padding: 10px 0; }
+    select { font: inherit; padding: 10px; border-radius: 8px; max-width: 100%; }
+    #preview-rows li { margin: 12px 0; overflow-wrap: anywhere; }
+    #preview-errors { white-space: pre-wrap; font: inherit; color: #ac2920; }
+    .nav-tabs button, .speak-btn, .delete-btn { min-height: 44px; }
+    button:focus-visible, summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+    input[type="text"], input[type="password"], textarea { font-size: 16px; }
+    dialog { width: min(620px, calc(100% - 24px)); max-height: 90dvh; overflow-y: auto; color: var(--text); background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 24px; }
+    dialog::backdrop { background: rgba(0,0,0,.4); }
+    dialog h2 { margin-top: 0; } dialog textarea { min-height: 180px; }
+    #paste-result { white-space: pre-wrap; line-height: 1.5; }
     @media (max-width: 600px) { .shortcut-hint { display: none; } }
   </style>
 </head>
@@ -157,6 +170,11 @@
     </div>
   </header>
 
+  <div id="global-sync-status" class="sync-status status-line" role="status" aria-live="polite">Lade Daten …</div>
+  <section id="storage-recovery" class="panel hidden" role="alert">
+    <p>Deine gespeicherten Daten bleiben unverändert. Lade sie zur Wiederherstellung herunter.</p>
+    <button class="btn-secondary" onclick="exportRecovery()">Rohdaten sichern</button>
+  </section>
   <!-- LERN-ANSICHT -->
   <main id="view-study">
     <div class="card-container" id="study-card">
@@ -199,26 +217,46 @@
   <main id="view-manage" class="hidden">
     <div class="panel">
       <h3>Neue Karte anlegen</h3>
-      <div class="form-group"><label>Vorderseite (Deutsch / Impuls)</label><input type="text" id="input-front"></div>
-      <div class="form-group"><label>Rückseite (Englischer Ausdruck)</label><input type="text" id="input-back"></div>
-      <div class="form-group"><label>Beispielsatz & Nuance (Optional)</label><textarea id="input-notes"></textarea></div>
-      <button class="btn-primary" onclick="addCard()">Karte speichern</button>
+      <div class="form-group"><label for="input-front">Vorderseite (Deutsch / Impuls)</label><input type="text" id="input-front"></div>
+      <div class="form-group"><label for="input-back">Rückseite (Englischer Ausdruck)</label><input type="text" id="input-back"></div>
+      <div class="form-group"><label for="input-notes">Beispielsatz &amp; Nuance (Optional)</label><textarea id="input-notes"></textarea></div>
+      <button class="btn-primary" data-write onclick="addCard()">Karte speichern</button>
     </div>
 
     <div class="panel">
-      <h3>Massen-Import per Textfeld (Ohne Datei!)</h3>
+      <h3>Neue Vokabeln hinzufügen</h3>
+      <p class="help">Deutsch und Englisch reichen aus. Eine dritte Spalte kann Beispiele und Notizen enthalten.</p>
+      <div class="btn-row">
+        <button class="btn-secondary" data-write onclick="openPasteDialog()">Vokabeln einfügen</button>
+        <button class="btn-secondary" data-write onclick="document.getElementById('csv-file').click()">CSV / TSV auswählen</button>
+        <input id="csv-file" class="hidden" type="file" accept=".csv,.tsv,.txt,text/csv,text/tab-separated-values,text/plain" onchange="readImportFile(event,'csv')">
+      </div>
+      <details><summary>Text prüfen oder Trennzeichen einstellen</summary>
       <div class="form-group">
-        <label>Füge hier direkt deine Vokabeln ein (Pro Zeile: Deutsch;Englisch;Notiz):</label>
+        <label for="bulk-text-input">Füge hier direkt deine Vokabeln ein (Pro Zeile: Deutsch;Englisch;Notiz):</label>
         <textarea id="bulk-text-input" placeholder="die Praxis gut finden;to find the office okay;Beispiel..." style="min-height: 120px; font-family: monospace; font-size: 13px;"></textarea>
       </div>
-      <button class="btn-primary" onclick="importBulkText()">Vokabeln direkt importieren</button>
+      <button class="btn-primary" data-write onclick="importBulkText()">Vorschau anzeigen</button>
+      <div class="form-group"><label for="import-delimiter">Trennzeichen</label>
+        <select id="import-delimiter" onchange="cancelImport()"><option value="auto">Automatisch erkennen</option><option value=";">Semikolon ;</option><option value=",">Komma ,</option><option value="&#9;">Tabulator</option></select>
+      </div></details>
+      <p id="import-message" role="status" aria-live="polite"></p>
+      <section id="import-preview" class="hidden" aria-labelledby="preview-title">
+        <h4 id="preview-title">Import prüfen</h4>
+        <p id="preview-summary"></p><ol id="preview-rows"></ol>
+        <p class="help">Vorschau der ersten fünf Karten. Dubletten werden übersprungen.</p>
+        <pre id="preview-errors"></pre>
+        <div class="btn-row"><button id="confirm-import" data-write class="btn-secondary" onclick="confirmImport()">Jetzt hinzufügen</button><button class="btn-secondary" onclick="cancelImport()">Abbrechen</button></div>
+      </section>
     </div>
 
     <div class="panel">
       <h3>Backup & Export</h3>
       <div class="btn-row">
         <button class="btn-secondary" onclick="exportJSON()">Backup (JSON)</button>
-        <label class="btn-secondary" style="cursor: pointer;">Backup laden <input type="file" accept=".json" style="display: none;" onchange="importJSON(event)"></label>
+        <button class="btn-secondary" onclick="exportBeforeImport()">Sicherung vor letztem Import</button>
+        <button class="btn-secondary" data-write onclick="document.getElementById('json-file').click()">Backup laden</button>
+        <input id="json-file" class="hidden" type="file" accept=".json,application/json" onchange="readImportFile(event,'json')">
       </div>
     </div>
     <div class="panel">
@@ -231,16 +269,16 @@
   <main id="view-sync" class="hidden">
     <div class="panel">
       <h3>GitHub Cloud-Sync</h3>
-      <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.4; margin-top: 0;">Verbinde deinen Mac und dein iPhone über ein verstecktes Gist.</p>
+      <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.4; margin-top: 0;">Verbinde Mac und iPhone mit derselben Gist-ID. Bitte auf beiden Geräten die neue App-Version öffnen. Ein geheimes Gist ist für alle lesbar, die seine URL kennen. Verwende ausschließlich Lernmaterial ohne Klientendaten.</p>
       
-      <div id="sync-status-badge" class="sync-status hidden">Status unbekannt</div>
+      <div id="sync-status-badge" class="sync-status hidden" role="status">Status unbekannt</div>
 
       <div class="form-group">
-        <label>GitHub Personal Access Token (PAT)</label>
+        <label for="github-token">GitHub Personal Access Token (PAT)</label>
         <input type="password" id="github-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
       </div>
       <div class="form-group">
-        <label>Gist ID</label>
+        <label for="github-gist-id">Gist ID</label>
         <input type="text" id="github-gist-id" placeholder="Leer lassen für neues Gist" spellcheck="false">
       </div>
       
@@ -248,312 +286,24 @@
     </div>
   </main>
 
-  <script>
-    const STORAGE_KEY = 'wesentlich_vocab_cards_v1';
-    const GITHUB_TOKEN_KEY = 'wesentlich_gh_token';
-    const GITHUB_GIST_KEY = 'wesentlich_gh_gist';
-    let cards = [];
-    let currentCard = null;
-    let isRevealed = false;
-    let recognition = null;
-    let isListening = false;
-    let isSyncing = false;
-
-    function loadData() {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      cards = raw ? JSON.parse(raw) : [];
-      document.getElementById('github-token').value = localStorage.getItem(GITHUB_TOKEN_KEY) || '';
-      document.getElementById('github-gist-id').value = localStorage.getItem(GITHUB_GIST_KEY) || '';
-      updateStats();
-      if (localStorage.getItem(GITHUB_TOKEN_KEY) && localStorage.getItem(GITHUB_GIST_KEY)) {
-        forceSync();
-      }
-    }
-
-    function saveCards(triggerSync = true) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(cards));
-      updateStats();
-      if (triggerSync && localStorage.getItem(GITHUB_TOKEN_KEY)) {
-        uploadToGistInBackground();
-      }
-    }
-
-    function setSyncStatus(state, msg) {
-      const badge = document.getElementById('sync-status-badge');
-      badge.className = 'sync-status ' + state;
-      badge.textContent = msg;
-      badge.classList.remove('hidden');
-    }
-
-    async function forceSync() {
-      if (isSyncing) return;
-      const token = document.getElementById('github-token').value.trim();
-      let gistId = document.getElementById('github-gist-id').value.trim();
-      if (!token) return alert('Bitte zuerst den GitHub Token eingeben.');
-
-      localStorage.setItem(GITHUB_TOKEN_KEY, token);
-      localStorage.setItem(GITHUB_GIST_KEY, gistId);
-      isSyncing = true;
-      document.getElementById('btn-force-sync').disabled = true;
-      setSyncStatus('pending', 'Synchronisiere...');
-
-      try {
-        if (!gistId) {
-          const res = await fetch('https://api.github.com/gists', {
-            method: 'POST',
-            headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' },
-            body: JSON.stringify({
-              description: 'Wesentlich Vokabeltrainer Data',
-              public: false,
-              files: { 'wesentlich_vocab.json': { content: JSON.stringify(cards, null, 2) } }
-            })
-          });
-          if (!res.ok) throw new Error('Fehler beim Erstellen des Gists');
-          const data = await res.json();
-          gistId = data.id;
-          document.getElementById('github-gist-id').value = gistId;
-          localStorage.setItem(GITHUB_GIST_KEY, gistId);
-          setSyncStatus('ok', 'Gist erstellt & hochgeladen!');
-        } else {
-          const res = await fetch(`https://api.github.com/gists/${gistId}`, {
-            headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
-          });
-          if (!res.ok) throw new Error('Fehler beim Abrufen');
-          const data = await res.json();
-          const fileContent = data.files['wesentlich_vocab.json']?.content;
-          if (fileContent) {
-            const remoteCards = JSON.parse(fileContent);
-            if (remoteCards.length >= cards.length) {
-              cards = remoteCards;
-              saveCards(false);
-              setSyncStatus('ok', 'Karten aus der Cloud geladen!');
-            } else {
-              await uploadToGistInBackground();
-              setSyncStatus('ok', 'Lokale Karten in die Cloud geladen!');
-            }
-            if (!document.getElementById('view-study').classList.contains('hidden')) renderStudy();
-            if (!document.getElementById('view-manage').classList.contains('hidden')) renderCardList();
-          }
-        }
-      } catch (err) {
-        setSyncStatus('error', err.message);
-      } finally {
-        isSyncing = false;
-        document.getElementById('btn-force-sync').disabled = false;
-      }
-    }
-
-    async function uploadToGistInBackground() {
-      const token = localStorage.getItem(GITHUB_TOKEN_KEY);
-      const gistId = localStorage.getItem(GITHUB_GIST_KEY);
-      if (!token || !gistId) return;
-      try {
-        setSyncStatus('pending', 'Lade hoch...');
-        await fetch(`https://api.github.com/gists/${gistId}`, {
-          method: 'PATCH',
-          headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' },
-          body: JSON.stringify({
-            files: { 'wesentlich_vocab.json': { content: JSON.stringify(cards, null, 2) } }
-          })
-        });
-        setSyncStatus('ok', 'Verbunden & aktuell');
-      } catch (e) {
-        setSyncStatus('error', 'Hintergrund-Upload fehlgeschlagen');
-      }
-    }
-
-    function getDueCards() { const now = Date.now(); return cards.filter(c => c.due <= now).sort((a, b) => a.due - b.due); }
-
-    function calculateSM2(card, rating) {
-      let reps = card.reps || 0; let interval = card.interval || 0; let ease = card.ease || 2.5;
-      const DAY_MS = 86400000; const MIN_MS = 60000;
-      if (rating === 0) { return { reps: 0, interval: 0, ease: Math.max(1.3, ease - 0.2), due: Date.now() + 10 * MIN_MS, label: '10 Min' }; }
-      if (rating === 1) { interval = reps === 0 ? 1 : Math.max(1, Math.round(interval * 1.2)); ease = Math.max(1.3, ease - 0.15);
-      } else if (rating === 2) { if (reps === 0) interval = 1; else if (reps === 1) interval = 3; else interval = Math.round(interval * ease);
-      } else if (rating === 3) { if (reps === 0) interval = 4; else if (reps === 1) interval = 7; else interval = Math.round(interval * ease * 1.3); ease += 0.15; }
-      return { reps: reps + 1, interval, ease, due: Date.now() + interval * DAY_MS, label: interval + (interval === 1 ? ' Tag' : ' Tage') };
-    }
-
-    function normalizeText(str) { return str.toLowerCase().replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, ' ').trim(); }
-    function checkUserAnswer(userRaw, targetRaw) {
-      const userNorm = normalizeText(userRaw); if (!userNorm) return null;
-      const variants = targetRaw.split(/[\/,;]/).map(v => normalizeText(v)).filter(Boolean);
-      const isMatch = variants.some(v => v === userNorm || v.replace(/^to\s+/, '') === userNorm.replace(/^to\s+/, ''));
-      return { isMatch, userRaw: userRaw.trim() };
-    }
-
-    function renderStudy() {
-      stopSpeechRecognition();
-      const due = getDueCards(); updateStats();
-      const contentEl = document.getElementById('card-content'), emptyEl = document.getElementById('empty-study'), actionBar = document.getElementById('action-bar'), inputField = document.getElementById('user-answer');
-      if (due.length === 0) { currentCard = null; contentEl.classList.add('hidden'); actionBar.classList.add('hidden'); emptyEl.classList.remove('hidden'); return; }
-      currentCard = due[0]; isRevealed = false;
-      contentEl.classList.remove('hidden'); actionBar.classList.remove('hidden'); emptyEl.classList.add('hidden');
-      document.getElementById('front-text').textContent = currentCard.front;
-      document.getElementById('back-text').textContent = currentCard.back;
-      inputField.value = ''; inputField.disabled = false;
-      document.getElementById('check-feedback').classList.add('hidden');
-      const notesEl = document.getElementById('notes-text');
-      if (currentCard.notes && currentCard.notes.trim() !== '') { notesEl.textContent = currentCard.notes; notesEl.classList.remove('hidden'); } else { notesEl.classList.add('hidden'); }
-      document.getElementById('answer-section').classList.add('hidden');
-      document.getElementById('show-answer-btn').classList.remove('hidden');
-      document.getElementById('rating-buttons').classList.add('hidden');
-      for (let r = 0; r <= 3; r++) { document.getElementById('int-' + r).textContent = calculateSM2(currentCard, r).label; }
-      setTimeout(() => inputField.focus(), 50);
-    }
-
-    function revealAnswer() {
-      if (!currentCard || isRevealed) return;
-      stopSpeechRecognition(); isRevealed = true;
-      const inputField = document.getElementById('user-answer'), feedbackEl = document.getElementById('check-feedback');
-      const checkResult = checkUserAnswer(inputField.value, currentCard.back);
-      inputField.disabled = true; inputField.blur();
-      if (checkResult) {
-        feedbackEl.classList.remove('hidden', 'feedback-exact', 'feedback-diff');
-        if (checkResult.isMatch) { feedbackEl.classList.add('feedback-exact'); feedbackEl.textContent = '✓ Treffer: "' + checkResult.userRaw + '"'; } 
-        else { feedbackEl.classList.add('feedback-diff'); feedbackEl.textContent = 'Deine Eingabe: "' + checkResult.userRaw + '" – vergleiche unten.'; }
-      } else { feedbackEl.classList.add('hidden'); }
-      document.getElementById('answer-section').classList.remove('hidden');
-      document.getElementById('show-answer-btn').classList.add('hidden');
-      document.getElementById('rating-buttons').classList.remove('hidden');
-      speakCurrent();
-    }
-
-    function rateCard(rating) {
-      if (!currentCard) return;
-      const res = calculateSM2(currentCard, rating);
-      currentCard.reps = res.reps; currentCard.interval = res.interval; currentCard.ease = res.ease; currentCard.due = res.due;
-      saveCards(); renderStudy();
-    }
-
-    function speakCurrent() {
-      if (!currentCard || !('speechSynthesis' in window)) return;
-      window.speechSynthesis.cancel();
-      const cleanText = currentCard.back.replace(/\s*\/\s*/g, ', or ');
-      const utter = new SpeechSynthesisUtterance(cleanText); utter.lang = 'en-US'; utter.rate = 0.95;
-      window.speechSynthesis.speak(utter);
-    }
-
-    function initSpeechRecognition() {
-      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SpeechRec) { document.getElementById('mic-btn').style.display = 'none'; return; }
-      recognition = new SpeechRec(); recognition.lang = 'en-US'; recognition.interimResults = true; recognition.continuous = false;
-      recognition.onstart = () => { isListening = true; document.getElementById('mic-btn').classList.add('listening'); };
-      recognition.onresult = (e) => { let t = ''; for(let i=0; i<e.results.length; i++) t += e.results[i][0].transcript; document.getElementById('user-answer').value = t; };
-      recognition.onerror = () => stopSpeechRecognition(); recognition.onend = () => stopSpeechRecognition();
-    }
-    function toggleSpeechRecognition() { if (!recognition) return; if (isListening) { recognition.stop(); } else { if (isRevealed) return; document.getElementById('user-answer').value = ''; recognition.start(); } }
-    function stopSpeechRecognition() { if (recognition && isListening) { try { recognition.stop(); } catch(e){} } isListening = false; const btn = document.getElementById('mic-btn'); if (btn) btn.classList.remove('listening'); }
-
-    function updateStats() { document.getElementById('due-count').textContent = getDueCards().length; document.getElementById('total-count').textContent = cards.length; document.getElementById('manage-count').textContent = cards.length; }
-
-    function switchView(view) {
-      stopSpeechRecognition();
-      document.getElementById('view-study').classList.toggle('hidden', view !== 'study');
-      document.getElementById('view-manage').classList.toggle('hidden', view !== 'manage');
-      document.getElementById('view-sync').classList.toggle('hidden', view !== 'sync');
-      document.getElementById('tab-study').classList.toggle('active', view === 'study');
-      document.getElementById('tab-manage').classList.toggle('active', view === 'manage');
-      document.getElementById('tab-sync').classList.toggle('active', view === 'sync');
-      if (view === 'study') renderStudy(); else if (view === 'manage') renderCardList();
-    }
-
-    function addCard() {
-      const front = document.getElementById('input-front').value.trim(), back = document.getElementById('input-back').value.trim(), notes = document.getElementById('input-notes').value.trim();
-      if (!front || !back) return alert('Bitte Vorder- und Rückseite ausfüllen.');
-      cards.unshift({ id: Date.now().toString(), front, back, notes, reps: 0, interval: 0, ease: 2.5, due: Date.now() });
-      saveCards();
-      document.getElementById('input-front').value = ''; document.getElementById('input-back').value = ''; document.getElementById('input-notes').value = '';
-      renderCardList();
-    }
-
-    function importBulkText() {
-      const text = document.getElementById('bulk-text-input').value;
-      if (!text.trim()) return alert('Bitte zuerst Vokabeln in das Textfeld einfügen.');
-      const lines = text.split(/\r?\n/);
-      let imported = 0;
-      
-      lines.forEach(line => {
-        if (!line || !line.trim()) return;
-        const parts = line.split(';');
-        if (parts.length >= 2) {
-          cards.push({
-            id: Date.now().toString() + Math.random().toString(36).slice(2, 6),
-            front: parts[0].replace(/^["']|["']$/g, '').trim(),
-            back: parts[1].replace(/^["']|["']$/g, '').trim(),
-            notes: parts.slice(2).join(';').replace(/^["']|["']$/g, '').trim(),
-            reps: 0, interval: 0, ease: 2.5, due: Date.now()
-          });
-          imported++;
-        }
-      });
-      saveCards();
-      renderCardList();
-      document.getElementById('bulk-text-input').value = '';
-      alert(imported + ' Vokabeln erfolgreich importiert!');
-      switchView('manage');
-    }
-
-    function deleteCard(id) { if (!confirm('Karte löschen?')) return; cards = cards.filter(c => c.id !== id); saveCards(); renderCardList(); }
-    function renderCardList() {
-      const list = document.getElementById('card-list'); list.innerHTML = '';
-      cards.forEach(c => {
-        const row = document.createElement('div'); row.className = 'card-list-item';
-        const textDiv = document.createElement('div'); textDiv.className = 'card-list-text';
-        const strong = document.createElement('strong'); strong.textContent = c.front;
-        const span = document.createElement('span'); span.textContent = c.back;
-        textDiv.appendChild(strong); textDiv.appendChild(span);
-        const delBtn = document.createElement('button'); delBtn.className = 'delete-btn'; delBtn.textContent = 'Löschen'; delBtn.onclick = () => deleteCard(c.id);
-        row.appendChild(textDiv); row.appendChild(delBtn); list.appendChild(row);
-      });
-    }
-
-    function exportJSON() {
-      const blob = new Blob([JSON.stringify(cards, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'vokabeln-backup.json';
-      a.click();
-    }
-
-    function importJSON(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        try {
-          const data = JSON.parse(e.target.result);
-          if (Array.isArray(data)) {
-            cards = data;
-            saveCards();
-            renderCardList();
-            alert(cards.length + ' Karten geladen.');
-          }
-        } catch (err) {
-          alert('Ungültige JSON-Datei.');
-        }
-        event.target.value = '';
-      };
-      reader.readAsText(file);
-    }
-
-    window.addEventListener('keydown', (e) => {
-      if (!document.getElementById('view-study').classList.contains('hidden')) {
-        if (document.activeElement.id === 'user-answer') {
-          if (e.key === 'Enter' && !isRevealed) { e.preventDefault(); revealAnswer(); } return;
-        }
-        if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
-        if ((e.code === 'Space' || e.key === 'Enter') && !isRevealed) { e.preventDefault(); revealAnswer(); }
-        else if (isRevealed) {
-          if (e.key === '1') rateCard(0); if (e.key === '2') rateCard(1); if (e.key === '3') rateCard(2); if (e.key === '4') rateCard(3); if (e.key.toLowerCase() === 'r') speakCurrent();
-        }
-      }
-    });
-
-    loadData();
-    initSpeechRecognition();
-    if (!document.getElementById('view-study').classList.contains('hidden')) renderStudy();
-  </script>
+  <dialog id="paste-dialog" aria-labelledby="paste-title">
+    <h2 id="paste-title">Vokabeln einfügen</h2>
+    <p class="help" id="paste-help">Kopiere zwei oder drei Spalten aus einer Tabelle oder Text im Format Deutsch;Englisch;Notiz. Nach dem Einfügen werden gültige Karten automatisch gespeichert. Dubletten werden übersprungen.</p>
+    <label for="paste-input">Deine Vokabeln</label>
+    <textarea id="paste-input" aria-describedby="paste-help" placeholder="Anspannung;tension;I notice some tension." onpaste="schedulePasteImport()"></textarea>
+    <details><summary>Falls das Trennzeichen unklar ist</summary><label for="paste-delimiter">Trennzeichen</label>
+      <select id="paste-delimiter"><option value="auto">Automatisch erkennen</option><option value=";">Semikolon ;</option><option value=",">Komma ,</option><option value="&#9;">Tabulator</option></select>
+    </details>
+    <p id="paste-result" role="status" aria-live="polite"></p>
+    <div class="btn-row">
+      <button class="btn-secondary" data-write onclick="autoPasteImport()">Inhalt hinzufügen</button>
+      <button id="undo-paste" class="btn-secondary hidden" onclick="undoPasteImport()">Letztes Einfügen rückgängig</button>
+      <button class="btn-secondary" onclick="document.getElementById('paste-dialog').close()">Fertig</button>
+    </div>
+  </dialog>
+  <script src="core.js"></script>
+  <script src="data.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
+
