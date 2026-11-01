@@ -11,6 +11,23 @@
   const key = (c) => [c.front, c.back].map(s => s.normalize('NFKC').toLocaleLowerCase('de').replace(/\s+/g, ' ').trim()).join('\u0000');
   const number = (v, fallback, min = 0) => typeof v === 'number' && Number.isFinite(v) && v >= min ? v : fallback;
   const compare = (a, b) => a < b ? -1 : a > b ? 1 : 0;
+  function alternatives(items = []) {
+    if (!Array.isArray(items)) throw new Error('Ungültige Alternativen.');
+    return items.map(a=>{
+      if (!a || !text(a.id) || !text(a.text)) throw new Error('Alternative ohne ID oder Formulierung.');
+      return {id:a.id,text:text(a.text),note:text(a.note),updatedAt:number(a.updatedAt,0),deletedAt:number(a.deletedAt,0)};
+    }).sort((a,b)=>compare(a.id,b.id));
+  }
+  function mergeAlternatives(...lists) {
+    const map=new Map();
+    for(const a of lists.flat()) {
+      const old=map.get(a.id);
+      if(!old){map.set(a.id,{...a});continue;}
+      const winner=old.updatedAt-a.updatedAt || compare(JSON.stringify(old),JSON.stringify(a));
+      map.set(a.id,{...(winner>=0?old:a),deletedAt:Math.max(old.deletedAt,a.deletedAt)});
+    }
+    return [...map.values()].sort((a,b)=>compare(a.id,b.id));
+  }
   function schedule(card, rating, at) {
     let reps = card.reps, interval = card.interval, ease = card.ease;
     if (rating === 0) return { reps: 0, interval: 0, ease: Math.max(1.3, ease - .2), due: at + 600000 };
@@ -41,7 +58,7 @@
       }).sort((a,b) => a.at - b.at || compare(a.id,b.id));
       return { id, front: text(c.front), back: text(c.back), notes: text(c.notes), module: text(c.module),
         createdAt: number(c.createdAt, 0), updatedAt: number(c.updatedAt, 0), deletedAt: number(c.deletedAt, 0),
-        baseAt: number(c.baseAt, 0), base, reviews: cleanReviews };
+        baseAt: number(c.baseAt, 0), base, reviews: cleanReviews, alternatives:alternatives(c.alternatives) };
     });
     return { schemaVersion: 2, cards: cards.sort((a,b) => compare(a.id,b.id)) };
   }
@@ -61,7 +78,7 @@
         const prev = events.get(r.id);
         if (!prev || JSON.stringify(r) > JSON.stringify(prev)) events.set(r.id, r);
       }
-      byId.set(c.id, { ...winner, createdAt: Math.min(old.createdAt,c.createdAt), deletedAt: Math.max(old.deletedAt,c.deletedAt),
+      byId.set(c.id, { ...winner, alternatives:mergeAlternatives(old.alternatives||[],c.alternatives||[]), createdAt: Math.min(old.createdAt,c.createdAt), deletedAt: Math.max(old.deletedAt,c.deletedAt),
         base: { ...baseWinner.base }, baseAt: baseWinner.baseAt,
         reviews: [...events.values()].sort((a,b) => a.at - b.at || compare(a.id,b.id)) });
     }
@@ -100,7 +117,7 @@
     front: ['front','de','deutsch','german','vorderseite','begriff','deutsch / impuls'],
     back: ['back','en','englisch','english','rückseite','rueckseite','übersetzung','translation'],
     notes: ['notes','note','notiz','notizen','beispielsatz','beispielsatz & nuance'],
-    module: ['module','modul','thema','kategorie']
+    module: ['module','modul','thema','kategorie'], alternatives:['alternatives','alternativen','alternative']
   };
   function headerMap(cells) {
     const map = {};
@@ -132,6 +149,7 @@
     for (const r of rows.slice(mapping ? 1 : 0)) {
       const at = (name, fallback) => r.cells[mapping ? mapping[name] : fallback] || '';
       const c = { front: at('front',0), back: at('back',1), notes: mapping ? at('notes',2) : r.cells.slice(2).join(delimiter), module: mapping ? at('module',-1) : '' };
+      if(mapping && mapping.alternatives>=0)c.alternatives=at('alternatives',-1).split('|').map(s=>s.trim()).filter(Boolean);
       if (!c.front || !c.back) { errors.push({line:r.line,message:'Vorder- oder Rückseite fehlt.'}); continue; }
       entries.push(c);
     }
@@ -145,7 +163,7 @@
       if (known.has(k)) { duplicates++; continue; }
       known.add(k);
       added.push({ id:id(), front:e.front, back:e.back, notes:e.notes || '', module:e.module || '', createdAt:now, updatedAt:now, deletedAt:0,
-        baseAt:now, base:{reps:0,interval:0,ease:2.5,due:now}, reviews:[] });
+        baseAt:now, base:{reps:0,interval:0,ease:2.5,due:now}, reviews:[],alternatives:(e.alternatives||[]).map(a=>({id:id(),text:typeof a==='string'?a:a.text,note:typeof a==='string'?'':a.note||'',updatedAt:now,deletedAt:0})) });
     }
     return { added, duplicates };
   }

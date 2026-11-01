@@ -6,10 +6,13 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Vokabeln">
-  <title>Vokabeltrainer</title>
+  <title>Wort für Wort · Vokabeltrainer</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <meta name="theme-color" content="#246166">
   <link rel="stylesheet" href="style.css">
 </head>
-<body><aside style="padding:12px 16px;background:#e8eee7;color:#233d3d;text-align:center;font-size:14px">Vorschau · Eigene Testdaten, Cloud-Sync ausgeschaltet. Deine bisherigen Karten bleiben unverändert.</aside>
+<body><aside class="preview-banner">Vorschau · Eigene Testdaten, Cloud-Sync ausgeschaltet.</aside>
 
   <header>
     <div class="brand"><span class="brand-mark" aria-hidden="true">w.</span><div><strong>Wort für Wort</strong><small>Englisch für Begegnungen</small></div></div>
@@ -29,6 +32,7 @@
     <p>Deine gespeicherten Daten bleiben unverändert. Lade sie zur Wiederherstellung herunter.</p>
     <button class="btn-secondary" onclick="exportRecovery()">Rohdaten sichern</button>
   </section>
+  <div id="offline-status" class="status-line help" role="status"></div><div id="update-notice" class="status-line hidden"><button class="btn-secondary" onclick="applyUpdate()">Neue Version laden</button><span class="help"> Deine Karten bleiben erhalten.</span></div>
   <!-- LERN-ANSICHT -->
   <main id="view-study">
     <section id="round-home" class="home-card">
@@ -61,6 +65,12 @@
         <div id="answer-section" class="hidden"><div class="card-divider"></div><div id="check-feedback" class="check-feedback hidden"></div>
           <div class="card-label">Eine passende Formulierung</div><div class="card-back"><button class="speak-btn" aria-label="Englische Lösung vorlesen" onclick="speakCurrent()">🔊</button><span id="back-text"></span></div>
           <button class="text-btn" onclick="speakCurrent(0.7)">Langsam anhören</button><div id="notes-text" class="card-notes hidden"></div>
+          <section id="alternatives-section"><h3>Auch passend</h3><div id="alternatives-list"></div></section>
+          <details id="alternative-form"><summary>Alternative ergänzen</summary><p class="help">Speichere eine im Kontext passende vollständige Wendung.</p>
+            <label for="alternative-text">Englische Formulierung</label><input id="alternative-text" type="text">
+            <label for="alternative-note">Bedeutungsnuance (optional)</label><input id="alternative-note" type="text">
+            <div class="btn-row"><button class="btn-secondary" onclick="saveAlternative()">Alternative speichern</button><button id="use-answer" class="text-btn" onclick="useMyAnswer()">Meine Antwort übernehmen</button></div>
+          </details><p id="alternative-message" role="status"></p>
         </div>
       </div>
     </div>
@@ -116,7 +126,7 @@
     <div class="panel">
       <h3>Backup & Export</h3>
       <div class="btn-row">
-        <button class="btn-secondary" onclick="exportJSON()">Backup (JSON)</button>
+        <button class="btn-secondary" onclick="exportJSON()">Backup (JSON)</button><button class="btn-secondary" onclick="exportLegacy()">Sicherung vor dem Umstieg</button>
         <button class="btn-secondary" onclick="exportBeforeImport()">Sicherung vor letztem Import</button>
         <button class="btn-secondary" data-write onclick="document.getElementById('json-file').click()">Backup laden</button>
         <input id="json-file" class="hidden" type="file" accept=".json,application/json" onchange="readImportFile(event,'json')">
@@ -175,7 +185,9 @@
   <script src="data.js"></script>
   <script src="app.js"></script>
   <script src="packs.js"></script>
+  <script src="alternatives.js"></script>
   <script src="sessions.js"></script>
+  <script src="offline.js"></script>
 </body>
 </html>
 

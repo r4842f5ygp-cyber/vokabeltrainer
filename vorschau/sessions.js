@@ -93,6 +93,7 @@ function renderStudy() {
   $('front-text').textContent=currentCard.front;$('back-text').textContent=currentCard.back;
   $('card-content').classList.remove('hidden');
   $('user-answer').value=round.slot===index?round.answer:'';$('user-answer').disabled=false;
+  resetAlternativeForm();
   $('check-feedback').classList.add('hidden');$('answer-section').classList.add('hidden');
   $('notes-text').textContent=currentCard.notes;$('notes-text').classList.toggle('hidden',!currentCard.notes);
   $('show-answer-btn').classList.remove('hidden');$('rating-buttons').classList.add('hidden');
@@ -124,7 +125,7 @@ function saveEdit() {
 }
 function addPack(name) {
   const pack=VOCAB_PACKS.find(p=>p.name===name);if(!pack)return;
-  const entries=pack.entries.map(([front,back,notes])=>({front,back,notes,module:name}));
+  const entries=pack.entries.map(([front,back,notes,alternatives])=>({front,back,notes,alternatives:alternatives||[],module:name}));
   const plan=C.planImport(state,entries,uuid,Date.now());
   if(!plan.added.length){$('pack-message').textContent='Dieses Paket ist bereits vorhanden.';return;}
   if(commit(C.merge(state,{schemaVersion:2,cards:plan.added}),{backup:true})){$('pack-message').textContent=plan.added.length+' Karten hinzugefügt.';renderStudy();}
