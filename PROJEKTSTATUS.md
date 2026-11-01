@@ -46,3 +46,7 @@ Unter Karten → 41 importierte Therapiekarten überarbeiten → Originalkarten 
 
 ## Themenpakete
 Paketkacheln zeigen Vorhanden bzw. den vorhandenen Anteil. Fehlende Karten können hinzugefügt werden, vorhandene über Dieses Thema üben direkt eine Runde starten. Fälligkeit und Tageslimit bleiben wirksam und werden bei leerer Auswahl erklärt.
+
+
+## iPhone-Sprachausgabe
+Gemeinsame Sprachausgabe für Lösung und Alternativen: verfügbare englische Stimme wählen, Utterance-Referenz halten, pausierte Synthese fortsetzen, Mikrofonaufnahme beenden und synchrone Auslösung aus dem Nutzertipp. Start-, Ende-, Fehler- und Timeoutmeldungen statt stillen Scheiterns. Lautlosmodus und vorhandenes Update sind mögliche weitere Faktoren; tatsächlicher Erfolg auf dem persönlichen iPhone ist noch zu bestätigen.

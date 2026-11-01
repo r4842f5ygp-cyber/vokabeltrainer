@@ -2,10 +2,7 @@ let alternativeEditId=null;
 function resetAlternativeForm() {
   alternativeEditId=null;$('alternative-text').value='';$('alternative-note').value='';$('alternative-message').textContent='';$('alternative-form').open=false;
 }
-function speakAlternative(text) {
-  if(!('speechSynthesis' in window))return;
-  window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='en-US';u.rate=.9;window.speechSynthesis.speak(u);
-}
+function speakAlternative(text) { speakEnglish(text,.9); }
 function renderAlternatives() {
   const list=$('alternatives-list');list.replaceChildren();
   const entries=(currentCard?.alternatives||[]).filter(a=>!a.deletedAt);
@@ -42,3 +39,4 @@ function removeAlternative(id){
   if(!a)return;a.deletedAt=Date.now();
   if(commit(next)){currentCard=cards.find(v=>v.id===c.id);renderAlternatives();}
 }
+

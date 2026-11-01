@@ -64,7 +64,7 @@
         </div></details>
         <div id="answer-section" class="hidden"><div class="card-divider"></div><div id="check-feedback" class="check-feedback hidden"></div>
           <div class="card-label">Eine passende Formulierung</div><div class="card-back"><button class="speak-btn" aria-label="Englische Lösung vorlesen" onclick="speakCurrent()">🔊</button><span id="back-text"></span></div>
-          <button class="text-btn" onclick="speakCurrent(0.7)">Langsam anhören</button><div id="notes-text" class="card-notes hidden"></div>
+          <button class="text-btn" onclick="speakCurrent(0.7)">Langsam anhören</button><p id="speech-status" class="help" role="status" aria-live="polite"></p><div id="notes-text" class="card-notes hidden"></div>
           <section id="alternatives-section"><h3>Auch passend</h3><div id="alternatives-list"></div></section>
           <details id="alternative-form"><summary>Alternative ergänzen</summary><p class="help">Speichere eine im Kontext passende vollständige Wendung.</p>
             <label for="alternative-text">Englische Formulierung</label><input id="alternative-text" type="text">
@@ -183,6 +183,7 @@
   </dialog>
   <script src="core.js"></script>
   <script src="data.js"></script>
+  <script src="speech.js"></script>
   <script src="app.js"></script>
   <script src="packs.js"></script>
   <script src="therapy.js"></script>
@@ -191,4 +192,5 @@
   <script src="offline.js"></script>
 </body>
 </html>
+
 

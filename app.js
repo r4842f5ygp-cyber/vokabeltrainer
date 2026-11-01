@@ -42,11 +42,7 @@ const STORAGE_KEY = 'wesentlich_vocab_cards_v1';
     }
 
     function speakCurrent(rate = 0.95) {
-      if (!currentCard || !('speechSynthesis' in window)) return;
-      window.speechSynthesis.cancel();
-      const cleanText = currentCard.back.replace(/\s*\/\s*/g, ', or ');
-      const utter = new SpeechSynthesisUtterance(cleanText); utter.lang = 'en-US'; utter.rate = rate;
-      window.speechSynthesis.speak(utter);
+      if (currentCard) speakEnglish(currentCard.back.replace(/\s*\/\s*/g, ', or '),rate);
     }
 
     function initSpeechRecognition() {
@@ -119,3 +115,4 @@ const STORAGE_KEY = 'wesentlich_vocab_cards_v1';
         }
       }
     });
+

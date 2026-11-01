@@ -1,6 +1,6 @@
 const fs=require('node:fs'),crypto=require('node:crypto'),path=require('node:path');
 const root=path.resolve(__dirname,'..');
-const files=['index.html','core.js','data.js','app.js','packs.js','sessions.js','alternatives.js','therapy.js','offline.js','style.css','manifest.webmanifest','icon.svg'];
+const files=['index.html','core.js','data.js','app.js','speech.js','packs.js','sessions.js','alternatives.js','therapy.js','offline.js','style.css','manifest.webmanifest','icon.svg'];
 const version=crypto.createHash('sha256').update(files.map(f=>fs.readFileSync(path.join(root,f))).join('')).digest('hex').slice(0,16);
 const sw=path.join(root,'sw.js');fs.writeFileSync(sw,fs.readFileSync(sw,'utf8').replace(/const VERSION='[^']+';/,"const VERSION='"+version+"';"));
 // Isolated preview uses identical features, separate data, no cloud requests.
@@ -12,3 +12,4 @@ for(const f of [...files,'sw.js']){
  fs.writeFileSync(path.join(root,'vorschau',f),content);
 }
 console.log('Release '+version+' und isolierte Vorschau vorbereitet.');
+
