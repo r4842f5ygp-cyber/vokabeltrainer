@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Vokabeln">
+  <title>Vokabeltrainer</title>
+  <style>
+    :root {
+      --bg: #f5f5f7;
+      --card-bg: #ffffff;
+      --text: #1d1d1f;
+      --text-secondary: #86868b;
+      --border: #d2d2d7;
+      --accent: #0066cc;
+      --again: #ff3b30;
+      --hard: #ff9500;
+      --good: #34c759;
+      --easy: #007aff;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #000000;
+        --card-bg: #1c1c1e;
+        --text: #f5f5f7;
+        --text-secondary: #98989d;
+        --border: #38383a;
+        --accent: #0a84ff;
+      }
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      padding: env(safe-area-inset-top) 16px env(safe-area-inset-bottom) 16px;
+    }
+    header {
+      max-width: 640px;
+      width: 100%;
+      margin: 16px auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .stats-bar {
+      display: flex;
+      gap: 14px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+    .stats-bar span b { color: var(--text); }
+    .nav-tabs {
+      display: flex;
+      background: var(--card-bg);
+      border-radius: 8px;
+      padding: 3px;
+      border: 1px solid var(--border);
+    }
+    .nav-tabs button {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .nav-tabs button.active { background: var(--accent); color: #fff; }
+    main {
+      max-width: 640px;
+      width: 100%;
+      margin: 0 auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .card-container {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 32px 24px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      border: 1px solid var(--border);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 360px;
+      margin-bottom: 20px;
+    }
+    .card-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-secondary); margin-bottom: 8px; font-weight: 600; }
+    .card-front { font-size: 24px; font-weight: 600; line-height: 1.35; margin-bottom: 24px; }
+    .answer-input-wrapper { display: flex; gap: 8px; margin-top: 8px; }
+    .answer-input { flex: 1; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 16px; font-family: inherit; outline: none; }
+    .answer-input:focus { border-color: var(--accent); }
+    .mic-btn { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; width: 46px; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; color: var(--text); flex-shrink: 0; }
+    .mic-btn.listening { background: rgba(255, 59, 48, 0.15); border-color: var(--again); color: var(--again); }
+    .check-feedback { margin-bottom: 14px; padding: 10px 14px; border-radius: 8px; font-size: 14px; font-weight: 600; }
+    .feedback-exact { background: rgba(52, 199, 89, 0.15); color: var(--good); border: 1px solid rgba(52, 199, 89, 0.35); }
+    .feedback-diff { background: rgba(255, 149, 0, 0.15); color: var(--hard); border: 1px solid rgba(255, 149, 0, 0.35); }
+    .card-divider { height: 1px; background: var(--border); margin: 20px 0; }
+    .card-back { font-size: 22px; font-weight: 600; color: var(--accent); line-height: 1.35; display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+    .speak-btn { background: var(--bg); border: 1px solid var(--border); border-radius: 50%; width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text); flex-shrink: 0; font-size: 16px; }
+    .card-notes { font-size: 16px; line-height: 1.55; color: var(--text-secondary); white-space: pre-line; background: var(--bg); padding: 14px 16px; border-radius: 10px; }
+    .action-bar { margin-bottom: 24px; }
+    .btn-primary { width: 100%; background: var(--accent); color: #fff; border: none; padding: 16px; border-radius: 12px; font-size: 17px; font-weight: 600; cursor: pointer; }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+    .rating-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .rate-btn { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 12px 6px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .rate-btn .interval { font-size: 12px; color: var(--text-secondary); }
+    .rate-btn .label { font-size: 15px; font-weight: 600; }
+    .rate-again .label { color: var(--again); } .rate-hard .label { color: var(--hard); } .rate-good .label { color: var(--good); } .rate-easy .label { color: var(--easy); }
+    .panel { background: var(--card-bg); border-radius: 14px; padding: 20px; border: 1px solid var(--border); margin-bottom: 16px; }
+    .panel h3 { margin-top: 0; margin-bottom: 14px; font-size: 17px; }
+    .form-group { margin-bottom: 12px; }
+    .form-group label { display: block; font-size: 13px; color: var(--text-secondary); margin-bottom: 4px; }
+    input[type="text"], input[type="password"], textarea { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 15px; font-family: inherit; }
+    textarea { resize: vertical; min-height: 70px; }
+    .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn-secondary { background: var(--bg); color: var(--text); border: 1px solid var(--border); padding: 10px 14px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; }
+    .card-list-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); gap: 12px; }
+    .card-list-item:last-child { border-bottom: none; }
+    .card-list-text { flex: 1; min-width: 0; }
+    .card-list-text strong { display: block; font-size: 15px; margin-bottom: 2px; }
+    .card-list-text span { font-size: 13px; color: var(--text-secondary); display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .delete-btn { background: none; border: none; color: var(--again); font-size: 13px; cursor: pointer; padding: 6px 10px; }
+    .hidden { display: none !important; }
+    .empty-state { text-align: center; padding: 40px 16px; color: var(--text-secondary); }
+    .empty-state h2 { color: var(--text); margin-bottom: 8px; }
+    .shortcut-hint { text-align: center; font-size: 12px; color: var(--text-secondary); margin-top: 10px; }
+    .sync-status { display: inline-block; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; margin-bottom: 12px; }
+    .sync-status.ok { background: rgba(52, 199, 89, 0.15); color: var(--good); }
+    .sync-status.error { background: rgba(255, 59, 48, 0.15); color: var(--again); }
+    .sync-status.pending { background: rgba(255, 149, 0, 0.15); color: var(--hard); }
+    @media (max-width: 600px) { .shortcut-hint { display: none; } }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="stats-bar">
+      <span>Fällig: <b id="due-count">0</b></span>
+      <span>Gesamt: <b id="total-count">0</b></span>
+    </div>
+    <div class="nav-tabs">
+      <button id="tab-study" class="active" onclick="switchView('study')">Lernen</button>
+      <button id="tab-manage" onclick="switchView('manage')">Karten</button>
+      <button id="tab-sync" onclick="switchView('sync')">Sync</button>
+    </div>
+  </header>
+
+  <!-- LERN-ANSICHT -->
+  <main id="view-study">
+    <div class="card-container" id="study-card">
+      <div id="card-content">
+        <div class="card-label">Begriff / Kontext (DE)</div>
+        <div class="card-front" id="front-text"></div>
+        <div class="answer-input-wrapper" id="input-wrapper">
+          <input type="text" id="user-answer" class="answer-input" placeholder="Englische Antwort (optional)..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+          <button type="button" id="mic-btn" class="mic-btn" onclick="toggleSpeechRecognition()" title="Antwort einsprechen (Englisch)">🎙️</button>
+        </div>
+        <div id="answer-section" class="hidden">
+          <div class="card-divider"></div>
+          <div id="check-feedback" class="check-feedback hidden"></div>
+          <div class="card-label">Lösung (Englisch)</div>
+          <div class="card-back">
+            <button class="speak-btn" onclick="speakCurrent()">🔊</button>
+            <span id="back-text"></span>
+          </div>
+          <div id="notes-text" class="card-notes hidden"></div>
+        </div>
+      </div>
+      <div id="empty-study" class="empty-state hidden">
+        <h2>Alles erledigt für heute!</h2>
+        <p>Es stehen aktuell keine weiteren Karten zur Wiederholung an.</p>
+      </div>
+    </div>
+    <div class="action-bar" id="action-bar">
+      <button id="show-answer-btn" class="btn-primary" onclick="revealAnswer()">Prüfen / Antwort zeigen</button>
+      <div id="rating-buttons" class="rating-grid hidden">
+        <button class="rate-btn rate-again" onclick="rateCard(0)"><span class="interval" id="int-0"></span><span class="label">Noch mal</span></button>
+        <button class="rate-btn rate-hard" onclick="rateCard(1)"><span class="interval" id="int-1"></span><span class="label">Schwer</span></button>
+        <button class="rate-btn rate-good" onclick="rateCard(2)"><span class="interval" id="int-2"></span><span class="label">Gut</span></button>
+        <button class="rate-btn rate-easy" onclick="rateCard(3)"><span class="interval" id="int-3"></span><span class="label">Einfach</span></button>
+      </div>
+      <div class="shortcut-hint" id="shortcut-hint">Tastatur: [Enter] Prüfen &nbsp;|&nbsp; [1] Noch mal &nbsp;[2] Schwer &nbsp;[3] Gut &nbsp;[4] Einfach &nbsp;|&nbsp; [R] Audio</div>
+    </div>
+  </main>
+
+  <!-- VERWALTUNGS-ANSICHT -->
+  <main id="view-manage" class="hidden">
+    <div class="panel">
+      <h3>Neue Karte anlegen</h3>
+      <div class="form-group"><label>Vorderseite (Deutsch / Impuls)</label><input type="text" id="input-front"></div>
+      <div class="form-group"><label>Rückseite (Englischer Ausdruck)</label><input type="text" id="input-back"></div>
+      <div class="form-group"><label>Beispielsatz & Nuance (Optional)</label><textarea id="input-notes"></textarea></div>
+      <button class="btn-primary" onclick="addCard()">Karte speichern</button>
+    </div>
+    <div class="panel">
+      <h3>Import & Backup (CSV / JSON)</h3>
+      <div class="btn-row">
+        <label class="btn-secondary" style="cursor: pointer;">CSV importieren <input type="file" accept=".csv,.tsv,.txt" style="display: none;" onchange="importCSV(event)"></label>
+        <button class="btn-secondary" onclick="exportJSON()">Backup (JSON)</button>
+        <label class="btn-secondary" style="cursor: pointer;">Backup laden <input type="file" accept=".json" style="display: none;" onchange="importJSON(event)"></label>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Gespeicherte Karten (<span id="manage-count">0</span>)</h3>
+      <div id="card-list"></div>
+    </div>
+  </main>
+
+  <!-- SYNC-ANSICHT -->
+  <main id="view-sync" class="hidden">
+    <div class="panel">
+      <h3>GitHub Cloud-Sync</h3>
+      <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.4; margin-top: 0;">Verbinde deinen Mac und dein iPhone. Deine Karten werden als verstecktes Gist in deinem GitHub-Account gespeichert.</p>
+      
+      <div id="sync-status-badge" class="sync-status hidden">Status unbekannt</div>
+
+      <div class="form-group">
+        <label>GitHub Personal Access Token (PAT)</label>
+        <input type="password" id="github-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+      </div>
+      <div class="form-group">
+        <label>Gist ID (Wird bei der ersten Verbindung automatisch erzeugt)</label>
+        <input type="text" id="github-gist-id" placeholder="Leer lassen für neues Gist" spellcheck="false">
+      </div>
+      
+      <button id="btn-force-sync" class="btn-primary" onclick="forceSync()">Jetzt manuell synchronisieren</button>
+      <p style="font-size: 12px; color: var(--text-secondary); text-align: center; margin-top: 12px;">Wenn aktiviert, synchronisiert die App bei jeder Änderung automatisch im Hintergrund.</p>
+    </div>
+  </main>
+
+  <script>
+    const STORAGE_KEY = 'wesentlich_vocab_cards_v1';
+    const GITHUB_TOKEN_KEY = 'wesentlich_gh_token';
+    const GITHUB_GIST_KEY = 'wesentlich_gh_gist';
+    let cards = [];
+    let currentCard = null;
+    let isRevealed = false;
+    let recognition = null;
+    let isListening = false;
+    let isSyncing = false;
+
+    function loadData() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      cards = raw ? JSON.parse(raw) : [];
+      document.getElementById('github-token').value = localStorage.getItem(GITHUB_TOKEN_KEY) || '';
+      document.getElementById('github-gist-id').value = localStorage.getItem(GITHUB_GIST_KEY) || '';
+      updateStats();
+      
+      // Auto-Sync beim Starten, falls Token und Gist-ID vorhanden
+      if (localStorage.getItem(GITHUB_TOKEN_KEY) && localStorage.getItem(GITHUB_GIST_KEY)) {
+        forceSync();
+      }
+    }
+
+    function saveCards(triggerSync = true) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(cards));
+      updateStats();
+      if (triggerSync && localStorage.getItem(GITHUB_TOKEN_KEY)) {
+        uploadToGistInBackground();
+      }
+    }
+
+    // --- GITHUB SYNC LOGIK ---
+    function setSyncStatus(state, msg) {
+      const badge = document.getElementById('sync-status-badge');
+      badge.className = 'sync-status ' + state;
+      badge.textContent = msg;
+      badge.classList.remove('hidden');
+    }
+
+    async function forceSync() {
+      if (isSyncing) return;
+      const token = document.getElementById('github-token').value.trim();
+      let gistId = document.getElementById('github-gist-id').value.trim();
+
+      if (!token) return alert('Bitte zuerst den GitHub Token eingeben.');
+
+      localStorage.setItem(GITHUB_TOKEN_KEY, token);
+      localStorage.setItem(GITHUB_GIST_KEY, gistId);
+      
+      isSyncing = true;
+      document.getElementById('btn-force-sync').disabled = true;
+      setSyncStatus('pending', 'Synchronisiere...');
+
+      try {
+        if (!gistId) {
+          // Neues Gist erstellen
+          const res = await fetch('https://api.github.com/gists', {
+            method: 'POST',
+            headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' },
+            body: JSON.stringify({
+              description: 'Wesentlich Vokabeltrainer Data',
+              public: false,
+              files: { 'wesentlich_vocab.json': { content: JSON.stringify(cards, null, 2) } }
+            })
+          });
+          if (!res.ok) throw new Error('Fehler beim Erstellen des Gists');
+          const data = await res.json();
+          gistId = data.id;
+          document.getElementById('github-gist-id').value = gistId;
+          localStorage.setItem(GITHUB_GIST_KEY, gistId);
+          setSyncStatus('ok', 'Gist erstellt & hochgeladen!');
+        } else {
+          // Bestehendes Gist abrufen
+          const res = await fetch(`https://api.github.com/gists/${gistId}`, {
+            headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+          });
+          if (!res.ok) throw new Error('Fehler beim Abrufen (Token/Gist-ID falsch?)');
+          const data = await res.json();
+          const fileContent = data.files['wesentlich_vocab.json']?.content;
+          
+          if (fileContent) {
+            const remoteCards = JSON.parse(fileContent);
+            // Einfache Konfliktlösung: Wir nehmen an, der manuell gestartete Sync zieht die Remote-Daten.
+            // Um Datenverlust zu vermeiden, mergen wir basierend auf der längeren Liste (für dieses Setup ausreichend).
+            if (remoteCards.length >= cards.length) {
+              cards = remoteCards;
+              saveCards(false);
+              setSyncStatus('ok', 'Karten aus der Cloud geladen!');
+            } else {
+              // Lokal sind mehr Karten, also Remote überschreiben
+              await uploadToGistInBackground();
+              setSyncStatus('ok', 'Lokale Karten in die Cloud geladen!');
+            }
+            if (!document.getElementById('view-study').classList.contains('hidden')) renderStudy();
+            if (!document.getElementById('view-manage').classList.contains('hidden')) renderCardList();
+          }
+        }
+      } catch (err) {
+        setSyncStatus('error', err.message);
+      } finally {
+        isSyncing = false;
+        document.getElementById('btn-force-sync').disabled = false;
+      }
+    }
+
+    async function uploadToGistInBackground() {
+      const token = localStorage.getItem(GITHUB_TOKEN_KEY);
+      const gistId = localStorage.getItem(GITHUB_GIST_KEY);
+      if (!token || !gistId) return;
+
+      try {
+        setSyncStatus('pending', 'Lade hoch...');
+        await fetch(`https://api.github.com/gists/${gistId}`, {
+          method: 'PATCH',
+          headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' },
+          body: JSON.stringify({
+            files: { 'wesentlich_vocab.json': { content: JSON.stringify(cards, null, 2) } }
+          })
+        });
+        setSyncStatus('ok', 'Verbunden & aktuell');
+      } catch (e) {
+        setSyncStatus('error', 'Hintergrund-Upload fehlgeschlagen');
+      }
+    }
+    // --- ENDE GITHUB SYNC LOGIK ---
+
+    function getDueCards() { const now = Date.now(); return cards.filter(c => c.due <= now).sort((a, b) => a.due - b.due); }
+
+    function calculateSM2(card, rating) {
+      let reps = card.reps || 0; let interval = card.interval || 0; let ease = card.ease || 2.5;
+      const DAY_MS = 86400000; const MIN_MS = 60000;
+      if (rating === 0) { return { reps: 0, interval: 0, ease: Math.max(1.3, ease - 0.2), due: Date.now() + 10 * MIN_MS, label: '10 Min' }; }
+      if (rating === 1) { interval = reps === 0 ? 1 : Math.max(1, Math.round(interval * 1.2)); ease = Math.max(1.3, ease - 0.15);
+      } else if (rating === 2) { if (reps === 0) interval = 1; else if (reps === 1) interval = 3; else interval = Math.round(interval * ease);
+      } else if (rating === 3) { if (reps === 0) interval = 4; else if (reps === 1) interval = 7; else interval = Math.round(interval * ease * 1.3); ease += 0.15; }
+      return { reps: reps + 1, interval, ease, due: Date.now() + interval * DAY_MS, label: interval + (interval === 1 ? ' Tag' : ' Tage') };
+    }
+
+    function normalizeText(str) { return str.toLowerCase().replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, ' ').trim(); }
+    function checkUserAnswer(userRaw, targetRaw) {
+      const userNorm = normalizeText(userRaw); if (!userNorm) return null;
+      const variants = targetRaw.split(/[\/,;]/).map(v => normalizeText(v)).filter(Boolean);
+      const isMatch = variants.some(v => v === userNorm || v.replace(/^to\s+/, '') === userNorm.replace(/^to\s+/, ''));
+      return { isMatch, userRaw: userRaw.trim() };
+    }
+
+    function renderStudy() {
+      stopSpeechRecognition();
+      const due = getDueCards(); updateStats();
+      const contentEl = document.getElementById('card-content'), emptyEl = document.getElementById('empty-study'), actionBar = document.getElementById('action-bar'), inputField = document.getElementById('user-answer');
+      if (due.length === 0) { currentCard = null; contentEl.classList.add('hidden'); actionBar.classList.add('hidden'); emptyEl.classList.remove('hidden'); return; }
+      currentCard = due[0]; isRevealed = false;
+      contentEl.classList.remove('hidden'); actionBar.classList.remove('hidden'); emptyEl.classList.add('hidden');
+      document.getElementById('front-text').textContent = currentCard.front;
+      document.getElementById('back-text').textContent = currentCard.back;
+      inputField.value = ''; inputField.disabled = false;
+      document.getElementById('check-feedback').classList.add('hidden');
+      const notesEl = document.getElementById('notes-text');
+      if (currentCard.notes && currentCard.notes.trim() !== '') { notesEl.textContent = currentCard.notes; notesEl.classList.remove('hidden'); } else { notesEl.classList.add('hidden'); }
+      document.getElementById('answer-section').classList.add('hidden');
+      document.getElementById('show-answer-btn').classList.remove('hidden');
+      document.getElementById('rating-buttons').classList.add('hidden');
+      for (let r = 0; r <= 3; r++) { document.getElementById('int-' + r).textContent = calculateSM2(currentCard, r).label; }
+      setTimeout(() => inputField.focus(), 50);
+    }
+
+    function revealAnswer() {
+      if (!currentCard || isRevealed) return;
+      stopSpeechRecognition(); isRevealed = true;
+      const inputField = document.getElementById('user-answer'), feedbackEl = document.getElementById('check-feedback');
+      const checkResult = checkUserAnswer(inputField.value, currentCard.back);
+      inputField.disabled = true; inputField.blur();
+      if (checkResult) {
+        feedbackEl.classList.remove('hidden', 'feedback-exact', 'feedback-diff');
+        if (checkResult.isMatch) { feedbackEl.classList.add('feedback-exact'); feedbackEl.textContent = '✓ Treffer: "' + checkResult.userRaw + '"'; } 
+        else { feedbackEl.classList.add('feedback-diff'); feedbackEl.textContent = 'Deine Eingabe: "' + checkResult.userRaw + '" – vergleiche unten.'; }
+      } else { feedbackEl.classList.add('hidden'); }
+      document.getElementById('answer-section').classList.remove('hidden');
+      document.getElementById('show-answer-btn').classList.add('hidden');
+      document.getElementById('rating-buttons').classList.remove('hidden');
+      speakCurrent();
+    }
+
+    function rateCard(rating) {
+      if (!currentCard) return;
+      const res = calculateSM2(currentCard, rating);
+      currentCard.reps = res.reps; currentCard.interval = res.interval; currentCard.ease = res.ease; currentCard.due = res.due;
+      saveCards(); renderStudy();
+    }
+
+    function speakCurrent() {
+      if (!currentCard || !('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const cleanText = currentCard.back.replace(/\s*\/\s*/g, ', or ');
+      const utter = new SpeechSynthesisUtterance(cleanText); utter.lang = 'en-US'; utter.rate = 0.95;
+      window.speechSynthesis.speak(utter);
+    }
+
+    function initSpeechRecognition() {
+      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRec) { document.getElementById('mic-btn').style.display = 'none'; return; }
+      recognition = new SpeechRec(); recognition.lang = 'en-US'; recognition.interimResults = true; recognition.continuous = false;
+      recognition.onstart = () => { isListening = true; document.getElementById('mic-btn').classList.add('listening'); };
+      recognition.onresult = (e) => { let t = ''; for(let i=0; i<e.results.length; i++) t += e.results[i][0].transcript; document.getElementById('user-answer').value = t; };
+      recognition.onerror = () => stopSpeechRecognition(); recognition.onend = () => stopSpeechRecognition();
+    }
+    function toggleSpeechRecognition() { if (!recognition) return; if (isListening) { recognition.stop(); } else { if (isRevealed) return; document.getElementById('user-answer').value = ''; recognition.start(); } }
+    function stopSpeechRecognition() { if (recognition && isListening) { try { recognition.stop(); } catch(e){} } isListening = false; const btn = document.getElementById('mic-btn'); if (btn) btn.classList.remove('listening'); }
+
+    function updateStats() { document.getElementById('due-count').textContent = getDueCards().length; document.getElementById('total-count').textContent = cards.length; document.getElementById('manage-count').textContent = cards.length; }
+
+    function switchView(view) {
+      stopSpeechRecognition();
+      document.getElementById('view-study').classList.toggle('hidden', view !== 'study');
+      document.getElementById('view-manage').classList.toggle('hidden', view !== 'manage');
+      document.getElementById('view-sync').classList.toggle('hidden', view !== 'sync');
+      document.getElementById('tab-study').classList.toggle('active', view === 'study');
+      document.getElementById('tab-manage').classList.toggle('active', view === 'manage');
+      document.getElementById('tab-sync').classList.toggle('active', view === 'sync');
+      if (view === 'study') renderStudy(); else if (view === 'manage') renderCardList();
+    }
+
+    function addCard() {
+      const front = document.getElementById('input-front').value.trim(), back = document.getElementById('input-back').value.trim(), notes = document.getElementById('input-notes').value.trim();
+      if (!front || !back) return alert('Bitte Vorder- und Rückseite ausfüllen.');
+      cards.unshift({ id: Date.now().toString(), front, back, notes, reps: 0, interval: 0, ease: 2.5, due: Date.now() });
+      saveCards();
+      document.getElementById('input-front').value = ''; document.getElementById('input-back').value = ''; document.getElementById('input-notes').value = '';
+      renderCardList();
+    }
+    function deleteCard(id) { if (!confirm('Karte löschen?')) return; cards = cards.filter(c => c.id !== id); saveCards(); renderCardList(); }
+    function renderCardList() {
+      const list = document.getElementById('card-list'); list.innerHTML = '';
+      cards.forEach(c => {
+        const row = document.createElement('div'); row.className = 'card-list-item';
+        const textDiv = document.createElement('div'); textDiv.className = 'card-list-text';
+        const strong = document.createElement('strong'); strong.textContent = c.front;
+        const span = document.createElement('span'); span.textContent = c.back;
+        textDiv.appendChild(strong); textDiv.appendChild(span);
+        const delBtn = document.createElement('button'); delBtn.className = 'delete-btn'; delBtn.textContent = 'Löschen'; delBtn.onclick = () => deleteCard(c.id);
+        row.appendChild(textDiv); row.appendChild(delBtn); list.appendChild(row);
+      });
+    }
+
+    // Keyboard Shortcuts
+    window.addEventListener('keydown', (e) => {
+      if (!document.getElementById('view-study').classList.contains('hidden')) {
+        if (document.activeElement.id === 'user-answer') {
+          if (e.key === 'Enter' && !isRevealed) { e.preventDefault(); revealAnswer(); } return;
+        }
+        if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
+        if ((e.code === 'Space' || e.key === 'Enter') && !isRevealed) { e.preventDefault(); revealAnswer(); }
+        else if (isRevealed) {
+          if (e.key === '1') rateCard(0); if (e.key === '2') rateCard(1); if (e.key === '3') rateCard(2); if (e.key === '4') rateCard(3); if (e.key.toLowerCase() === 'r') speakCurrent();
+        }
+      }
+    });
+
+    loadData();
+    initSpeechRecognition();
+    if (!document.getElementById('view-study').classList.contains('hidden')) renderStudy();
+  </script>
+</body>
+</html>
