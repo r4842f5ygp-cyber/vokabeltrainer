@@ -35,3 +35,11 @@ Die alte Datei `wesentlich_vocab.json` wird gelesen, aber vom neuen Code nicht v
 JSON-Backups werden nach Karten-ID zusammengeführt; Löschmarkierungen eines V2-Backups werden dabei ebenfalls übernommen. Vor jedem Import wird eine lokale Sicherung angelegt, die über „Sicherung vor letztem Import“ heruntergeladen werden kann. Die V1-Kopie bleibt beim Umstieg unverändert erhalten. Ein V2-Backup ist nicht für die alte App-Version geeignet.
 
 Aktuelle Prüfergebnisse, Migrationshinweise und noch ausstehende Arbeiten stehen in [PROJEKTSTATUS.md](PROJEKTSTATUS.md).
+
+## Kurze Lernrunden
+
+Auf der Startseite ein Thema wählen und eine Runde mit bis zu sechs Aufgaben starten. Fällige Wiederholungen werden zuerst angeboten. Pro lokalem Kalendertag kommen höchstens fünf neue Karten hinzu. Eine Antwort zunächst selbst überlegen; Tippen und Spracheingabe sind optional. Audio wird per Schaltfläche gestartet, auf Wunsch langsamer.
+
+„Pause“ speichert die Runde samt Antwortentwurf auf diesem Gerät. Beim nächsten Start kann sie fortgesetzt werden. Der Karten- und Bewertungsbestand synchronisiert zwischen Geräten; der Rundenbildschirm bleibt gerätelokal. Der Abschluss bewertet keine objektive Beherrschung, sondern zeigt die vorgenommenen Selbsteinschätzungen.
+
+`sessions.js` enthält Runden, Filter und Bearbeitung, `packs.js` die optionalen Originalübungen, `style.css` die Gestaltung. Die Sammlung kann durchsucht und nach Themen gefiltert werden. Bearbeitungen erhalten die bisherigen Bewertungsereignisse.

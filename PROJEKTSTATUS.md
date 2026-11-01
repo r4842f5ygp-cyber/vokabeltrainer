@@ -1,6 +1,6 @@
 # Vokabeltrainer – Projektstatus
 
-Stand: 1. November 2026. Paket 1: Speicherung, Sync und Import.
+Stand: 1. November 2026. Pakete 1 und 2: Speicherung, Sync, Import und kurze Lernrunden.
 
 ## Umgesetzt auf dem Arbeitsbranch
 
@@ -14,7 +14,7 @@ Stand: 1. November 2026. Paket 1: Speicherung, Sync und Import.
 
 ## Validierung
 
-37 Node-Tests bestanden, einschließlich vollständiger Script-Ladereihenfolge mit einer DOM-Testumgebung, Lernbewertung, Import/Undo und simuliertem gleichzeitigen Zwei-Geräte-Sync. JavaScript-Syntax geprüft.
+47 Node-Tests bestanden, einschließlich vollständiger Script-Ladereihenfolge mit einer DOM-Testumgebung, Lernbewertung, Import/Undo und simuliertem gleichzeitigen Zwei-Geräte-Sync. JavaScript-Syntax geprüft.
 
 Eine echte Browser-/Safari-/iPhone-Prüfung sowie ein Live-Test mit GitHub Gists stehen aus. Hier ließ sich kein lokaler HTTP-Server starten; die Browserrichtlinie verbietet file:-Vorschauen. Die DOM-Testumgebung ersetzt keine visuelle oder native Zwischenablage-Prüfung.
 
@@ -34,8 +34,21 @@ Eine echte Browser-/Safari-/iPhone-Prüfung sowie ein Live-Test mit GitHub Gists
 - LocalStorage bleibt durch Browser-/Gerätelöschung verlierbar. JSON-Backups ergänzen den Sync.
 - Zuverlässiger Offline-Neustart mit Service Worker und Manifest ist noch nicht umgesetzt.
 
-## Nächstes Paket
+## Paket 2 umgesetzt
 
-Warme, übersichtliche Oberfläche; kurze Runden mit etwa sechs Aufgaben, sichtbarem Ende, Pause/Wiedereinstieg; situationsbezogene Aufgaben; Modulfilter und Kartenbearbeitung. Dafür zunächst keine neue Datenbank oder Framework-Migration.
+- Leinenfarbener Hintergrund, Petroleum-Akzente und hellere dunkle Darstellung; responsive Bedienelemente, reduzierte Bewegung und kontrastreiche Schriftfarben.
+- Startseite mit Themenwahl; abgeschlossene Runden mit bis zu sechs Aufgaben. Wiederholungen haben Vorrang. Neue Karten sind auf fünf am lokalen Kalendertag begrenzt.
+- Fortschrittsbalken, Pause und Fortsetzen nach Neustart mit Entwurf der Antwort. Eine laufende Runde wird bei Verlassen der App pausiert. Bewertungen haben pro Rundenposition eine feste ID, sodass nach einem Absturz dieselbe Position nicht nochmals bewertet wird.
+- Antwort zunächst selbst überlegen, Eingabe optional aufklappen. Audio startet ausschließlich auf Wunsch und kann langsamer abgespielt werden.
+- Abschluss zeigt die Zahl der Aufgaben und die eigenen Bewertungen; kein Countdown, keine Streak-Strafe und kein automatischer Start der nächsten Runde.
+- Drei optionale Originalpakete mit insgesamt 18 Karten: Körper wahrnehmen, Kontakt halten, Wünsche klären. Kein Import ohne Klick. Mischung aus Begriffen und Gesprächsformulierungen; noch keine separate Hörverständnis- oder Rollenspielprüfung.
+- Suche, Themenfilter und Bearbeitung erhalten Lernstände. Alte Modulangaben in eckigen Klammern werden für die Themenwahl erkannt.
+- Die laufende Runde ist gerätelokal; Karten und Bewertungen synchronisieren weiterhin. Die zuletzt angezeigte Karte wird beim Cloud-Abruf während einer Antwort nicht ersetzt.
 
-Vor jedem neuen Arbeitspaket Modell und Denkstärke nennen. Empfehlung für Paket 2: GPT-6.1-sol, hoch, sofern auswählbar.
+Zusätzlich manuell prüfen: Darstellung bei 320/390/800 Pixeln, Hell/Dunkel, iPhone-Tastatur, Dialogfokus, Audio und langsame Wiedergabe, Hintergrundpause, Paketwahl und neue Themenfilter.
+
+## Nächste Arbeiten
+
+Echte Browser- und Geräteprüfung, Live-Gist-Test und zuverlässiger Offline-Neustart mit Service Worker und Manifest. Danach gegebenenfalls getrennte Aufgaben für Hörverständnis, freies Formulieren und differenzierte Antwortvarianten. Noch keine Produktivübernahme erfolgt.
+
+Vor jedem neuen Arbeitspaket Modell und Denkstärke nennen. Empfehlung für die nächste technische Prüfung: GPT-6.1-sol, hoch, sofern auswählbar.

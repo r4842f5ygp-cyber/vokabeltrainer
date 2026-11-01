@@ -23,26 +23,6 @@ const STORAGE_KEY = 'wesentlich_vocab_cards_v1';
       return { isMatch, userRaw: userRaw.trim() };
     }
 
-    function renderStudy() {
-      stopSpeechRecognition();
-      const due = getDueCards(); updateStats();
-      const contentEl = document.getElementById('card-content'), emptyEl = document.getElementById('empty-study'), actionBar = document.getElementById('action-bar'), inputField = document.getElementById('user-answer');
-      if (due.length === 0) { currentCard = null; contentEl.classList.add('hidden'); actionBar.classList.add('hidden'); emptyEl.classList.remove('hidden'); return; }
-      currentCard = due[0]; isRevealed = false;
-      contentEl.classList.remove('hidden'); actionBar.classList.remove('hidden'); emptyEl.classList.add('hidden');
-      document.getElementById('front-text').textContent = currentCard.front;
-      document.getElementById('back-text').textContent = currentCard.back;
-      inputField.value = ''; inputField.disabled = false;
-      document.getElementById('check-feedback').classList.add('hidden');
-      const notesEl = document.getElementById('notes-text');
-      if (currentCard.notes && currentCard.notes.trim() !== '') { notesEl.textContent = currentCard.notes; notesEl.classList.remove('hidden'); } else { notesEl.classList.add('hidden'); }
-      document.getElementById('answer-section').classList.add('hidden');
-      document.getElementById('show-answer-btn').classList.remove('hidden');
-      document.getElementById('rating-buttons').classList.add('hidden');
-      for (let r = 0; r <= 3; r++) { document.getElementById('int-' + r).textContent = calculateSM2(currentCard, r).label; }
-      if (matchMedia('(pointer: fine)').matches) inputField.focus();
-    }
-
     function revealAnswer() {
       if (!currentCard || isRevealed) return;
       stopSpeechRecognition(); isRevealed = true;
@@ -57,24 +37,14 @@ const STORAGE_KEY = 'wesentlich_vocab_cards_v1';
       document.getElementById('answer-section').classList.remove('hidden');
       document.getElementById('show-answer-btn').classList.add('hidden');
       document.getElementById('rating-buttons').classList.remove('hidden');
-      speakCurrent();
+      saveRoundDraft();
     }
 
-    function rateCard(rating) {
-      if (!currentCard || !isRevealed) return;
-      const id = currentCard.id;
-      const next = C.merge(state);
-      const record = next.cards.find(c=>c.id===id);
-      if (!record || record.deletedAt) return renderStudy();
-      record.reviews.push({id:uuid(),at:Date.now(),rating});
-      if (commit(next)) renderStudy();
-    }
-
-    function speakCurrent() {
+    function speakCurrent(rate = 0.95) {
       if (!currentCard || !('speechSynthesis' in window)) return;
       window.speechSynthesis.cancel();
       const cleanText = currentCard.back.replace(/\s*\/\s*/g, ', or ');
-      const utter = new SpeechSynthesisUtterance(cleanText); utter.lang = 'en-US'; utter.rate = 0.95;
+      const utter = new SpeechSynthesisUtterance(cleanText); utter.lang = 'en-US'; utter.rate = rate;
       window.speechSynthesis.speak(utter);
     }
 
@@ -83,7 +53,7 @@ const STORAGE_KEY = 'wesentlich_vocab_cards_v1';
       if (!SpeechRec) { document.getElementById('mic-btn').style.display = 'none'; return; }
       recognition = new SpeechRec(); recognition.lang = 'en-US'; recognition.interimResults = true; recognition.continuous = false;
       recognition.onstart = () => { isListening = true; document.getElementById('mic-btn').classList.add('listening'); };
-      recognition.onresult = (e) => { let t = ''; for(let i=0; i<e.results.length; i++) t += e.results[i][0].transcript; document.getElementById('user-answer').value = t; };
+      recognition.onresult = (e) => { let t = ''; for(let i=0; i<e.results.length; i++) t += e.results[i][0].transcript; document.getElementById('user-answer').value = t; saveRoundDraft(); };
       recognition.onerror = () => stopSpeechRecognition(); recognition.onend = () => stopSpeechRecognition();
     }
     function toggleSpeechRecognition() { if (!recognition) return; if (isListening) { recognition.stop(); } else { if (isRevealed) return; document.getElementById('user-answer').value = ''; recognition.start(); } }
@@ -92,6 +62,7 @@ const STORAGE_KEY = 'wesentlich_vocab_cards_v1';
     function updateStats() { document.getElementById('due-count').textContent = getDueCards().length; document.getElementById('total-count').textContent = cards.length; document.getElementById('manage-count').textContent = cards.length; }
 
     function switchView(view) {
+      if(view !== 'study' && round && !round.paused) pauseRound();
       stopSpeechRecognition();
       document.getElementById('view-study').classList.toggle('hidden', view !== 'study');
       document.getElementById('view-manage').classList.toggle('hidden', view !== 'manage');
@@ -119,20 +90,24 @@ const STORAGE_KEY = 'wesentlich_vocab_cards_v1';
       if (commit(next)) renderCardList();
     }
     function renderCardList() {
-      const list = document.getElementById('card-list'); list.innerHTML = '';
-      cards.forEach(c => {
+      const list = document.getElementById('card-list'); list.replaceChildren();
+      updateTopics();
+      const query=$('card-search').value.toLocaleLowerCase('de'), topic=$('manage-module').value;
+      cards.filter(c=>(!topic || moduleOf(c)===topic) && [c.front,c.back,c.notes].join(' ').toLocaleLowerCase('de').includes(query)).forEach(c => {
         const row = document.createElement('div'); row.className = 'card-list-item';
         const textDiv = document.createElement('div'); textDiv.className = 'card-list-text';
         const strong = document.createElement('strong'); strong.textContent = c.front;
         const span = document.createElement('span'); span.textContent = c.back;
         textDiv.appendChild(strong); textDiv.appendChild(span);
         const delBtn = document.createElement('button'); delBtn.className = 'delete-btn'; delBtn.textContent = 'Löschen'; delBtn.onclick = () => deleteCard(c.id);
-        row.appendChild(textDiv); row.appendChild(delBtn); list.appendChild(row);
+        const editBtn=document.createElement('button');editBtn.className='btn-secondary';editBtn.textContent='Bearbeiten';editBtn.onclick=()=>editCard(c.id);
+        row.appendChild(textDiv); row.appendChild(editBtn); row.appendChild(delBtn); list.appendChild(row);
       });
     }
 
     window.addEventListener('keydown', (e) => {
-      if (!document.getElementById('view-study').classList.contains('hidden')) {
+      if (!document.getElementById('view-study').classList.contains('hidden') && round && !round.paused && currentCard && !e.repeat) {
+        if (document.activeElement.tagName === 'BUTTON' || document.activeElement.tagName === 'SELECT') return;
         if (document.activeElement.id === 'user-answer') {
           if (e.key === 'Enter' && !isRevealed) { e.preventDefault(); revealAnswer(); } return;
         }
@@ -143,7 +118,3 @@ const STORAGE_KEY = 'wesentlich_vocab_cards_v1';
         }
       }
     });
-
-    loadData();
-    initSpeechRecognition();
-    if (!document.getElementById('view-study').classList.contains('hidden')) renderStudy();

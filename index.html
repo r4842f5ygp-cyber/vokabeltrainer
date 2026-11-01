@@ -7,158 +7,12 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Vokabeln">
   <title>Vokabeltrainer</title>
-  <style>
-    :root {
-      --bg: #f5f5f7;
-      --card-bg: #ffffff;
-      --text: #1d1d1f;
-      --text-secondary: #86868b;
-      --border: #d2d2d7;
-      --accent: #0066cc;
-      --again: #ff3b30;
-      --hard: #ff9500;
-      --good: #34c759;
-      --easy: #007aff;
-    }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #000000;
-        --card-bg: #1c1c1e;
-        --text: #f5f5f7;
-        --text-secondary: #98989d;
-        --border: #38383a;
-        --accent: #0a84ff;
-      }
-    }
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      padding: env(safe-area-inset-top) 16px env(safe-area-inset-bottom) 16px;
-    }
-    header {
-      max-width: 640px;
-      width: 100%;
-      margin: 16px auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .stats-bar {
-      display: flex;
-      gap: 14px;
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text-secondary);
-    }
-    .stats-bar span b { color: var(--text); }
-    .nav-tabs {
-      display: flex;
-      background: var(--card-bg);
-      border-radius: 8px;
-      padding: 3px;
-      border: 1px solid var(--border);
-    }
-    .nav-tabs button {
-      background: none;
-      border: none;
-      color: var(--text-secondary);
-      padding: 6px 10px;
-      border-radius: 6px;
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-    }
-    .nav-tabs button.active { background: var(--accent); color: #fff; }
-    main {
-      max-width: 640px;
-      width: 100%;
-      margin: 0 auto;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-    .card-container {
-      background: var(--card-bg);
-      border-radius: 16px;
-      padding: 32px 24px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
-      border: 1px solid var(--border);
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      min-height: 360px;
-      margin-bottom: 20px;
-    }
-    .card-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-secondary); margin-bottom: 8px; font-weight: 600; }
-    .card-front { font-size: 24px; font-weight: 600; line-height: 1.35; margin-bottom: 24px; }
-    .answer-input-wrapper { display: flex; gap: 8px; margin-top: 8px; }
-    .answer-input { flex: 1; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 16px; font-family: inherit; outline: none; }
-    .answer-input:focus { border-color: var(--accent); }
-    .mic-btn { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; width: 46px; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; color: var(--text); flex-shrink: 0; }
-    .mic-btn.listening { background: rgba(255, 59, 48, 0.15); border-color: var(--again); color: var(--again); }
-    .check-feedback { margin-bottom: 14px; padding: 10px 14px; border-radius: 8px; font-size: 14px; font-weight: 600; }
-    .feedback-exact { background: rgba(52, 199, 89, 0.15); color: var(--good); border: 1px solid rgba(52, 199, 89, 0.35); }
-    .feedback-diff { background: rgba(255, 149, 0, 0.15); color: var(--hard); border: 1px solid rgba(255, 149, 0, 0.35); }
-    .card-divider { height: 1px; background: var(--border); margin: 20px 0; }
-    .card-back { font-size: 22px; font-weight: 600; color: var(--accent); line-height: 1.35; display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
-    .speak-btn { background: var(--bg); border: 1px solid var(--border); border-radius: 50%; width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text); flex-shrink: 0; font-size: 16px; }
-    .card-notes { font-size: 16px; line-height: 1.55; color: var(--text-secondary); white-space: pre-line; background: var(--bg); padding: 14px 16px; border-radius: 10px; }
-    .action-bar { margin-bottom: 24px; }
-    .btn-primary { width: 100%; background: var(--accent); color: #fff; border: none; padding: 16px; border-radius: 12px; font-size: 17px; font-weight: 600; cursor: pointer; }
-    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
-    .rating-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-    .rate-btn { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 12px 6px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-    .rate-btn .interval { font-size: 12px; color: var(--text-secondary); }
-    .rate-btn .label { font-size: 15px; font-weight: 600; }
-    .rate-again .label { color: var(--again); } .rate-hard .label { color: var(--hard); } .rate-good .label { color: var(--good); } .rate-easy .label { color: var(--easy); }
-    .panel { background: var(--card-bg); border-radius: 14px; padding: 20px; border: 1px solid var(--border); margin-bottom: 16px; }
-    .panel h3 { margin-top: 0; margin-bottom: 14px; font-size: 17px; }
-    .form-group { margin-bottom: 12px; }
-    .form-group label { display: block; font-size: 13px; color: var(--text-secondary); margin-bottom: 4px; }
-    input[type="text"], input[type="password"], textarea { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 15px; font-family: inherit; }
-    textarea { resize: vertical; min-height: 70px; }
-    .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
-    .btn-secondary { background: var(--bg); color: var(--text); border: 1px solid var(--border); padding: 10px 14px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; }
-    .card-list-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); gap: 12px; }
-    .card-list-item:last-child { border-bottom: none; }
-    .card-list-text { flex: 1; min-width: 0; }
-    .card-list-text strong { display: block; font-size: 15px; margin-bottom: 2px; }
-    .card-list-text span { font-size: 13px; color: var(--text-secondary); display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .delete-btn { background: none; border: none; color: var(--again); font-size: 13px; cursor: pointer; padding: 6px 10px; }
-    .hidden { display: none !important; }
-    .empty-state { text-align: center; padding: 40px 16px; color: var(--text-secondary); }
-    .empty-state h2 { color: var(--text); margin-bottom: 8px; }
-    .shortcut-hint { text-align: center; font-size: 12px; color: var(--text-secondary); margin-top: 10px; }
-    .sync-status { display: inline-block; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; margin-bottom: 12px; }
-    .sync-status.ok { background: rgba(52, 199, 89, 0.15); color: var(--good); }
-    .sync-status.error { background: rgba(255, 59, 48, 0.15); color: var(--again); }
-    .sync-status.pending { background: rgba(255, 149, 0, 0.15); color: var(--hard); }
-    .status-line { display: block; max-width: 640px; width: 100%; margin: 0 auto 12px; }
-    .help { font-size: 14px; line-height: 1.5; color: var(--text-secondary); }
-    details { margin-top: 16px; } summary { cursor: pointer; padding: 10px 0; }
-    select { font: inherit; padding: 10px; border-radius: 8px; max-width: 100%; }
-    #preview-rows li { margin: 12px 0; overflow-wrap: anywhere; }
-    #preview-errors { white-space: pre-wrap; font: inherit; color: #ac2920; }
-    .nav-tabs button, .speak-btn, .delete-btn { min-height: 44px; }
-    button:focus-visible, summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
-    input[type="text"], input[type="password"], textarea { font-size: 16px; }
-    dialog { width: min(620px, calc(100% - 24px)); max-height: 90dvh; overflow-y: auto; color: var(--text); background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 24px; }
-    dialog::backdrop { background: rgba(0,0,0,.4); }
-    dialog h2 { margin-top: 0; } dialog textarea { min-height: 180px; }
-    #paste-result { white-space: pre-wrap; line-height: 1.5; }
-    @media (max-width: 600px) { .shortcut-hint { display: none; } }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
   <header>
+    <div class="brand"><span class="brand-mark" aria-hidden="true">w.</span><div><strong>Wort für Wort</strong><small>Englisch für Begegnungen</small></div></div>
     <div class="stats-bar">
       <span>Fällig: <b id="due-count">0</b></span>
       <span>Gesamt: <b id="total-count">0</b></span>
@@ -177,32 +31,41 @@
   </section>
   <!-- LERN-ANSICHT -->
   <main id="view-study">
-    <div class="card-container" id="study-card">
+    <section id="round-home" class="home-card">
+      <p class="eyebrow">DEINE KLEINE PRAXISRUNDE</p>
+      <h1 id="home-title">Ein kleiner Schritt für Dein Englisch.</h1>
+      <p id="home-detail" class="home-detail"></p>
+      <label for="study-module">Heute üben</label><select id="study-module" onchange="renderStudy()"><option value="">Alle Themen</option></select>
+      <button id="start-round" data-write class="btn-primary" onclick="startRound()">Kurze Runde starten</button>
+      <button id="resume-round" class="btn-primary hidden" onclick="resumeRound()">Meine Runde fortsetzen</button>
+      <p id="round-message" role="status"></p>
+      <p class="help">Bis zu sechs Aufgaben. Höchstens fünf neue Karten am Tag. Pausen sind jederzeit möglich.</p>
+      <div id="empty-study" class="empty-state hidden"><h2>Hier beginnt Deine Sammlung.</h2><p>Starte mit einem Themenpaket oder füge eigene Vokabeln ein.</p><button class="btn-secondary" onclick="switchView('manage');openPasteDialog()">Eigene Vokabeln einfügen</button></div>
+      <details class="pack-section"><summary>Neue Themen entdecken</summary><div id="pack-list" class="pack-grid"></div><p id="pack-message" role="status"></p></details>
+    </section>
+    <section id="round-complete" class="home-card hidden" aria-labelledby="completion-title">
+      <span class="completion-mark" aria-hidden="true">✓</span><p class="eyebrow">EIN GUTER MOMENT ZUM AUFHÖREN</p>
+      <h1 id="completion-title">Deine Runde ist geschafft.</h1><p id="completion-detail"></p><p id="completion-next" class="help"></p>
+      <div class="btn-row"><button class="btn-primary" onclick="finishRound()">Für jetzt fertig</button><button class="btn-secondary" onclick="finishRound();startRound()">Noch eine Runde</button></div>
+    </section>
+    <div id="round-top" class="hidden"><div class="round-meta"><span id="round-position" role="status" aria-live="polite"></span><button class="text-btn" onclick="pauseRound()">Pause</button></div><progress id="round-progress" max="6" value="0" aria-label="Fortschritt dieser Runde"></progress></div>
+    <div class="card-container hidden" id="study-card">
+      <p id="card-topic" class="topic-pill"></p>
       <div id="card-content">
-        <div class="card-label">Begriff / Kontext (DE)</div>
-        <div class="card-front" id="front-text"></div>
-        <div class="answer-input-wrapper" id="input-wrapper">
-          <input type="text" id="user-answer" class="answer-input" placeholder="Englische Antwort (optional)..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-          <button type="button" id="mic-btn" class="mic-btn" onclick="toggleSpeechRecognition()" title="Antwort einsprechen (Englisch)">🎙️</button>
+        <div class="card-label">Wie würdest Du das auf Englisch sagen?</div><div class="card-front" id="front-text"></div>
+        <p class="help">Denk kurz nach oder sprich Deine Antwort laut aus.</p>
+        <details id="typing-details"><summary>Antwort tippen oder einsprechen</summary><div class="answer-input-wrapper" id="input-wrapper">
+          <input type="text" id="user-answer" class="answer-input" aria-label="Deine englische Antwort" oninput="saveRoundDraft()" placeholder="Deine englische Antwort …" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+          <button type="button" id="mic-btn" class="mic-btn" onclick="toggleSpeechRecognition()" title="Antwort einsprechen (Englisch)" aria-label="Englische Antwort einsprechen">🎙️</button>
+        </div></details>
+        <div id="answer-section" class="hidden"><div class="card-divider"></div><div id="check-feedback" class="check-feedback hidden"></div>
+          <div class="card-label">Eine passende Formulierung</div><div class="card-back"><button class="speak-btn" aria-label="Englische Lösung vorlesen" onclick="speakCurrent()">🔊</button><span id="back-text"></span></div>
+          <button class="text-btn" onclick="speakCurrent(0.7)">Langsam anhören</button><div id="notes-text" class="card-notes hidden"></div>
         </div>
-        <div id="answer-section" class="hidden">
-          <div class="card-divider"></div>
-          <div id="check-feedback" class="check-feedback hidden"></div>
-          <div class="card-label">Lösung (Englisch)</div>
-          <div class="card-back">
-            <button class="speak-btn" onclick="speakCurrent()">🔊</button>
-            <span id="back-text"></span>
-          </div>
-          <div id="notes-text" class="card-notes hidden"></div>
-        </div>
-      </div>
-      <div id="empty-study" class="empty-state hidden">
-        <h2>Alles erledigt für heute!</h2>
-        <p>Es stehen aktuell keine weiteren Karten zur Wiederholung an.</p>
       </div>
     </div>
-    <div class="action-bar" id="action-bar">
-      <button id="show-answer-btn" class="btn-primary" onclick="revealAnswer()">Prüfen / Antwort zeigen</button>
+    <div class="action-bar hidden" id="action-bar">
+      <button id="show-answer-btn" class="btn-primary" onclick="revealAnswer()">Antwort vergleichen</button>
       <div id="rating-buttons" class="rating-grid hidden">
         <button class="rate-btn rate-again" onclick="rateCard(0)"><span class="interval" id="int-0"></span><span class="label">Noch mal</span></button>
         <button class="rate-btn rate-hard" onclick="rateCard(1)"><span class="interval" id="int-1"></span><span class="label">Schwer</span></button>
@@ -260,7 +123,9 @@
       </div>
     </div>
     <div class="panel">
-      <h3>Gespeicherte Karten (<span id="manage-count">0</span>)</h3>
+      <h3>Deine Sammlung (<span id="manage-count">0</span>)</h3>
+      <label for="card-search">Karten suchen</label><input type="search" id="card-search" placeholder="Begriff oder Beispielsatz" oninput="renderCardList()">
+      <label for="manage-module">Thema</label><select id="manage-module" onchange="renderCardList()"><option value="">Alle Themen</option></select>
       <div id="card-list"></div>
     </div>
   </main>
@@ -301,9 +166,16 @@
       <button class="btn-secondary" onclick="document.getElementById('paste-dialog').close()">Fertig</button>
     </div>
   </dialog>
+  <dialog id="edit-dialog" aria-labelledby="edit-title"><h2 id="edit-title">Karte bearbeiten</h2>
+    <label for="edit-front">Deutsch / Impuls</label><textarea id="edit-front"></textarea><label for="edit-back">Englisch</label><textarea id="edit-back"></textarea>
+    <label for="edit-notes">Beispiel &amp; Nuance</label><textarea id="edit-notes"></textarea><label for="edit-module">Thema</label><input id="edit-module" type="text">
+    <p id="edit-message" role="status"></p><div class="btn-row"><button class="btn-primary" onclick="saveEdit()">Änderungen speichern</button><button class="btn-secondary" onclick="document.getElementById('edit-dialog').close()">Abbrechen</button></div>
+  </dialog>
   <script src="core.js"></script>
   <script src="data.js"></script>
   <script src="app.js"></script>
+  <script src="packs.js"></script>
+  <script src="sessions.js"></script>
 </body>
 </html>
 
