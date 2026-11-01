@@ -16,7 +16,7 @@ Stand: 1. November 2026. Pakete 1 und 2: Speicherung, Sync, Import und kurze Ler
 
 47 Node-Tests bestanden, einschließlich vollständiger Script-Ladereihenfolge mit einer DOM-Testumgebung, Lernbewertung, Import/Undo und simuliertem gleichzeitigen Zwei-Geräte-Sync. JavaScript-Syntax geprüft.
 
-Eine echte Browser-/Safari-/iPhone-Prüfung sowie ein Live-Test mit GitHub Gists stehen aus. Hier ließ sich kein lokaler HTTP-Server starten; die Browserrichtlinie verbietet file:-Vorschauen. Die DOM-Testumgebung ersetzt keine visuelle oder native Zwischenablage-Prüfung.
+Die separate Vorschau wurde mit ausdrücklicher Freigabe veröffentlicht und ihre Startseite im Browser aufgerufen. Die vollständige Safari-/iPhone-Bedienprüfung und ein Live-Test mit GitHub Gists stehen aus. Die DOM-Testumgebung ersetzt keine native Zwischenablage-, Audio- oder Geräteprüfung.
 
 ## Vor produktiver Übernahme prüfen
 
@@ -47,8 +47,30 @@ Eine echte Browser-/Safari-/iPhone-Prüfung sowie ein Live-Test mit GitHub Gists
 
 Zusätzlich manuell prüfen: Darstellung bei 320/390/800 Pixeln, Hell/Dunkel, iPhone-Tastatur, Dialogfokus, Audio und langsame Wiedergabe, Hintergrundpause, Paketwahl und neue Themenfilter.
 
-## Nächste Arbeiten
+## Veröffentlichungsstand
 
-Echte Browser- und Geräteprüfung, Live-Gist-Test und zuverlässiger Offline-Neustart mit Service Worker und Manifest. Danach gegebenenfalls getrennte Aufgaben für Hörverständnis, freies Formulieren und differenzierte Antwortvarianten. Noch keine Produktivübernahme erfolgt.
+Die separate Vorschau unter https://r4842f5ygp-cyber.github.io/vokabeltrainer/vorschau/ ist veröffentlicht (PR 2). Ihre Speicherschlüssel sind getrennt; Cloud-Sync ist abgeschaltet. Das neue Hauptprogramm einschließlich Sync liegt weiterhin in PR 1 als Entwurf vor. Die vorhandene Haupt-App wurde nicht durch die neue Fassung ersetzt.
+
+## Nächstes Arbeitspaket: passende Alternativen
+
+Vom Nutzer verbindlich aufgenommen:
+
+- Pro Karte mehrere kontextuell passende vollständige englische Formulierungen speichern, optional mit Bedeutungsnuance.
+- Beim Üben nach Aufdecken unter „Auch passend“ anzeigen; Alternativen einzeln anhören, bearbeiten und entfernen.
+- „Alternative ergänzen“ direkt auf der Lernkarte; alternativ die bereits getippte Antwort übernehmen.
+- Alle gespeicherten passenden Alternativen bei der Antwortprüfung akzeptieren. Synonyme nicht ungeprüft gleichsetzen.
+- Lernhistorie und aktuelle Runde erhalten; Alternativen in Sicherungen, CSV-Konzept und späterem Geräte-Sync berücksichtigen.
+- Beispiel: „to long for connection“ / „to yearn for connection“; yearn oft intensiver und gehobener.
+- Oberfläche zunächst kompakt; Ergänzungsformular bei Bedarf aufklappen.
+- Zunächst in der separaten Vorschau testen, anschließend in das Hauptprogramm übernehmen.
+
+## Weitere offene Arbeiten, in Reihenfolge
+
+1. Bedienungsfeedback aus der Vorschau sammeln und Fehler beheben.
+2. Offline-Neustart mit Service Worker, Manifest und nachvollziehbaren Versionsupdates umsetzen und im Flugmodus prüfen.
+3. Live-Sync auf Mac und iPhone mit getrennten Offline-Änderungen, Bewertungen und Löschungen prüfen; vorher je Gerät sichern.
+4. Bestehendes Vokabelmaterial sprachlich prüfen, mehrdeutige Sammelkarten aufteilen und Pakete gezielt erweitern.
+5. Nach erfolgreicher Prüfung die neue Fassung in die Haupt-App übernehmen.
+6. Optional danach: eigene Hörverständnis- und freie Formulierungsaufgaben.
 
 Vor jedem neuen Arbeitspaket Modell und Denkstärke nennen. Empfehlung für die nächste technische Prüfung: GPT-6.1-sol, hoch, sofern auswählbar.
