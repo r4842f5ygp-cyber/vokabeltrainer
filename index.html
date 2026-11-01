@@ -204,10 +204,19 @@
       <div class="form-group"><label>Beispielsatz & Nuance (Optional)</label><textarea id="input-notes"></textarea></div>
       <button class="btn-primary" onclick="addCard()">Karte speichern</button>
     </div>
+
     <div class="panel">
-      <h3>Import & Backup (CSV / JSON)</h3>
+      <h3>Massen-Import per Textfeld (Ohne Datei!)</h3>
+      <div class="form-group">
+        <label>Füge hier direkt deine Vokabeln ein (Pro Zeile: Deutsch;Englisch;Notiz):</label>
+        <textarea id="bulk-text-input" placeholder="die Praxis gut finden;to find the office okay;Beispiel..." style="min-height: 120px; font-family: monospace; font-size: 13px;"></textarea>
+      </div>
+      <button class="btn-primary" onclick="importBulkText()">Vokabeln direkt importieren</button>
+    </div>
+
+    <div class="panel">
+      <h3>Backup & Export</h3>
       <div class="btn-row">
-        <label class="btn-secondary" style="cursor: pointer;">CSV importieren <input type="file" accept=".csv,.tsv,.txt,.txt" style="display: none;" onchange="importCSV(event)"></label>
         <button class="btn-secondary" onclick="exportJSON()">Backup (JSON)</button>
         <label class="btn-secondary" style="cursor: pointer;">Backup laden <input type="file" accept=".json" style="display: none;" onchange="importJSON(event)"></label>
       </div>
@@ -222,7 +231,7 @@
   <main id="view-sync" class="hidden">
     <div class="panel">
       <h3>GitHub Cloud-Sync</h3>
-      <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.4; margin-top: 0;">Verbinde deinen Mac und dein iPhone. Deine Karten werden als verstecktes Gist in deinem GitHub-Account gespeichert.</p>
+      <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.4; margin-top: 0;">Verbinde deinen Mac und dein iPhone über ein verstecktes Gist.</p>
       
       <div id="sync-status-badge" class="sync-status hidden">Status unbekannt</div>
 
@@ -457,6 +466,34 @@
       document.getElementById('input-front').value = ''; document.getElementById('input-back').value = ''; document.getElementById('input-notes').value = '';
       renderCardList();
     }
+
+    function importBulkText() {
+      const text = document.getElementById('bulk-text-input').value;
+      if (!text.trim()) return alert('Bitte zuerst Vokabeln in das Textfeld einfügen.');
+      const lines = text.split(/\r?\n/);
+      let imported = 0;
+      
+      lines.forEach(line => {
+        if (!line || !line.trim()) return;
+        const parts = line.split(';');
+        if (parts.length >= 2) {
+          cards.push({
+            id: Date.now().toString() + Math.random().toString(36).slice(2, 6),
+            front: parts[0].replace(/^["']|["']$/g, '').trim(),
+            back: parts[1].replace(/^["']|["']$/g, '').trim(),
+            notes: parts.slice(2).join(';').replace(/^["']|["']$/g, '').trim(),
+            reps: 0, interval: 0, ease: 2.5, due: Date.now()
+          });
+          imported++;
+        }
+      });
+      saveCards();
+      renderCardList();
+      document.getElementById('bulk-text-input').value = '';
+      alert(imported + ' Vokabeln erfolgreich importiert!');
+      switchView('manage');
+    }
+
     function deleteCard(id) { if (!confirm('Karte löschen?')) return; cards = cards.filter(c => c.id !== id); saveCards(); renderCardList(); }
     function renderCardList() {
       const list = document.getElementById('card-list'); list.innerHTML = '';
@@ -469,41 +506,6 @@
         const delBtn = document.createElement('button'); delBtn.className = 'delete-btn'; delBtn.textContent = 'Löschen'; delBtn.onclick = () => deleteCard(c.id);
         row.appendChild(textDiv); row.appendChild(delBtn); list.appendChild(row);
       });
-    }
-
-    // Verbesserter CSV-Import (robust gegen Zeilenumbrüche und Quotes)
-    function importCSV(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const text = e.target.result;
-        // Teilen nach Zeilen (egal ob \n oder \r\n)
-        const lines = text.split(/\r?\n/);
-        let imported = 0;
-        
-        lines.forEach(line => {
-          if (!line || !line.trim()) return;
-          // Teile anhand von Semikolon
-          const parts = line.split(';');
-          if (parts.length >= 2) {
-            cards.push({
-              id: Date.now().toString() + Math.random().toString(36).slice(2, 6),
-              front: parts[0].replace(/^["']|["']$/g, '').trim(),
-              back: parts[1].replace(/^["']|["']$/g, '').trim(),
-              notes: parts.slice(2).join(';').replace(/^["']|["']$/g, '').trim(),
-              reps: 0, interval: 0, ease: 2.5, due: Date.now()
-            });
-            imported++;
-          }
-        });
-        saveCards();
-        renderCardList();
-        alert(imported + ' Vokabeln erfolgreich importiert!');
-        event.target.value = '';
-        switchView('manage');
-      };
-      reader.readAsText(file);
     }
 
     function exportJSON() {
