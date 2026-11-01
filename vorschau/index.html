@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Vokabeln">
+  <title>Vokabeltrainer</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body><aside style="padding:12px 16px;background:#e8eee7;color:#233d3d;text-align:center;font-size:14px">Vorschau · Eigene Testdaten, Cloud-Sync ausgeschaltet. Deine bisherigen Karten bleiben unverändert.</aside>
+
+  <header>
+    <div class="brand"><span class="brand-mark" aria-hidden="true">w.</span><div><strong>Wort für Wort</strong><small>Englisch für Begegnungen</small></div></div>
+    <div class="stats-bar">
+      <span>Fällig: <b id="due-count">0</b></span>
+      <span>Gesamt: <b id="total-count">0</b></span>
+    </div>
+    <div class="nav-tabs">
+      <button id="tab-study" class="active" onclick="switchView('study')">Lernen</button>
+      <button id="tab-manage" onclick="switchView('manage')">Karten</button>
+      <button style="display:none" id="tab-sync" onclick="switchView('sync')">Sync</button>
+    </div>
+  </header>
+
+  <div id="global-sync-status" class="sync-status status-line" role="status" aria-live="polite">Lade Daten …</div>
+  <section id="storage-recovery" class="panel hidden" role="alert">
+    <p>Deine gespeicherten Daten bleiben unverändert. Lade sie zur Wiederherstellung herunter.</p>
+    <button class="btn-secondary" onclick="exportRecovery()">Rohdaten sichern</button>
+  </section>
+  <!-- LERN-ANSICHT -->
+  <main id="view-study">
+    <section id="round-home" class="home-card">
+      <p class="eyebrow">DEINE KLEINE PRAXISRUNDE</p>
+      <h1 id="home-title">Ein kleiner Schritt für Dein Englisch.</h1>
+      <p id="home-detail" class="home-detail"></p>
+      <label for="study-module">Heute üben</label><select id="study-module" onchange="renderStudy()"><option value="">Alle Themen</option></select>
+      <button id="start-round" data-write class="btn-primary" onclick="startRound()">Kurze Runde starten</button>
+      <button id="resume-round" class="btn-primary hidden" onclick="resumeRound()">Meine Runde fortsetzen</button>
+      <p id="round-message" role="status"></p>
+      <p class="help">Bis zu sechs Aufgaben. Höchstens fünf neue Karten am Tag. Pausen sind jederzeit möglich.</p>
+      <div id="empty-study" class="empty-state hidden"><h2>Hier beginnt Deine Sammlung.</h2><p>Starte mit einem Themenpaket oder füge eigene Vokabeln ein.</p><button class="btn-secondary" onclick="switchView('manage');openPasteDialog()">Eigene Vokabeln einfügen</button></div>
+      <details class="pack-section"><summary>Neue Themen entdecken</summary><div id="pack-list" class="pack-grid"></div><p id="pack-message" role="status"></p></details>
+    </section>
+    <section id="round-complete" class="home-card hidden" aria-labelledby="completion-title">
+      <span class="completion-mark" aria-hidden="true">✓</span><p class="eyebrow">EIN GUTER MOMENT ZUM AUFHÖREN</p>
+      <h1 id="completion-title">Deine Runde ist geschafft.</h1><p id="completion-detail"></p><p id="completion-next" class="help"></p>
+      <div class="btn-row"><button class="btn-primary" onclick="finishRound()">Für jetzt fertig</button><button class="btn-secondary" onclick="finishRound();startRound()">Noch eine Runde</button></div>
+    </section>
+    <div id="round-top" class="hidden"><div class="round-meta"><span id="round-position" role="status" aria-live="polite"></span><button class="text-btn" onclick="pauseRound()">Pause</button></div><progress id="round-progress" max="6" value="0" aria-label="Fortschritt dieser Runde"></progress></div>
+    <div class="card-container hidden" id="study-card">
+      <p id="card-topic" class="topic-pill"></p>
+      <div id="card-content">
+        <div class="card-label">Wie würdest Du das auf Englisch sagen?</div><div class="card-front" id="front-text"></div>
+        <p class="help">Denk kurz nach oder sprich Deine Antwort laut aus.</p>
+        <details id="typing-details"><summary>Antwort tippen oder einsprechen</summary><div class="answer-input-wrapper" id="input-wrapper">
+          <input type="text" id="user-answer" class="answer-input" aria-label="Deine englische Antwort" oninput="saveRoundDraft()" placeholder="Deine englische Antwort …" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+          <button type="button" id="mic-btn" class="mic-btn" onclick="toggleSpeechRecognition()" title="Antwort einsprechen (Englisch)" aria-label="Englische Antwort einsprechen">🎙️</button>
+        </div></details>
+        <div id="answer-section" class="hidden"><div class="card-divider"></div><div id="check-feedback" class="check-feedback hidden"></div>
+          <div class="card-label">Eine passende Formulierung</div><div class="card-back"><button class="speak-btn" aria-label="Englische Lösung vorlesen" onclick="speakCurrent()">🔊</button><span id="back-text"></span></div>
+          <button class="text-btn" onclick="speakCurrent(0.7)">Langsam anhören</button><div id="notes-text" class="card-notes hidden"></div>
+        </div>
+      </div>
+    </div>
+    <div class="action-bar hidden" id="action-bar">
+      <button id="show-answer-btn" class="btn-primary" onclick="revealAnswer()">Antwort vergleichen</button>
+      <div id="rating-buttons" class="rating-grid hidden">
+        <button class="rate-btn rate-again" onclick="rateCard(0)"><span class="interval" id="int-0"></span><span class="label">Noch mal</span></button>
+        <button class="rate-btn rate-hard" onclick="rateCard(1)"><span class="interval" id="int-1"></span><span class="label">Schwer</span></button>
+        <button class="rate-btn rate-good" onclick="rateCard(2)"><span class="interval" id="int-2"></span><span class="label">Gut</span></button>
+        <button class="rate-btn rate-easy" onclick="rateCard(3)"><span class="interval" id="int-3"></span><span class="label">Einfach</span></button>
+      </div>
+      <div class="shortcut-hint" id="shortcut-hint">Tastatur: [Enter] Prüfen &nbsp;|&nbsp; [1] Noch mal &nbsp;[2] Schwer &nbsp;[3] Gut &nbsp;[4] Einfach &nbsp;|&nbsp; [R] Audio</div>
+    </div>
+  </main>
+
+  <!-- VERWALTUNGS-ANSICHT -->
+  <main id="view-manage" class="hidden">
+    <div class="panel">
+      <h3>Neue Karte anlegen</h3>
+      <div class="form-group"><label for="input-front">Vorderseite (Deutsch / Impuls)</label><input type="text" id="input-front"></div>
+      <div class="form-group"><label for="input-back">Rückseite (Englischer Ausdruck)</label><input type="text" id="input-back"></div>
+      <div class="form-group"><label for="input-notes">Beispielsatz &amp; Nuance (Optional)</label><textarea id="input-notes"></textarea></div>
+      <button class="btn-primary" data-write onclick="addCard()">Karte speichern</button>
+    </div>
+
+    <div class="panel">
+      <h3>Neue Vokabeln hinzufügen</h3>
+      <p class="help">Deutsch und Englisch reichen aus. Eine dritte Spalte kann Beispiele und Notizen enthalten.</p>
+      <div class="btn-row">
+        <button class="btn-secondary" data-write onclick="openPasteDialog()">Vokabeln einfügen</button>
+        <button class="btn-secondary" data-write onclick="document.getElementById('csv-file').click()">CSV / TSV auswählen</button>
+        <input id="csv-file" class="hidden" type="file" accept=".csv,.tsv,.txt,text/csv,text/tab-separated-values,text/plain" onchange="readImportFile(event,'csv')">
+      </div>
+      <details><summary>Text prüfen oder Trennzeichen einstellen</summary>
+      <div class="form-group">
+        <label for="bulk-text-input">Füge hier direkt deine Vokabeln ein (Pro Zeile: Deutsch;Englisch;Notiz):</label>
+        <textarea id="bulk-text-input" placeholder="die Praxis gut finden;to find the office okay;Beispiel..." style="min-height: 120px; font-family: monospace; font-size: 13px;"></textarea>
+      </div>
+      <button class="btn-primary" data-write onclick="importBulkText()">Vorschau anzeigen</button>
+      <div class="form-group"><label for="import-delimiter">Trennzeichen</label>
+        <select id="import-delimiter" onchange="cancelImport()"><option value="auto">Automatisch erkennen</option><option value=";">Semikolon ;</option><option value=",">Komma ,</option><option value="&#9;">Tabulator</option></select>
+      </div></details>
+      <p id="import-message" role="status" aria-live="polite"></p>
+      <section id="import-preview" class="hidden" aria-labelledby="preview-title">
+        <h4 id="preview-title">Import prüfen</h4>
+        <p id="preview-summary"></p><ol id="preview-rows"></ol>
+        <p class="help">Vorschau der ersten fünf Karten. Dubletten werden übersprungen.</p>
+        <pre id="preview-errors"></pre>
+        <div class="btn-row"><button id="confirm-import" data-write class="btn-secondary" onclick="confirmImport()">Jetzt hinzufügen</button><button class="btn-secondary" onclick="cancelImport()">Abbrechen</button></div>
+      </section>
+    </div>
+
+    <div class="panel">
+      <h3>Backup & Export</h3>
+      <div class="btn-row">
+        <button class="btn-secondary" onclick="exportJSON()">Backup (JSON)</button>
+        <button class="btn-secondary" onclick="exportBeforeImport()">Sicherung vor letztem Import</button>
+        <button class="btn-secondary" data-write onclick="document.getElementById('json-file').click()">Backup laden</button>
+        <input id="json-file" class="hidden" type="file" accept=".json,application/json" onchange="readImportFile(event,'json')">
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Deine Sammlung (<span id="manage-count">0</span>)</h3>
+      <label for="card-search">Karten suchen</label><input type="search" id="card-search" placeholder="Begriff oder Beispielsatz" oninput="renderCardList()">
+      <label for="manage-module">Thema</label><select id="manage-module" onchange="renderCardList()"><option value="">Alle Themen</option></select>
+      <div id="card-list"></div>
+    </div>
+  </main>
+
+  <!-- SYNC-ANSICHT -->
+  <main id="view-sync" class="hidden">
+    <div class="panel">
+      <h3>GitHub Cloud-Sync</h3>
+      <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.4; margin-top: 0;">Verbinde Mac und iPhone mit derselben Gist-ID. Bitte auf beiden Geräten die neue App-Version öffnen. Ein geheimes Gist ist für alle lesbar, die seine URL kennen. Verwende ausschließlich Lernmaterial ohne Klientendaten.</p>
+      
+      <div id="sync-status-badge" class="sync-status hidden" role="status">Status unbekannt</div>
+
+      <div class="form-group">
+        <label for="github-token">GitHub Personal Access Token (PAT)</label>
+        <input type="password" id="github-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+      </div>
+      <div class="form-group">
+        <label for="github-gist-id">Gist ID</label>
+        <input type="text" id="github-gist-id" placeholder="Leer lassen für neues Gist" spellcheck="false">
+      </div>
+      
+      <button id="btn-force-sync" class="btn-primary" onclick="forceSync()">Jetzt manuell synchronisieren</button>
+    </div>
+  </main>
+
+  <dialog id="paste-dialog" aria-labelledby="paste-title">
+    <h2 id="paste-title">Vokabeln einfügen</h2>
+    <p class="help" id="paste-help">Kopiere zwei oder drei Spalten aus einer Tabelle oder Text im Format Deutsch;Englisch;Notiz. Nach dem Einfügen werden gültige Karten automatisch gespeichert. Dubletten werden übersprungen.</p>
+    <label for="paste-input">Deine Vokabeln</label>
+    <textarea id="paste-input" aria-describedby="paste-help" placeholder="Anspannung;tension;I notice some tension." onpaste="schedulePasteImport()"></textarea>
+    <details><summary>Falls das Trennzeichen unklar ist</summary><label for="paste-delimiter">Trennzeichen</label>
+      <select id="paste-delimiter"><option value="auto">Automatisch erkennen</option><option value=";">Semikolon ;</option><option value=",">Komma ,</option><option value="&#9;">Tabulator</option></select>
+    </details>
+    <p id="paste-result" role="status" aria-live="polite"></p>
+    <div class="btn-row">
+      <button class="btn-secondary" data-write onclick="autoPasteImport()">Inhalt hinzufügen</button>
+      <button id="undo-paste" class="btn-secondary hidden" onclick="undoPasteImport()">Letztes Einfügen rückgängig</button>
+      <button class="btn-secondary" onclick="document.getElementById('paste-dialog').close()">Fertig</button>
+    </div>
+  </dialog>
+  <dialog id="edit-dialog" aria-labelledby="edit-title"><h2 id="edit-title">Karte bearbeiten</h2>
+    <label for="edit-front">Deutsch / Impuls</label><textarea id="edit-front"></textarea><label for="edit-back">Englisch</label><textarea id="edit-back"></textarea>
+    <label for="edit-notes">Beispiel &amp; Nuance</label><textarea id="edit-notes"></textarea><label for="edit-module">Thema</label><input id="edit-module" type="text">
+    <p id="edit-message" role="status"></p><div class="btn-row"><button class="btn-primary" onclick="saveEdit()">Änderungen speichern</button><button class="btn-secondary" onclick="document.getElementById('edit-dialog').close()">Abbrechen</button></div>
+  </dialog>
+  <script src="core.js"></script>
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+  <script src="packs.js"></script>
+  <script src="sessions.js"></script>
+</body>
+</html>
+
