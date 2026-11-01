@@ -52,4 +52,4 @@ Die App muss einmal vollständig online geöffnet werden. Sobald „Für Offline
 
 Vor einem Release `node scripts/prepare-release.cjs` ausführen. Das berechnet eine neue Cache-Version und erstellt die separate Vorschau mit eigenen Speicherschlüsseln und deaktivierter GitHub-API. Root-App und Vorschau haben getrennte Service-Worker-Scopes. Die bestehende Vorschau wird bei jedem Release aktualisiert. Für die alte Hauptversion steht „Sicherung vor dem Umstieg“ als Download bereit.
 
-Die sechs optionalen Originalpakete umfassen 36 Karten. Die ursprüngliche importierte Sammlung wird nicht automatisch umgeschrieben; eine vollständige fachliche Prüfung ihrer 41 Einträge ist damit nicht behauptet.
+Die sechs optionalen Originalpakete umfassen 36 Karten. Alle 41 importierten Originalkarten wurden sprachlich redigiert und als zusätzliches Paket bereitgestellt. Unter Karten können erkennbare unveränderte Originale gezielt aktualisiert oder die redigierten Karten als CSV exportiert werden. Die Aktualisierung erhält IDs und Lernstände, sichert vorher und überspringt eigene Notizen oder Themenzuordnungen. Beim bloßen Öffnen wird die Sammlung nicht verändert.

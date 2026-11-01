@@ -27,24 +27,24 @@
     </div>
   </header>
 
-  <div id="global-sync-status" class="sync-status status-line" role="status" aria-live="polite">Lade Daten …</div>
+  <div class="status-strip"><details id="status-details"><summary><span id="connection-summary">Lokal</span> · Status</summary><div class="status-popover"><div id="global-sync-status" role="status" aria-live="polite">Lade Daten …</div><div id="offline-status" role="status"></div><p class="help">Audio und Spracheingabe können Internet benötigen.</p></div></details><div id="update-notice" class="hidden"><button class="text-btn" onclick="applyUpdate()">Aktualisieren</button></div></div>
   <section id="storage-recovery" class="panel hidden" role="alert">
     <p>Deine gespeicherten Daten bleiben unverändert. Lade sie zur Wiederherstellung herunter.</p>
     <button class="btn-secondary" onclick="exportRecovery()">Rohdaten sichern</button>
   </section>
-  <div id="offline-status" class="status-line help" role="status"></div><div id="update-notice" class="status-line hidden"><button class="btn-secondary" onclick="applyUpdate()">Neue Version laden</button><span class="help"> Deine Karten bleiben erhalten.</span></div>
+
   <!-- LERN-ANSICHT -->
   <main id="view-study">
     <section id="round-home" class="home-card">
-      <p class="eyebrow">DEINE KLEINE PRAXISRUNDE</p>
-      <h1 id="home-title">Ein kleiner Schritt für Dein Englisch.</h1>
+
+      <h1 id="home-title">Deine kleine Praxisrunde</h1>
       <p id="home-detail" class="home-detail"></p>
-      <label for="study-module">Heute üben</label><select id="study-module" onchange="renderStudy()"><option value="">Alle Themen</option></select>
+      <label id="study-label" for="study-module">Heute üben</label><select id="study-module" onchange="renderStudy()"><option value="">Alle Themen</option></select>
       <button id="start-round" data-write class="btn-primary" onclick="startRound()">Kurze Runde starten</button>
       <button id="resume-round" class="btn-primary hidden" onclick="resumeRound()">Meine Runde fortsetzen</button>
       <p id="round-message" role="status"></p>
-      <p class="help">Bis zu sechs Aufgaben. Höchstens fünf neue Karten am Tag. Pausen sind jederzeit möglich.</p>
-      <div id="empty-study" class="empty-state hidden"><h2>Hier beginnt Deine Sammlung.</h2><p>Starte mit einem Themenpaket oder füge eigene Vokabeln ein.</p><button class="btn-secondary" onclick="switchView('manage');openPasteDialog()">Eigene Vokabeln einfügen</button></div>
+      <details class="learning-info"><summary>So übst Du</summary><p class="help">Bis zu sechs Aufgaben. Höchstens fünf neue Karten am Tag. Pausen sind jederzeit möglich.</p></details>
+      <div id="empty-study" class="empty-state hidden"><p>Wähle ein Themenpaket oder füge eigene Vokabeln ein.</p><button class="btn-secondary" onclick="switchView('manage');openPasteDialog()">Eigene Vokabeln einfügen</button></div>
       <details class="pack-section"><summary>Neue Themen entdecken</summary><div id="pack-list" class="pack-grid"></div><p id="pack-message" role="status"></p></details>
     </section>
     <section id="round-complete" class="home-card hidden" aria-labelledby="completion-title">
@@ -136,7 +136,7 @@
       <h3>Deine Sammlung (<span id="manage-count">0</span>)</h3>
       <label for="card-search">Karten suchen</label><input type="search" id="card-search" placeholder="Begriff oder Beispielsatz" oninput="renderCardList()">
       <label for="manage-module">Thema</label><select id="manage-module" onchange="renderCardList()"><option value="">Alle Themen</option></select>
-      <div id="card-list"></div>
+      <details><summary>41 importierte Therapiekarten überarbeiten</summary><p class="help">Aktualisiert erkennbare, unveränderte Originalkarten. Eigene Bearbeitungen, Karten-IDs und Lernstände bleiben erhalten. Vorher wird eine Sicherung angelegt.</p><button class="btn-secondary" onclick="applyTherapyRevision()">Originalkarten sprachlich aktualisieren</button><button class="btn-secondary" onclick="exportTherapyCSV()">Redigierte Karten als CSV</button><p id="therapy-result" role="status"></p></details><div id="card-list"></div>
     </div>
   </main>
 
@@ -185,6 +185,7 @@
   <script src="data.js"></script>
   <script src="app.js"></script>
   <script src="packs.js"></script>
+  <script src="therapy.js"></script>
   <script src="alternatives.js"></script>
   <script src="sessions.js"></script>
   <script src="offline.js"></script>

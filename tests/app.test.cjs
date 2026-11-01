@@ -114,3 +114,19 @@ test('typed answer can be reused without losing the active round',()=>{
  const h=boot(seedCards(1,2));h.run('startRound()');h.els.get('user-answer').value='my expression';h.run('revealAnswer();useMyAnswer();saveAlternative()');
  assert.equal(h.run('currentCard.alternatives[0].text'),'my expression');assert.equal(h.run('roundIndex()'),0);
 });
+test('all 41 original cards are reviewed once with IDs and schedules preserved',()=>{
+ const originals=JSON.parse(fs.readFileSync(path.join(root,'therapy-originals.json'),'utf8'));
+ const h=boot(originals.map((c,i)=>({...c,id:String(i),reps:3,interval:7,ease:2.5,due:1234})));
+ assert.equal(h.run('THERAPY_REVIEWED.length'),41);h.run('applyTherapyRevision()');
+ assert.equal(h.run('cards.length'),41);assert.ok(h.run('cards.every(c=>c.reps===3&&c.due===1234)'));
+ assert.equal(h.run('cards.find(c=>c.id==="33").back'),'to feel hurt');
+ h.run('applyTherapyRevision(true)');assert.equal(h.run('cards.length'),41);
+ assert.ok(h.store.get('wesentlich_vocab_before_import_v2'));
+});
+test('therapy review preserves personal notes and can add the full corrected collection',()=>{
+ const originals=JSON.parse(fs.readFileSync(path.join(root,'therapy-originals.json'),'utf8'));
+ const h=boot([{...originals[0],notes:'My own note',id:'mine',reps:2,interval:3,ease:2.5,due:500}]);
+ h.run('applyTherapyRevision()');assert.equal(h.run('cards[0].notes'),'My own note');
+ const clean=boot();clean.run('applyTherapyRevision(true)');assert.equal(clean.run('cards.length'),41);
+ clean.run('applyTherapyRevision(true)');assert.equal(clean.run('cards.length'),41);
+});

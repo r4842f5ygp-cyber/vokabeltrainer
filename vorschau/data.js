@@ -13,6 +13,9 @@ const visibleCards = () => state.cards.filter(c => !c.deletedAt).map(C.project);
 
 function refreshCards() { cards = visibleCards(); updateStats(); }
 function setSyncStatus(kind, message) {
+  const brief=document.getElementById('connection-summary');
+  if(brief)brief.textContent=kind==='error'?'Speicher / Sync prüfen':kind==='ok'?'Synchronisiert':message.includes('offline')?'Offline':message.includes('nicht verbunden')?'Lokal':'Speichert …';
+  if(kind==='error')document.getElementById('status-details').open=true;
   for (const id of ['sync-status-badge','global-sync-status']) {
     const el = document.getElementById(id);
     el.className = 'sync-status ' + kind;
@@ -137,8 +140,8 @@ async function forceSync() {
     await syncNow();
   } catch { setSyncStatus('error','Verbindung konnte lokal nicht gespeichert werden.'); }
 }
-function backupDownload(content, filename) {
-  const blob = new Blob([content],{type:'application/json'}), url = URL.createObjectURL(blob), a = document.createElement('a');
+function backupDownload(content, filename, mime='application/json') {
+  const blob = new Blob([content],{type:mime}), url = URL.createObjectURL(blob), a = document.createElement('a');
   a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
 function exportJSON() { backupDownload(JSON.stringify(state,null,2),'vokabeln-backup-v2-' + new Date().toISOString().slice(0,10) + '.json'); }

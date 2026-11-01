@@ -14,7 +14,7 @@ async function initOffline(){
       const worker=offlineRegistration.installing;
       worker?.addEventListener('statechange',()=>{if(worker.state==='installed')offer();});
     });
-    await navigator.serviceWorker.ready;label.textContent='Für Offline-Nutzung bereit · Audio und Spracheingabe können Internet benötigen.';
+    await navigator.serviceWorker.ready;label.textContent='Für Offline-Nutzung bereit.';
   }catch{label.textContent='Offline-Vorbereitung fehlgeschlagen. Bitte online erneut öffnen.';}
 }
 initOffline();
