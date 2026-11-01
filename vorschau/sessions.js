@@ -43,9 +43,9 @@ function updateTopics() {
     select.value=[...new Set(cards.map(moduleOf))].includes(value)?value:'';
   }
 }
-function startRound() {
+function startRound(selection = null) {
   if (storageBlocked) return;
-  const selected=availableCards().slice(0,6);
+  const selected=(selection || availableCards()).slice(0,6);
   if (!selected.length) return renderStudy();
   if (storeRound({id:uuid(),ids:selected.map(c=>c.id),paused:false,slot:0,answer:'',revealed:false})) renderStudy();
 }
@@ -60,7 +60,7 @@ function pauseRound() {
 function resumeRound() { if (round && storeRound({...round,paused:false})) renderStudy(); }
 function finishRound() { if(storeRound(null)) renderStudy(); }
 function renderStudy() {
-  stopSpeechRecognition();updateStats();updateTopics();
+  stopSpeechRecognition();updateStats();updateTopics();renderPacks();
   const active=!!round && !round.paused && roundIndex()>=0;
   const complete=!!round && roundIndex()<0;
   $('round-home').classList.toggle('hidden',active || complete);
@@ -132,9 +132,34 @@ function addPack(name) {
   if(!plan.added.length){$('pack-message').textContent='Dieses Paket ist bereits vorhanden.';return;}
   if(commit(C.merge(state,{schemaVersion:2,cards:plan.added}),{backup:true})){$('pack-message').textContent=plan.added.length+' Karten hinzugefügt.';renderStudy();}
 }
+function packCards(pack){
+  const keys=new Set(pack.entries.map(([front,back])=>C.key({front,back})));
+  return cards.filter(c=>keys.has(C.key(c)));
+}
+function studyPack(name){
+  const pack=VOCAB_PACKS.find(p=>p.name===name);if(!pack)return;
+  if(round && roundIndex()>=0){
+    if(!confirm('Die pausierte Runde beenden und dieses Thema starten? Bereits gespeicherte Bewertungen bleiben erhalten.'))return;
+    if(!storeRound(null))return;
+  }else if(round&&!storeRound(null))return;
+  $('study-module').value='';
+  const ids=new Set(packCards(pack).map(c=>c.id));
+  const selected=availableCards().filter(c=>ids.has(c.id));
+  if(!selected.length){$('pack-message').textContent='Für dieses Thema ist gerade nichts fällig oder das Tageslimit für neue Karten ist erreicht.';return;}
+  startRound(selected);
+}
 function renderPacks() {
   const list=$('pack-list');list.replaceChildren();
-  for(const pack of VOCAB_PACKS){const button=document.createElement('button');button.className='pack-card';button.disabled=storageBlocked;button.textContent=pack.name+' · '+pack.entries.length+' Karten';button.onclick=()=>addPack(pack.name);list.append(button);}
+  for(const pack of VOCAB_PACKS){
+    const count=new Set(packCards(pack).map(C.key)).size,complete=count===pack.entries.length;
+    const tile=document.createElement('div');tile.className='pack-card';
+    const title=document.createElement('strong');title.textContent=pack.name;
+    const status=document.createElement('p');status.className='help';status.textContent=complete?'✓ Vorhanden · '+count+' Karten':count+' von '+pack.entries.length+' Karten vorhanden';
+    tile.append(title,status);
+    if(!complete){const add=document.createElement('button');add.className='btn-secondary';add.disabled=storageBlocked;add.textContent=count?'Fehlende hinzufügen':'Hinzufügen';add.onclick=()=>addPack(pack.name);tile.append(add);}
+    if(count){const study=document.createElement('button');study.className='btn-secondary';study.disabled=storageBlocked;study.textContent='Dieses Thema üben';study.onclick=()=>studyPack(pack.name);tile.append(study);}
+    list.append(tile);
+  }
 }
 loadData();if(!storageBlocked)loadRound();initSpeechRecognition();renderPacks();renderStudy();
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden' && round && !round.paused)pauseRound();});

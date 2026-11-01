@@ -43,3 +43,6 @@ Der obere Bereich hat eine einzeilige mobile Navigation ohne Logo/Untertitel und
 Alle 41 Quellzeilen aus therapie-vokabeln.csv sind in therapy-originals.json dokumentiert und je einer vollständig überarbeiteten Karte in therapy.js zugeordnet. Eindeutiges Lernziel pro Karte; unterschiedliche Wörter werden in der Notiz unterschieden, nicht als Synonyme gewertet. Pauschale somatische Deutungen und unbelegte Heller-Zuschreibungen wurden entfernt. Beispiel- und Notiztexte sind eigene Formulierungen. Wortbedeutungen zusätzlich mit Cambridge Dictionary abgeglichen (u. a. resentful, zone out).
 
 Unter Karten → 41 importierte Therapiekarten überarbeiten → Originalkarten sprachlich aktualisieren können erkennbare unveränderte Originale aktualisiert werden. Eigene Notizen oder eigene Themenzuordnungen werden übersprungen. IDs, Bewertungen und Lernstände bleiben erhalten; vor Übernahme wird gesichert. Die redigierten 41 Karten lassen sich als optionales Paket hinzufügen oder als CSV herunterladen. Kein automatischer Eingriff in die lokale Sammlung beim Seitenaufruf.
+
+## Themenpakete
+Paketkacheln zeigen Vorhanden bzw. den vorhandenen Anteil. Fehlende Karten können hinzugefügt werden, vorhandene über Dieses Thema üben direkt eine Runde starten. Fälligkeit und Tageslimit bleiben wirksam und werden bei leerer Auswahl erklärt.

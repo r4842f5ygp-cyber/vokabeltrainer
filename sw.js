@@ -1,5 +1,5 @@
 /* Generated version is updated by scripts/prepare-release.cjs. */
-const VERSION='fa11958dc55fdf7e';
+const VERSION='3de27a060fc443f2';
 const PREFIX='vocab-app:'+self.registration.scope+':';
 const CACHE=PREFIX+VERSION;
 const FILES=['./','index.html','core.js','data.js','app.js','packs.js','sessions.js','alternatives.js','therapy.js','offline.js','style.css','manifest.webmanifest','icon.svg'];
