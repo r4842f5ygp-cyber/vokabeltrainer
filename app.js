@@ -16,9 +16,9 @@ const STORAGE_KEY = 'wesentlich_vocab_cards_v1';
     }
 
     function normalizeText(str) { return str.toLowerCase().replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, ' ').trim(); }
-    function checkUserAnswer(userRaw, targetRaw) {
+    function checkUserAnswer(userRaw, targetRaw, alternatives = []) {
       const userNorm = normalizeText(userRaw); if (!userNorm) return null;
-      const variants = targetRaw.split(/\s*\/\s*/).map(v => normalizeText(v)).filter(Boolean);
+      const variants = [targetRaw,...alternatives.filter(a=>!a.deletedAt).map(a=>a.text)].flatMap(v=>v.split(/\s*\/\s*/)).map(v=>normalizeText(v)).filter(Boolean);
       const isMatch = variants.some(v => v === userNorm || v.replace(/^to\s+/, '') === userNorm.replace(/^to\s+/, ''));
       return { isMatch, userRaw: userRaw.trim() };
     }
@@ -27,7 +27,7 @@ const STORAGE_KEY = 'wesentlich_vocab_cards_v1';
       if (!currentCard || isRevealed) return;
       stopSpeechRecognition(); isRevealed = true;
       const inputField = document.getElementById('user-answer'), feedbackEl = document.getElementById('check-feedback');
-      const checkResult = checkUserAnswer(inputField.value, currentCard.back);
+      const checkResult = checkUserAnswer(inputField.value, currentCard.back, currentCard.alternatives || []);
       inputField.disabled = true; inputField.blur();
       if (checkResult) {
         feedbackEl.classList.remove('hidden', 'feedback-exact', 'feedback-diff');
@@ -37,6 +37,7 @@ const STORAGE_KEY = 'wesentlich_vocab_cards_v1';
       document.getElementById('answer-section').classList.remove('hidden');
       document.getElementById('show-answer-btn').classList.add('hidden');
       document.getElementById('rating-buttons').classList.remove('hidden');
+      renderAlternatives();
       saveRoundDraft();
     }
 

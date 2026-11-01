@@ -262,3 +262,9 @@ window.addEventListener('storage',event=>{
     catch { setSyncStatus('error','Änderungen aus anderem Fenster nicht lesbar.'); }
   }
 });
+
+function exportLegacy(){
+  const raw=localStorage.getItem(STORAGE_KEY);
+  if(!raw)return alert('Es gibt auf diesem Gerät keine Sicherung aus der alten Version.');
+  backupDownload(raw,'vokabeln-vor-umstieg.json');
+}

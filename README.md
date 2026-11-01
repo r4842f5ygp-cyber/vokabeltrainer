@@ -43,3 +43,13 @@ Auf der Startseite ein Thema wählen und eine Runde mit bis zu sechs Aufgaben st
 „Pause“ speichert die Runde samt Antwortentwurf auf diesem Gerät. Beim nächsten Start kann sie fortgesetzt werden. Der Karten- und Bewertungsbestand synchronisiert zwischen Geräten; der Rundenbildschirm bleibt gerätelokal. Der Abschluss bewertet keine objektive Beherrschung, sondern zeigt die vorgenommenen Selbsteinschätzungen.
 
 `sessions.js` enthält Runden, Filter und Bearbeitung, `packs.js` die optionalen Originalübungen, `style.css` die Gestaltung. Die Sammlung kann durchsucht und nach Themen gefiltert werden. Bearbeitungen erhalten die bisherigen Bewertungsereignisse.
+
+## Alternativen und Offline-Nutzung
+
+Nach Aufdecken einer Lernkarte lässt sich „Alternative ergänzen“ aufklappen. Eine vollständige englische Wendung und bei Bedarf eine Nuance speichern. „Meine Antwort übernehmen“ kopiert die getippte Antwort in das Formular. Gespeicherte Alternativen werden akzeptiert, einzeln vorgelesen und können bearbeitet oder entfernt werden. Die Sprachrichtigkeit wird nicht automatisch von einer KI geprüft. CSV mit Kopfzeile kann eine Spalte `Alternativen` enthalten; mehrere Wendungen durch `|` trennen. JSON-Backups bewahren auch Nuancen und Löschmarkierungen.
+
+Die App muss einmal vollständig online geöffnet werden. Sobald „Für Offline-Nutzung bereit“ erscheint, liegen die App-Dateien im Browsercache. Audio und Spracheingabe können je nach Browser und installierten Stimmen Internet benötigen. Neue Versionen werden angeboten und per Klick aktiviert. Browser können ihre lokalen Daten und Caches löschen; Backups bleiben deshalb sinnvoll.
+
+Vor einem Release `node scripts/prepare-release.cjs` ausführen. Das berechnet eine neue Cache-Version und erstellt die separate Vorschau mit eigenen Speicherschlüsseln und deaktivierter GitHub-API. Root-App und Vorschau haben getrennte Service-Worker-Scopes. Die bestehende Vorschau wird bei jedem Release aktualisiert. Für die alte Hauptversion steht „Sicherung vor dem Umstieg“ als Download bereit.
+
+Die sechs optionalen Originalpakete umfassen 36 Karten. Die ursprüngliche importierte Sammlung wird nicht automatisch umgeschrieben; eine vollständige fachliche Prüfung ihrer 41 Einträge ist damit nicht behauptet.

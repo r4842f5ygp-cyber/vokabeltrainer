@@ -1,76 +1,37 @@
-# Vokabeltrainer – Projektstatus
+# Vokabeltrainer – Abschlussstand
 
-Stand: 1. November 2026. Pakete 1 und 2: Speicherung, Sync, Import und kurze Lernrunden.
+Stand: 1. November 2026. Umsetzung der Haupt-App und der isolierten Vorschau fertig vorbereitet.
 
-## Umgesetzt auf dem Arbeitsbranch
+## Enthalten
 
-- CSV-/TSV-Dateien und Text mit Semikolon, Komma oder Tabulator; Kopfzeilen, BOM, mehrzeilige Felder und doppelte Anführungszeichen.
-- Vorschau vor Datei-/Backup-Import, Dublettenprüfung und nachvollziehbare Zeilenfehler.
-- Dialog „Vokabeln einfügen“: Einfügen speichert automatisch; Rückgängig entfernt nur die zuletzt dadurch erstellten Karten. Fehlerhafte Tabellen werden nicht teilweise übernommen.
-- V2-Datenformat mit unveränderter V1-Kopie im bisherigen localStorage-Schlüssel, Sicherung vor Import und JSON-Export ohne Zugangsdaten.
-- Geräteweise Gist-Dateien, Zusammenführung nach ID, Lernereignisse mit eigenen IDs, dauerhafte Löschmarkierungen und sichtbare HTTP-Fehler.
-- Fachlogik, Speicherung und Oberfläche in drei kleinen JavaScript-Dateien; keine externen Laufzeitabhängigkeiten.
-- Antwortsätze werden nicht mehr an Kommas zerlegt; auf Touch-Geräten wird die Tastatur beim Kartenwechsel nicht automatisch geöffnet.
+- Kurze Runden mit bis zu sechs Aufgaben, fünf neue Karten täglich, Pause und Fortsetzen inklusive Antwortentwurf; keine Streak-Strafen oder automatische Endlosschleife.
+- Leinen/Petroleum, helle dunkle Darstellung, optionale Eingabe, Audio normal oder langsam, Suche und Themenfilter, Kartenbearbeitung ohne Lernstandsverlust.
+- CSV/TSV mit Vorschau, Fehlerprüfung, Dublettenprüfung; automatisches Einfügefenster mit Rückgängig.
+- Eigene passende Alternativen direkt beim Lernen, Übernahme der getippten Antwort, Nuance, Audio, Bearbeiten und Entfernen. Antwortprüfung berücksichtigt Alternativen. JSON sowie CSV-Spalte Alternativen unterstützen sie. Zusammenführen bewahrt gleichzeitige Ergänzungen beider Geräte und Löschungen.
+- Sechs optionale Originalpakete, 36 Karten mit Begriffen und Gesprächsformulierungen. Sachlich unterschiedliche Begriffe sind getrennte Karten. Die importierten Alt-Karten werden nicht umgeschrieben.
+- Service Worker für vollständige lokale App-Dateien, Manifest, Versionshinweis und Update per Klick; getrennte Caches und lokale Speicherschlüssel für Vorschau und Haupt-App. Keine API- oder Zugangsdaten im Cache.
+- Geräteweise Gist-Snapshots statt Auswahl nach Kartenanzahl; idempotente Lernereignisse, Löschmarkierungen, sichtbare Speicher-/HTTP-Fehler.
+- Unveränderte V1-Daten bleiben als Sicherung erhalten und sind herunterladbar. Zusätzlich Sicherung vor jedem Import und JSON-Export.
 
 ## Validierung
 
-47 Node-Tests bestanden, einschließlich vollständiger Script-Ladereihenfolge mit einer DOM-Testumgebung, Lernbewertung, Import/Undo und simuliertem gleichzeitigen Zwei-Geräte-Sync. JavaScript-Syntax geprüft.
+55 Node-Tests bestanden. Abgedeckt sind App-Start, Import/Undo, Runden, Neustart, Alternativen einschließlich Bearbeiten und Löschen, deren Backup/CSV-Unterstützung, konkurrierende Ergänzungen, simulierte Geräte-Synchronisation und Netz-/Speicherfehler. Service-Worker-Tests prüfen vollständige Dateien, Navigation ohne Netzwerk im Testmodell, Scope-Trennung, API-Ausschluss und ausdrückliche Update-Aktivierung. Syntax und HTML-Struktur geprüft.
 
-Die separate Vorschau wurde mit ausdrücklicher Freigabe veröffentlicht und ihre Startseite im Browser aufgerufen. Die vollständige Safari-/iPhone-Bedienprüfung und ein Live-Test mit GitHub Gists stehen aus. Die DOM-Testumgebung ersetzt keine native Zwischenablage-, Audio- oder Geräteprüfung.
+Die veröffentlichte Vorschau wurde zuvor im Browser geöffnet. Die finale Version wird nach Veröffentlichung nochmals geprüft. Ein echter Flugmodus-Neustart und Live-Gist-Abgleich auf den persönlichen Geräten sind aus dieser Umgebung nicht nachgewiesen. Tests mit simulierten Browser-/Netzfunktionen ersetzen keine native Safari-/iPhone-Prüfung.
 
-## Vor produktiver Übernahme prüfen
+## Persönlicher Abschlusstest
 
-1. Auf Mac und iPhone je ein vorhandenes JSON-Backup sichern.
-2. Neue Version auf beiden Geräten öffnen; dieselbe vorhandene Gist-ID verwenden. Alte App-Version nicht parallel zum neuen Sync benutzen.
-3. Eine Karte auf jedem Gerät offline hinzufügen und bewerten, danach beide verbinden und erneut synchronisieren. Beide Karten und Lernereignisse müssen erhalten sein.
-4. Auf iPhone und Mac Tabellen in den Dialog einfügen; einmal Rückgängig testen. CSV-Dateiauswahl, mehrzeilige Notizen, JSON-Download und Neustart prüfen.
-5. Prüfen, dass ein fehlgeschlagener Upload als Fehler sichtbar bleibt.
+1. Auf Mac und iPhone neue Hauptversion online öffnen und auf Offline-Bereitschaft warten; bei bestehender Verbindung dieselbe Gist-ID weiterverwenden. Alte App-Version nicht parallel benutzen.
+2. Als zusätzliche Sicherung „Sicherung vor dem Umstieg“ bzw. aktuelles JSON-Backup herunterladen.
+3. Beim Lernen eine Alternative ergänzen, neu öffnen und ihre Erkennung testen.
+4. Im Flugmodus App schließen und neu öffnen; danach wieder online beide Geräte synchronisieren und Änderungen vergleichen.
 
-## Grenzen
+## Verbleibende Grenzen
 
-- V1-Karten enthalten keine zuverlässigen Änderungszeitpunkte. Unterschiedliche Alt-Lernstände lassen sich deshalb nicht historisch exakt rekonstruieren. Die Migration wählt bei gleichem Basiszeitpunkt den späteren Fälligkeitstermin; neue Lernereignisse bleiben einzeln erhalten.
-- Bei V2 werden gleichzeitige Bewertungen beider Geräte chronologisch angewendet. Geräteuhren sollten stimmen.
-- Geräte-Snapshots wachsen mit dem Lernverlauf. Unvollständige Gist-Antworten stoppen den Sync mit Fehlermeldung; große Archive benötigen später eine Aufteilung.
-- LocalStorage bleibt durch Browser-/Gerätelöschung verlierbar. JSON-Backups ergänzen den Sync.
-- Zuverlässiger Offline-Neustart mit Service Worker und Manifest ist noch nicht umgesetzt.
+- Alt-Daten enthalten keine verlässliche Änderungschronologie. Bei abweichenden alten Basisständen wird der spätere Fälligkeitstermin bevorzugt. Neue Ereignisse bleiben einzeln erhalten.
+- Korrekte Geräteuhren sind für chronologische Bewertungen wichtig. Große Gist-Archive benötigen später Aufteilung; unvollständige Antworten stoppen den Sync.
+- Browser können lokale Speicher und Offline-Caches löschen. Audio-/Spracherkennung hängt von Browser und vorhandenen Stimmen ab.
+- Keine automatische KI-Prüfung selbst eingetragener Synonyme. Die ursprünglichen 41 importierten Karten sind nicht vollständig fachlich redigiert.
+- Eigene Hörverständnis- und Rollenspielaufgaben bleiben optionale Erweiterungen, keine Voraussetzung für diesen Abschluss.
 
-## Paket 2 umgesetzt
-
-- Leinenfarbener Hintergrund, Petroleum-Akzente und hellere dunkle Darstellung; responsive Bedienelemente, reduzierte Bewegung und kontrastreiche Schriftfarben.
-- Startseite mit Themenwahl; abgeschlossene Runden mit bis zu sechs Aufgaben. Wiederholungen haben Vorrang. Neue Karten sind auf fünf am lokalen Kalendertag begrenzt.
-- Fortschrittsbalken, Pause und Fortsetzen nach Neustart mit Entwurf der Antwort. Eine laufende Runde wird bei Verlassen der App pausiert. Bewertungen haben pro Rundenposition eine feste ID, sodass nach einem Absturz dieselbe Position nicht nochmals bewertet wird.
-- Antwort zunächst selbst überlegen, Eingabe optional aufklappen. Audio startet ausschließlich auf Wunsch und kann langsamer abgespielt werden.
-- Abschluss zeigt die Zahl der Aufgaben und die eigenen Bewertungen; kein Countdown, keine Streak-Strafe und kein automatischer Start der nächsten Runde.
-- Drei optionale Originalpakete mit insgesamt 18 Karten: Körper wahrnehmen, Kontakt halten, Wünsche klären. Kein Import ohne Klick. Mischung aus Begriffen und Gesprächsformulierungen; noch keine separate Hörverständnis- oder Rollenspielprüfung.
-- Suche, Themenfilter und Bearbeitung erhalten Lernstände. Alte Modulangaben in eckigen Klammern werden für die Themenwahl erkannt.
-- Die laufende Runde ist gerätelokal; Karten und Bewertungen synchronisieren weiterhin. Die zuletzt angezeigte Karte wird beim Cloud-Abruf während einer Antwort nicht ersetzt.
-
-Zusätzlich manuell prüfen: Darstellung bei 320/390/800 Pixeln, Hell/Dunkel, iPhone-Tastatur, Dialogfokus, Audio und langsame Wiedergabe, Hintergrundpause, Paketwahl und neue Themenfilter.
-
-## Veröffentlichungsstand
-
-Die separate Vorschau unter https://r4842f5ygp-cyber.github.io/vokabeltrainer/vorschau/ ist veröffentlicht (PR 2). Ihre Speicherschlüssel sind getrennt; Cloud-Sync ist abgeschaltet. Das neue Hauptprogramm einschließlich Sync liegt weiterhin in PR 1 als Entwurf vor. Die vorhandene Haupt-App wurde nicht durch die neue Fassung ersetzt.
-
-## Nächstes Arbeitspaket: passende Alternativen
-
-Vom Nutzer verbindlich aufgenommen:
-
-- Pro Karte mehrere kontextuell passende vollständige englische Formulierungen speichern, optional mit Bedeutungsnuance.
-- Beim Üben nach Aufdecken unter „Auch passend“ anzeigen; Alternativen einzeln anhören, bearbeiten und entfernen.
-- „Alternative ergänzen“ direkt auf der Lernkarte; alternativ die bereits getippte Antwort übernehmen.
-- Alle gespeicherten passenden Alternativen bei der Antwortprüfung akzeptieren. Synonyme nicht ungeprüft gleichsetzen.
-- Lernhistorie und aktuelle Runde erhalten; Alternativen in Sicherungen, CSV-Konzept und späterem Geräte-Sync berücksichtigen.
-- Beispiel: „to long for connection“ / „to yearn for connection“; yearn oft intensiver und gehobener.
-- Oberfläche zunächst kompakt; Ergänzungsformular bei Bedarf aufklappen.
-- Zunächst in der separaten Vorschau testen, anschließend in das Hauptprogramm übernehmen.
-
-## Weitere offene Arbeiten, in Reihenfolge
-
-1. Bedienungsfeedback aus der Vorschau sammeln und Fehler beheben.
-2. Offline-Neustart mit Service Worker, Manifest und nachvollziehbaren Versionsupdates umsetzen und im Flugmodus prüfen.
-3. Live-Sync auf Mac und iPhone mit getrennten Offline-Änderungen, Bewertungen und Löschungen prüfen; vorher je Gerät sichern.
-4. Bestehendes Vokabelmaterial sprachlich prüfen, mehrdeutige Sammelkarten aufteilen und Pakete gezielt erweitern.
-5. Nach erfolgreicher Prüfung die neue Fassung in die Haupt-App übernehmen.
-6. Optional danach: eigene Hörverständnis- und freie Formulierungsaufgaben.
-
-Vor jedem neuen Arbeitspaket Modell und Denkstärke nennen. Empfehlung für die nächste technische Prüfung: GPT-6.1-sol, hoch, sofern auswählbar.
+Vor weiteren Arbeitspaketen Modell und Denkstärke nennen. Empfehlung für Codeänderungen: GPT-6.1-sol, hoch, sofern verfügbar.

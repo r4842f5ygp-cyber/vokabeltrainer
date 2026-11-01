@@ -62,3 +62,14 @@ test('deleted term may be intentionally re-added with a different ID',()=>{
  const s=state();s.cards[0].deletedAt=123;assert.equal(C.planImport(s,[legacy()],()=> 'new',500).added.length,1);
 });
 test('all ratings produce finite future dates',()=>{for(let r=0;r<4;r++){const s=C.schedule(legacy(),r,500);assert.ok(Number.isFinite(s.due)&&s.due>500);}});
+test('concurrent alternatives merge without erasing a different device addition',()=>{
+ const a=state(),b=state();a.cards[0].alternatives=[{id:'a',text:'one',note:'',updatedAt:10,deletedAt:0}];b.cards[0].alternatives=[{id:'b',text:'two',note:'',updatedAt:10,deletedAt:0}];
+ const m=C.merge(a,b);assert.equal(m.cards[0].alternatives.length,2);assert.deepEqual(m,C.merge(b,a));
+ assert.deepEqual(C.validate(JSON.parse(JSON.stringify(m))),m);
+ const d=structuredClone(m);d.cards[0].alternatives[0].deletedAt=20;assert.equal(C.merge(d,m).cards[0].alternatives[0].deletedAt,20);
+});
+test('CSV alternative column imports pipe-separated phrases',()=>{
+ const p=C.parseImport('Deutsch;Englisch;Alternativen\nSehnsucht;longing;yearning|a strong desire');
+ let i=0;const plan=C.planImport(C.empty(),p.entries,()=>String(++i),100);
+ assert.equal(plan.added[0].alternatives.length,2);assert.equal(plan.added[0].alternatives[1].text,'a strong desire');
+});

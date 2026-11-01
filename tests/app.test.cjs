@@ -101,3 +101,16 @@ test('HTML tags are properly balanced',()=>{
  }
  assert.deepEqual(stack,[]);
 });
+test('alternatives added while learning are accepted, editable, removable and survive restart',()=>{
+ const h=boot(seedCards(1,2));h.run('startRound();revealAnswer()');
+ h.els.get('alternative-text').value='another expression';h.els.get('alternative-note').value='A nuance';h.run('saveAlternative()');
+ assert.equal(h.run('checkUserAnswer("another expression",currentCard.back,currentCard.alternatives).isMatch'),true);
+ assert.equal(h.run('state.cards[0].reviews.length'),0);
+ h.run('editAlternative(currentCard.alternatives[0].id)');h.els.get('alternative-text').value='a different expression';h.run('saveAlternative()');
+ const re=boot(h.store);re.run('resumeRound()');assert.equal(re.run('currentCard.alternatives[0].text'),'a different expression');
+ re.run('removeAlternative(currentCard.alternatives[0].id)');assert.equal(re.run('checkUserAnswer("a different expression",currentCard.back,currentCard.alternatives).isMatch'),false);
+});
+test('typed answer can be reused without losing the active round',()=>{
+ const h=boot(seedCards(1,2));h.run('startRound()');h.els.get('user-answer').value='my expression';h.run('revealAnswer();useMyAnswer();saveAlternative()');
+ assert.equal(h.run('currentCard.alternatives[0].text'),'my expression');assert.equal(h.run('roundIndex()'),0);
+});
