@@ -207,7 +207,7 @@
     <div class="panel">
       <h3>Import & Backup (CSV / JSON)</h3>
       <div class="btn-row">
-        <label class="btn-secondary" style="cursor: pointer;">CSV importieren <input type="file" accept=".csv,.tsv,.txt" style="display: none;" onchange="importCSV(event)"></label>
+        <label class="btn-secondary" style="cursor: pointer;">CSV importieren <input type="file" accept=".csv,.tsv,.txt,.txt" style="display: none;" onchange="importCSV(event)"></label>
         <button class="btn-secondary" onclick="exportJSON()">Backup (JSON)</button>
         <label class="btn-secondary" style="cursor: pointer;">Backup laden <input type="file" accept=".json" style="display: none;" onchange="importJSON(event)"></label>
       </div>
@@ -231,12 +231,11 @@
         <input type="password" id="github-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
       </div>
       <div class="form-group">
-        <label>Gist ID (Wird bei der ersten Verbindung automatisch erzeugt)</label>
+        <label>Gist ID</label>
         <input type="text" id="github-gist-id" placeholder="Leer lassen für neues Gist" spellcheck="false">
       </div>
       
       <button id="btn-force-sync" class="btn-primary" onclick="forceSync()">Jetzt manuell synchronisieren</button>
-      <p style="font-size: 12px; color: var(--text-secondary); text-align: center; margin-top: 12px;">Wenn aktiviert, synchronisiert die App bei jeder Änderung automatisch im Hintergrund.</p>
     </div>
   </main>
 
@@ -257,8 +256,6 @@
       document.getElementById('github-token').value = localStorage.getItem(GITHUB_TOKEN_KEY) || '';
       document.getElementById('github-gist-id').value = localStorage.getItem(GITHUB_GIST_KEY) || '';
       updateStats();
-      
-      // Auto-Sync beim Starten, falls Token und Gist-ID vorhanden
       if (localStorage.getItem(GITHUB_TOKEN_KEY) && localStorage.getItem(GITHUB_GIST_KEY)) {
         forceSync();
       }
@@ -272,7 +269,6 @@
       }
     }
 
-    // --- GITHUB SYNC LOGIK ---
     function setSyncStatus(state, msg) {
       const badge = document.getElementById('sync-status-badge');
       badge.className = 'sync-status ' + state;
@@ -284,19 +280,16 @@
       if (isSyncing) return;
       const token = document.getElementById('github-token').value.trim();
       let gistId = document.getElementById('github-gist-id').value.trim();
-
       if (!token) return alert('Bitte zuerst den GitHub Token eingeben.');
 
       localStorage.setItem(GITHUB_TOKEN_KEY, token);
       localStorage.setItem(GITHUB_GIST_KEY, gistId);
-      
       isSyncing = true;
       document.getElementById('btn-force-sync').disabled = true;
       setSyncStatus('pending', 'Synchronisiere...');
 
       try {
         if (!gistId) {
-          // Neues Gist erstellen
           const res = await fetch('https://api.github.com/gists', {
             method: 'POST',
             headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' },
@@ -313,24 +306,19 @@
           localStorage.setItem(GITHUB_GIST_KEY, gistId);
           setSyncStatus('ok', 'Gist erstellt & hochgeladen!');
         } else {
-          // Bestehendes Gist abrufen
           const res = await fetch(`https://api.github.com/gists/${gistId}`, {
             headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
           });
-          if (!res.ok) throw new Error('Fehler beim Abrufen (Token/Gist-ID falsch?)');
+          if (!res.ok) throw new Error('Fehler beim Abrufen');
           const data = await res.json();
           const fileContent = data.files['wesentlich_vocab.json']?.content;
-          
           if (fileContent) {
             const remoteCards = JSON.parse(fileContent);
-            // Einfache Konfliktlösung: Wir nehmen an, der manuell gestartete Sync zieht die Remote-Daten.
-            // Um Datenverlust zu vermeiden, mergen wir basierend auf der längeren Liste (für dieses Setup ausreichend).
             if (remoteCards.length >= cards.length) {
               cards = remoteCards;
               saveCards(false);
               setSyncStatus('ok', 'Karten aus der Cloud geladen!');
             } else {
-              // Lokal sind mehr Karten, also Remote überschreiben
               await uploadToGistInBackground();
               setSyncStatus('ok', 'Lokale Karten in die Cloud geladen!');
             }
@@ -350,7 +338,6 @@
       const token = localStorage.getItem(GITHUB_TOKEN_KEY);
       const gistId = localStorage.getItem(GITHUB_GIST_KEY);
       if (!token || !gistId) return;
-
       try {
         setSyncStatus('pending', 'Lade hoch...');
         await fetch(`https://api.github.com/gists/${gistId}`, {
@@ -365,7 +352,6 @@
         setSyncStatus('error', 'Hintergrund-Upload fehlgeschlagen');
       }
     }
-    // --- ENDE GITHUB SYNC LOGIK ---
 
     function getDueCards() { const now = Date.now(); return cards.filter(c => c.due <= now).sort((a, b) => a.due - b.due); }
 
@@ -485,7 +471,71 @@
       });
     }
 
-    // Keyboard Shortcuts
+    // Verbesserter CSV-Import (robust gegen Zeilenumbrüche und Quotes)
+    function importCSV(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const text = e.target.result;
+        // Teilen nach Zeilen (egal ob \n oder \r\n)
+        const lines = text.split(/\r?\n/);
+        let imported = 0;
+        
+        lines.forEach(line => {
+          if (!line || !line.trim()) return;
+          // Teile anhand von Semikolon
+          const parts = line.split(';');
+          if (parts.length >= 2) {
+            cards.push({
+              id: Date.now().toString() + Math.random().toString(36).slice(2, 6),
+              front: parts[0].replace(/^["']|["']$/g, '').trim(),
+              back: parts[1].replace(/^["']|["']$/g, '').trim(),
+              notes: parts.slice(2).join(';').replace(/^["']|["']$/g, '').trim(),
+              reps: 0, interval: 0, ease: 2.5, due: Date.now()
+            });
+            imported++;
+          }
+        });
+        saveCards();
+        renderCardList();
+        alert(imported + ' Vokabeln erfolgreich importiert!');
+        event.target.value = '';
+        switchView('manage');
+      };
+      reader.readAsText(file);
+    }
+
+    function exportJSON() {
+      const blob = new Blob([JSON.stringify(cards, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'vokabeln-backup.json';
+      a.click();
+    }
+
+    function importJSON(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = JSON.parse(e.target.result);
+          if (Array.isArray(data)) {
+            cards = data;
+            saveCards();
+            renderCardList();
+            alert(cards.length + ' Karten geladen.');
+          }
+        } catch (err) {
+          alert('Ungültige JSON-Datei.');
+        }
+        event.target.value = '';
+      };
+      reader.readAsText(file);
+    }
+
     window.addEventListener('keydown', (e) => {
       if (!document.getElementById('view-study').classList.contains('hidden')) {
         if (document.activeElement.id === 'user-answer') {
