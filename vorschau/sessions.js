@@ -25,11 +25,12 @@ function loadRound() {
     }
   } catch { $('round-message').textContent='Die letzte Runde konnte nicht wiederhergestellt werden. Deine Karten sind erhalten.'; }
 }
-function availableCards() {
+function availableCards(allowedIds=null) {
   const topic=$('study-module').value;
   const today=new Date();today.setHours(0,0,0,0);
   const introduced=cards.filter(c=>c.base.reps===0 && c.reviews.length && c.reviews[0].at>=today.getTime()).length;
-  const due=getDueCards().filter(c=>!topic || moduleOf(c)===topic);
+  const difficult=$('study-focus').value==='difficult';
+  const due=getDueCards().filter(c=>(!topic || moduleOf(c)===topic)&&(!allowedIds||allowedIds.has(c.id))&&(!difficult||isDifficultCard(c)));
   const reviews=due.filter(c=>c.base.reps>0 || c.reviews.length);
   const fresh=due.filter(c=>!c.base.reps && !c.reviews.length).slice(0,Math.max(0,5-introduced));
   return [...reviews,...fresh];
@@ -45,9 +46,9 @@ function updateTopics() {
 }
 function startRound(selection = null) {
   if (storageBlocked) return;
-  const selected=(selection || availableCards()).slice(0,6);
+  const selected=(selection || availableCards()).slice(0,preferences.roundSize);
   if (!selected.length) return renderStudy();
-  if (storeRound({id:uuid(),ids:selected.map(c=>c.id),paused:false,slot:0,answer:'',revealed:false})) renderStudy();
+  if (storeRound({id:uuid(),ids:selected.map(c=>c.id),paused:false,slot:0,answer:'',revealed:false})) {renderStudy();$('front-text').focus();}
 }
 function saveRoundDraft() {
   if (!round || round.paused || !currentCard) return;
@@ -55,14 +56,16 @@ function saveRoundDraft() {
 }
 function pauseRound() {
   saveRoundDraft();
-  if (round && storeRound({...round,paused:true})) { stopSpeechRecognition(); if ('speechSynthesis' in window) window.speechSynthesis.cancel(); renderStudy(); }
+  if (round && storeRound({...round,paused:true})) { stopSpeechRecognition();stopAudio();renderStudy(); }
 }
-function resumeRound() { if (round && storeRound({...round,paused:false})) renderStudy(); }
+function resumeRound() { if (round && storeRound({...round,paused:false})){renderStudy();$('front-text').focus();} }
 function finishRound() { if(storeRound(null)) renderStudy(); }
 function renderStudy() {
-  stopSpeechRecognition();updateStats();updateTopics();renderPacks();
+  stopSpeechRecognition();stopAudio();lastAudioRequest=null;updateStats();updateTopics();renderPacks();
   const active=!!round && !round.paused && roundIndex()>=0;
   const complete=!!round && roundIndex()<0;
+  document.body.classList.toggle('learning-active',active);
+  document.body.classList.remove('answer-visible');
   $('round-home').classList.toggle('hidden',active || complete);
   $('study-card').classList.toggle('hidden',!active);
   $('action-bar').classList.toggle('hidden',!active);
@@ -71,6 +74,8 @@ function renderStudy() {
   $('resume-round').classList.toggle('hidden',!round || complete);
   $('start-round').classList.toggle('hidden',!!round || !cards.length);
   $('study-module').classList.toggle('hidden',!cards.length);$('study-label').classList.toggle('hidden',!cards.length);
+  $('study-focus').classList.toggle('hidden',!cards.length);$('focus-label').classList.toggle('hidden',!cards.length);
+  $('welcome-back').classList.add('hidden');
   if (complete) {
     currentCard=null;
     const rs=roundReviews(), secure=rs.filter(r=>r.rating>=2).length;
@@ -83,20 +88,24 @@ function renderStudy() {
     const available=availableCards();
     $('start-round').disabled=storageBlocked || !available.length;
     $('home-title').textContent=!cards.length?'Deine erste Runde':round?'Deine Runde fortsetzen':'Deine kleine Praxisrunde';
-    $('home-detail').textContent=round?'Weiter an Deiner letzten Stelle.':!cards.length?'Englisch für Deinen Praxisalltag.':available.length?Math.min(6,available.length)+' Aufgaben · in Deinem Tempo':'Für jetzt erledigt. Neue Aufgaben kommen später.';
+    const last=lastPractice(),returning=last>0&&Date.now()-last>=7*86400000;
+    $('welcome-back').classList.toggle('hidden',!returning||!!round||!available.length);
+    $('gentle-round').disabled=!available.length;
+    $('home-detail').textContent=round?'Weiter an Deiner letzten Stelle.':!cards.length?'Englisch für Deinen Praxisalltag.':available.length?Math.min(preferences.roundSize,available.length)+' Aufgaben · in Deinem Tempo':$('study-focus').value==='difficult'?'Gerade sind keine schwierigen Wörter fällig. Wähle „Alle fälligen Wörter“ oder komm später wieder.':'Für diese Auswahl ist gerade nichts verfügbar. Wiederholungen werden zu ihrem Termin freigegeben; höchstens fünf neue Karten kommen täglich hinzu.';
     $('empty-study').classList.toggle('hidden',!!cards.length);
     return;
   }
   const index=roundIndex();currentCard=cards.find(c=>c.id===round.ids[index]);isRevealed=false;
   $('round-position').textContent='Aufgabe '+(index+1)+' von '+round.ids.length;
   $('round-progress').max=round.ids.length;$('round-progress').value=index;
-  $('card-topic').textContent=moduleOf(currentCard);
+  $('card-topic').textContent=moduleOf(currentCard)===FEELINGS_PACK.name?'Gefühle & Emotionen':moduleOf(currentCard);
   $('front-text').textContent=currentCard.front;$('back-text').textContent=currentCard.back;
   $('card-content').classList.remove('hidden');
   $('user-answer').value=round.slot===index?round.answer:'';$('user-answer').disabled=false;
   resetAlternativeForm();
   $('check-feedback').classList.add('hidden');$('answer-section').classList.add('hidden');
   $('notes-text').textContent=currentCard.notes;$('notes-text').classList.toggle('hidden',!currentCard.notes);
+  renderCardExample();renderImageHint();
   $('show-answer-btn').classList.remove('hidden');$('rating-buttons').classList.add('hidden');
   for(let r=0;r<4;r++) $('int-'+r).textContent=calculateSM2(currentCard,r).label;
   if(round.slot===index && round.revealed) revealAnswer();
@@ -107,7 +116,7 @@ function rateCard(rating) {
   if (!record || record.deletedAt) return renderStudy();
   const eventId=round.id+':'+index;
   if(!record.reviews.some(r=>r.id===eventId)) record.reviews.push({id:eventId,at:Date.now(),rating});
-  if(commit(next)) { storeRound({...round,slot:-1,answer:'',revealed:false});renderStudy(); }
+  if(commit(next)) {recordPractice();storeRound({...round,slot:-1,answer:'',revealed:false});renderStudy();if(currentCard)$('front-text').focus();else $('completion-title').focus();}
 }
 let editingId=null;
 function editCard(id) {
@@ -120,7 +129,7 @@ function saveEdit() {
   if(!c || c.deletedAt) { $('edit-message').textContent='Diese Karte wurde inzwischen gelöscht.';return; }
   const front=$('edit-front').value.trim(),back=$('edit-back').value.trim();
   if(!front || !back){$('edit-message').textContent='Bitte beide Seiten ausfüllen.';return;}
-  if(cards.some(other=>other.id!==c.id && C.key(other)===C.key({front,back}))){$('edit-message').textContent='Diese Karte ist bereits vorhanden.';return;}
+  if(C.key(c)!==C.key({front,back})&&cards.some(other=>other.id!==c.id && C.key(other)===C.key({front,back}))){$('edit-message').textContent='Diese Karte ist bereits vorhanden.';return;}
   Object.assign(c,{front,back,notes:$('edit-notes').value.trim(),module:$('edit-module').value.trim(),updatedAt:Math.max(Date.now(),c.updatedAt+1)});
   if(commit(next)){$('edit-dialog').close();renderCardList();updateTopics();}
 }
@@ -128,11 +137,12 @@ function addPack(name) {
   if(name==='Therapie-Wortschatz · redigiert')return applyTherapyRevision(true);
   const pack=VOCAB_PACKS.find(p=>p.name===name);if(!pack)return;
   const entries=pack.entries.map(([front,back,notes,alternatives])=>({front,back,notes,alternatives:alternatives||[],module:name}));
-  const plan=C.planImport(state,entries,uuid,Date.now());
+  const plan=pack===FEELINGS_PACK?planFeelingsImport(state,uuid,Date.now()):C.planImport(state,entries,uuid,Date.now());
   if(!plan.added.length){$('pack-message').textContent='Dieses Paket ist bereits vorhanden.';return;}
   if(commit(C.merge(state,{schemaVersion:2,cards:plan.added}),{backup:true})){$('pack-message').textContent=plan.added.length+' Karten hinzugefügt.';renderStudy();}
 }
 function packCards(pack){
+  if(pack===FEELINGS_PACK)return feelingsPackCards(cards);
   const keys=new Set(pack.entries.map(([front,back])=>C.key({front,back})));
   return cards.filter(c=>keys.has(C.key(c)));
 }
@@ -142,9 +152,12 @@ function studyPack(name){
     if(!confirm('Die pausierte Runde beenden und dieses Thema starten? Bereits gespeicherte Bewertungen bleiben erhalten.'))return;
     if(!storeRound(null))return;
   }else if(round&&!storeRound(null))return;
-  $('study-module').value='';
+  // Filter before applying the daily new-card limit, so unrelated fresh cards
+  // cannot crowd this topic out of its own practice button.
+  $('study-module').value=pack===FEELINGS_PACK?pack.name:'';
+  $('study-focus').value='all';
   const ids=new Set(packCards(pack).map(c=>c.id));
-  const selected=availableCards().filter(c=>ids.has(c.id));
+  const selected=availableCards(ids);
   if(!selected.length){$('pack-message').textContent='Für dieses Thema ist gerade nichts fällig oder das Tageslimit für neue Karten ist erreicht.';return;}
   startRound(selected);
 }
@@ -161,5 +174,6 @@ function renderPacks() {
     list.append(tile);
   }
 }
-loadData();if(!storageBlocked)loadRound();initSpeechRecognition();renderPacks();renderStudy();
+loadPreferences();loadData();if(!storageBlocked)loadRound();initSpeechRecognition();renderPacks();renderStudy();
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden' && round && !round.paused)pauseRound();});
+

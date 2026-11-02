@@ -38,11 +38,17 @@ const STORAGE_KEY = 'wesentlich_preview_vocab_cards_v1';
       document.getElementById('show-answer-btn').classList.add('hidden');
       document.getElementById('rating-buttons').classList.remove('hidden');
       renderAlternatives();
+      document.body.classList.add('answer-visible');
       saveRoundDraft();
     }
 
     function speakCurrent(rate = 0.95) {
       if (currentCard) speakEnglish(currentCard.back.replace(/\s*\/\s*/g, ', or '),rate);
+    }
+    function speakBrowserCurrent() {
+      if(!currentCard)return;
+      const request=lastAudioRequest||{text:currentCard.back.replace(/\s*\/\s*/g,', or '),rate:.95};
+      speakBrowserEnglish(request.text,request.rate);
     }
 
     function initSpeechRecognition() {
@@ -53,12 +59,13 @@ const STORAGE_KEY = 'wesentlich_preview_vocab_cards_v1';
       recognition.onresult = (e) => { let t = ''; for(let i=0; i<e.results.length; i++) t += e.results[i][0].transcript; document.getElementById('user-answer').value = t; saveRoundDraft(); };
       recognition.onerror = () => stopSpeechRecognition(); recognition.onend = () => stopSpeechRecognition();
     }
-    function toggleSpeechRecognition() { if (!recognition) return; if (isListening) { recognition.stop(); } else { if (isRevealed) return; document.getElementById('user-answer').value = ''; recognition.start(); } }
+    function toggleSpeechRecognition() { if (!recognition) return; if (isListening) { recognition.stop(); } else { if (isRevealed) return; stopAudio();document.getElementById('user-answer').value = ''; recognition.start(); } }
     function stopSpeechRecognition() { if (recognition && isListening) { try { recognition.stop(); } catch(e){} } isListening = false; const btn = document.getElementById('mic-btn'); if (btn) btn.classList.remove('listening'); }
 
     function updateStats() { document.getElementById('due-count').textContent = getDueCards().length; document.getElementById('total-count').textContent = cards.length; document.getElementById('manage-count').textContent = cards.length; }
 
     function switchView(view) {
+      stopAudio();
       if(view !== 'study' && round && !round.paused) pauseRound();
       stopSpeechRecognition();
       document.getElementById('view-study').classList.toggle('hidden', view !== 'study');
