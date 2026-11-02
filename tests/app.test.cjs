@@ -8,7 +8,7 @@ function boot(seed) {
    classList:{contains:n=>classes.has(n),add:(...ns)=>ns.forEach(n=>classes.add(n)),remove:(...ns)=>ns.forEach(n=>classes.delete(n)),toggle(n,on){if(on===undefined)on=!classes.has(n);on?classes.add(n):classes.delete(n);}},
    focus(){},blur(){},append(...items){this.children.push(...items);},appendChild(item){this.children.push(item);},replaceChildren(){this.children=[];},showModal(){this.open=true;},close(){this.open=false;},click(){},remove(){}});
  }
- const document={getElementById(id){assert.ok(els.has(id),'Missing HTML element: '+id);return els.get(id);},activeElement:{id:'',tagName:'BODY'},querySelectorAll:()=>[],addEventListener(){},createElement(){return {append(){},appendChild(){},click(){},remove(){}};},body:{appendChild(){}}};
+ const document={getElementById(id){assert.ok(els.has(id),'Missing HTML element: '+id);return els.get(id);},activeElement:{id:'',tagName:'BODY'},querySelectorAll:()=>[],addEventListener(){},createElement(){return {append(){},appendChild(){},click(){},remove(){}};},body:{appendChild(){},classList:{add(){},remove(){},toggle(){}}}};
  const c=vm.createContext({console,crypto:require('node:crypto').webcrypto,Date,JSON,structuredClone,AbortController,TextDecoder,Uint8Array,Blob,URL,
    navigator:{onLine:true},matchMedia:()=>({matches:false}),document,localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v)},
    setTimeout:()=>1,clearTimeout(){},alert(){},confirm:()=>true,fetch:()=>{throw new Error('No external network permitted in this test');},
@@ -130,3 +130,7 @@ test('therapy review preserves personal notes and can add the full corrected col
  const clean=boot();clean.run('applyTherapyRevision(true)');assert.equal(clean.run('cards.length'),41);
  clean.run('applyTherapyRevision(true)');assert.equal(clean.run('cards.length'),41);
 });
+test('production keeps existing reviews while adding all 55 feelings cards once',()=>{
+ const h=boot(seedCards(2,3)),before=h.run('JSON.stringify(state.cards)');h.run('addPack(FEELINGS_PACK.name);addPack(FEELINGS_PACK.name)');assert.equal(h.run('cards.length'),57);assert.equal(h.run('packCards(FEELINGS_PACK).length'),55);for(const c of JSON.parse(before))assert.deepEqual(JSON.parse(h.run('JSON.stringify(state.cards.find(c=>c.id==='+JSON.stringify(c.id)+'))')),c);assert.ok(h.store.get('wesentlich_vocab_before_import_v2'));assert.equal(h.run('STATE_KEY'),'wesentlich_vocab_state_v2');assert.equal(h.run('ROUND_KEY'),'wesentlich_vocab_round_v1');
+});
+test('production has all learning targets, examples and matching local audio',()=>{const h=boot();assert.equal(h.run('FEELINGS_ROWS.length'),55);assert.ok(h.run('FEELINGS_ROWS.every(r=>r[2]&&r[3]&&r[4]&&VOCAB_AUDIO[r[1].toLowerCase()]&&VOCAB_AUDIO[r[2].toLowerCase()])'));assert.equal(h.run('typeof api'),'function');});

@@ -3,15 +3,15 @@ const root=path.resolve(__dirname,'..');
 function worker(){
  const handlers={},cache=new Map(),removed=[];let fetched=0,activated=0;
  const scope='https://example.org/vokabeltrainer/';
- const ctx=vm.createContext({URL,self:{registration:{scope},addEventListener:(n,f)=>handlers[n]=f,skipWaiting:()=>activated++},
- caches:{open:async()=>({addAll:async urls=>urls.forEach(u=>cache.set(u,{cached:true})),match:async r=>cache.get(typeof r==='string'?r:r.url)}),keys:async()=>['vocab-app:'+scope+':old','vocab-app:'+scope+'vorschau/:other'],delete:async k=>removed.push(k)},fetch:async()=>{fetched++;throw Error('offline');}});
+ const ctx=vm.createContext({URL,Request,Response,self:{registration:{scope},addEventListener:(n,f)=>handlers[n]=f,skipWaiting:()=>activated++},
+ caches:{open:async()=>({addAll:async urls=>urls.forEach(u=>cache.set(typeof u==='string'?u:u.url,{cached:true})),match:async r=>cache.get(typeof r==='string'?r:r.url)}),keys:async()=>['vocab-app:'+scope+':old','vocab-app:'+scope+'vorschau/:other'],delete:async k=>removed.push(k)},fetch:async()=>{fetched++;throw Error('offline');}});
  vm.runInContext(fs.readFileSync(path.join(root,'sw.js'),'utf8'),ctx);
  return{handlers,cache,removed,get fetched(){return fetched;},get activated(){return activated;},scope,run:s=>vm.runInContext(s,ctx)};
 }
 test('offline installation includes every required local asset',async()=>{
  const w=worker();let promise;w.handlers.install({waitUntil:p=>promise=p});await promise;
- for(const url of w.cache.keys()){const file=new URL(url).pathname.split('/').pop()||'index.html';assert.ok(fs.existsSync(path.join(root,file)),file);}
- assert.equal(w.cache.size,14);
+ for(const url of w.cache.keys()){const file=new URL(url).pathname.slice(new URL(w.scope).pathname.length)||'index.html';assert.ok(fs.existsSync(path.join(root,file)),file);}
+ assert.ok(w.cache.size>=213);
 });
 test('cached navigation and scripts work with network unavailable',async()=>{
  const w=worker();let p;w.handlers.install({waitUntil:q=>p=q});await p;

@@ -1,0 +1,1159 @@
+{
+  "engine": "eSpeak / speak.js",
+  "voice": "en-US",
+  "speed": 155,
+  "files": [
+    {
+      "text": "Can we stay with that for a moment?",
+      "spoken": "Can we stay with that for a moment?",
+      "file": "assets/audio/ad75bb201e7a1c09.mp3",
+      "bytes": 14018
+    },
+    {
+      "text": "Can you give me a recent example?",
+      "spoken": "Can you give me a recent example?",
+      "file": "assets/audio/acc54f62ef02bb11.mp3",
+      "bytes": 15272
+    },
+    {
+      "text": "Did you find your way here okay?",
+      "spoken": "Did you find your way here okay?",
+      "file": "assets/audio/ebfe90b4f302bc5c.mp3",
+      "bytes": 14645
+    },
+    {
+      "text": "Does anything feel different?",
+      "spoken": "Does anything feel different?",
+      "file": "assets/audio/cbc4804f78865126.mp3",
+      "bytes": 12138
+    },
+    {
+      "text": "Does that description fit for you?",
+      "spoken": "Does that description fit for you?",
+      "file": "assets/audio/4c0957bb4ee63053.mp3",
+      "bytes": 14645
+    },
+    {
+      "text": "Have I understood you correctly?",
+      "spoken": "Have I understood you correctly?",
+      "file": "assets/audio/8605cbd18ec30e7f.mp3",
+      "bytes": 13078
+    },
+    {
+      "text": "He gave her a tender kiss.",
+      "spoken": "He gave her a tender kiss.",
+      "file": "assets/audio/1d694c81f7be89a7.mp3",
+      "bytes": 12608
+    },
+    {
+      "text": "He is a caring father.",
+      "spoken": "He is a caring father.",
+      "file": "assets/audio/94c6db855071f33c.mp3",
+      "bytes": 10570
+    },
+    {
+      "text": "His words were full of hatred.",
+      "spoken": "His words were full of hatred.",
+      "file": "assets/audio/4a62ba99c43bf86a.mp3",
+      "bytes": 14489
+    },
+    {
+      "text": "I am angry with him for breaking his promise.",
+      "spoken": "I am angry with him for breaking his promise.",
+      "file": "assets/audio/daccd7b1c159f962.mp3",
+      "bytes": 17937
+    },
+    {
+      "text": "I am curious about how you see things.",
+      "spoken": "I am curious about how you see things.",
+      "file": "assets/audio/d491c94409d902ea.mp3",
+      "bytes": 16056
+    },
+    {
+      "text": "I am excited about our trip.",
+      "spoken": "I am excited about our trip.",
+      "file": "assets/audio/0e70b5691ac812a0.mp3",
+      "bytes": 13391
+    },
+    {
+      "text": "I am exhausted after the journey.",
+      "spoken": "I am exhausted after the journey.",
+      "file": "assets/audio/f0d98274951aa892.mp3",
+      "bytes": 14175
+    },
+    {
+      "text": "I am grateful for your support.",
+      "spoken": "I am grateful for your support.",
+      "file": "assets/audio/7d2d87a6f0dfb828.mp3",
+      "bytes": 12921
+    },
+    {
+      "text": "I am not sure how to put it into words.",
+      "spoken": "I am not sure how to put it into words.",
+      "file": "assets/audio/3c3938cbf019f3b5.mp3",
+      "bytes": 16996
+    },
+    {
+      "text": "I am still awake.",
+      "spoken": "I am still awake.",
+      "file": "assets/audio/68739b04c82eccba.mp3",
+      "bytes": 9160
+    },
+    {
+      "text": "I can feel lonely even when other people are around.",
+      "spoken": "I can feel lonely even when other people are around.",
+      "file": "assets/audio/72d04bdac6ab271f.mp3",
+      "bytes": 19661
+    },
+    {
+      "text": "I feel a lot of affection for her.",
+      "spoken": "I feel a lot of affection for her.",
+      "file": "assets/audio/772114090dbf05f9.mp3",
+      "bytes": 14645
+    },
+    {
+      "text": "I feel anxious about the exam.",
+      "spoken": "I feel anxious about the exam.",
+      "file": "assets/audio/e7af5f164db542c9.mp3",
+      "bytes": 15272
+    },
+    {
+      "text": "I feel connected to you when we talk openly.",
+      "spoken": "I feel connected to you when we talk openly.",
+      "file": "assets/audio/bfeaf49cb2d7ea44.mp3",
+      "bytes": 17780
+    },
+    {
+      "text": "I feel content with my life.",
+      "spoken": "I feel content with my life.",
+      "file": "assets/audio/9f61b8af3eba884a.mp3",
+      "bytes": 13705
+    },
+    {
+      "text": "I feel empty inside, even though my day was full.",
+      "spoken": "I feel empty inside, even though my day was full.",
+      "file": "assets/audio/7bfc8d2116a1258a.mp3",
+      "bytes": 22169
+    },
+    {
+      "text": "I feel happy when we spend time together.",
+      "spoken": "I feel happy when we spend time together.",
+      "file": "assets/audio/2a2d2c77c1238b11.mp3",
+      "bytes": 18094
+    },
+    {
+      "text": "I feel hopeful that things will get better.",
+      "spoken": "I feel hopeful that things will get better.",
+      "file": "assets/audio/0b167d62a918d507.mp3",
+      "bytes": 17937
+    },
+    {
+      "text": "I feel insecure about my abilities.",
+      "spoken": "I feel insecure about my abilities.",
+      "file": "assets/audio/b2273cb6f00d4f27.mp3",
+      "bytes": 16369
+    },
+    {
+      "text": "I feel optimistic about the future.",
+      "spoken": "I feel optimistic about the future.",
+      "file": "assets/audio/a1b10962d85c2b11.mp3",
+      "bytes": 16526
+    },
+    {
+      "text": "I feel overwhelmed by all the tasks I have to finish.",
+      "spoken": "I feel overwhelmed by all the tasks I have to finish.",
+      "file": "assets/audio/3c7352a7afb16298.mp3",
+      "bytes": 21698
+    },
+    {
+      "text": "I feel relaxed after a warm bath.",
+      "spoken": "I feel relaxed after a warm bath.",
+      "file": "assets/audio/ee32e96ac938bddb.mp3",
+      "bytes": 16213
+    },
+    {
+      "text": "I feel restless and cannot sit still.",
+      "spoken": "I feel restless and cannot sit still.",
+      "file": "assets/audio/e42b7d6cc21a7bfe.mp3",
+      "bytes": 18094
+    },
+    {
+      "text": "I feel safe and secure when I am with you.",
+      "spoken": "I feel safe and secure when I am with you.",
+      "file": "assets/audio/e304550ea1791420.mp3",
+      "bytes": 18250
+    },
+    {
+      "text": "I feel sleepy after lunch.",
+      "spoken": "I feel sleepy after lunch.",
+      "file": "assets/audio/36a0329f3d23e06f.mp3",
+      "bytes": 12921
+    },
+    {
+      "text": "I feel tired after a long day.",
+      "spoken": "I feel tired after a long day.",
+      "file": "assets/audio/d6f0c74955469bab.mp3",
+      "bytes": 14959
+    },
+    {
+      "text": "I feel vulnerable when I talk about my fears.",
+      "spoken": "I feel vulnerable when I talk about my fears.",
+      "file": "assets/audio/f234fc946381aaeb.mp3",
+      "bytes": 19034
+    },
+    {
+      "text": "I felt a deep longing for home.",
+      "spoken": "I felt a deep longing for home.",
+      "file": "assets/audio/061c17fc6dbc4dfb.mp3",
+      "bytes": 14489
+    },
+    {
+      "text": "I felt a deep sense of shame.",
+      "spoken": "I felt a deep sense of shame.",
+      "file": "assets/audio/93ae181a64e293e1.mp3",
+      "bytes": 14802
+    },
+    {
+      "text": "I felt abandoned when no one came to see me.",
+      "spoken": "I felt abandoned when no one came to see me.",
+      "file": "assets/audio/dc23c2c1a322fcb1.mp3",
+      "bytes": 19191
+    },
+    {
+      "text": "I felt angry when he ignored me.",
+      "spoken": "I felt angry when he ignored me.",
+      "file": "assets/audio/89ac5419f5c90536.mp3",
+      "bytes": 14959
+    },
+    {
+      "text": "I felt ashamed of how I had treated him.",
+      "spoken": "I felt ashamed of how I had treated him.",
+      "file": "assets/audio/bdd6bddb8801724d.mp3",
+      "bytes": 18250
+    },
+    {
+      "text": "I felt desperate when nothing seemed to help.",
+      "spoken": "I felt desperate when nothing seemed to help.",
+      "file": "assets/audio/891dd7bf655dc3d9.mp3",
+      "bytes": 19347
+    },
+    {
+      "text": "I felt envious of her success.",
+      "spoken": "I felt envious of her success.",
+      "file": "assets/audio/39b9f39b0d5da8df.mp3",
+      "bytes": 14802
+    },
+    {
+      "text": "I felt frustrated because I could not make myself understood.",
+      "spoken": "I felt frustrated because I could not make myself understood.",
+      "file": "assets/audio/10e60a0a63c8ed9f.mp3",
+      "bytes": 25774
+    },
+    {
+      "text": "I felt guilty about forgetting her birthday.",
+      "spoken": "I felt guilty about forgetting her birthday.",
+      "file": "assets/audio/eb08380003c680f6.mp3",
+      "bytes": 18564
+    },
+    {
+      "text": "I felt helpless because I did not know how to help.",
+      "spoken": "I felt helpless because I did not know how to help.",
+      "file": "assets/audio/cc25bba03db57b08.mp3",
+      "bytes": 22169
+    },
+    {
+      "text": "I felt hopeless about the future.",
+      "spoken": "I felt hopeless about the future.",
+      "file": "assets/audio/d9c651204d0aa326.mp3",
+      "bytes": 15116
+    },
+    {
+      "text": "I felt hurt by what she said.",
+      "spoken": "I felt hurt by what she said.",
+      "file": "assets/audio/9dea2f8828cf3467.mp3",
+      "bytes": 14489
+    },
+    {
+      "text": "I felt indifferent to the result.",
+      "spoken": "I felt indifferent to the result.",
+      "file": "assets/audio/d540503dbad725b0.mp3",
+      "bytes": 14489
+    },
+    {
+      "text": "I felt jealous when my partner flirted with someone else.",
+      "spoken": "I felt jealous when my partner flirted with someone else.",
+      "file": "assets/audio/13fb47d379101130.mp3",
+      "bytes": 22796
+    },
+    {
+      "text": "I felt overwhelmed with joy when we met again.",
+      "spoken": "I felt overwhelmed with joy when we met again.",
+      "file": "assets/audio/bb88fae9988cf2a6.mp3",
+      "bytes": 19818
+    },
+    {
+      "text": "I felt powerless to change the situation.",
+      "spoken": "I felt powerless to change the situation.",
+      "file": "assets/audio/f8682c6cab0da9cc.mp3",
+      "bytes": 18720
+    },
+    {
+      "text": "I felt relieved when I heard the good news.",
+      "spoken": "I felt relieved when I heard the good news.",
+      "file": "assets/audio/de766f34767a4cc6.mp3",
+      "bytes": 17623
+    },
+    {
+      "text": "I felt sad when it was time to leave.",
+      "spoken": "I felt sad when it was time to leave.",
+      "file": "assets/audio/744834f4d1d78163.mp3",
+      "bytes": 16840
+    },
+    {
+      "text": "I felt tense before the meeting.",
+      "spoken": "I felt tense before the meeting.",
+      "file": "assets/audio/a9211ff9522c052e.mp3",
+      "bytes": 14175
+    },
+    {
+      "text": "I miss my family when I am away.",
+      "spoken": "I miss my family when I am away.",
+      "file": "assets/audio/76f2b3b97cd7daca.mp3",
+      "bytes": 13548
+    },
+    {
+      "text": "I was deeply moved by her kindness.",
+      "spoken": "I was deeply moved by her kindness.",
+      "file": "assets/audio/3a08556bfff9b8d0.mp3",
+      "bytes": 15116
+    },
+    {
+      "text": "I was disappointed when our plans fell through.",
+      "spoken": "I was disappointed when our plans fell through.",
+      "file": "assets/audio/71df44c41ec72405.mp3",
+      "bytes": 19191
+    },
+    {
+      "text": "I was wide awake at three in the morning.",
+      "spoken": "I was wide awake at three in the morning.",
+      "file": "assets/audio/fc9412b1afc8e834.mp3",
+      "bytes": 16056
+    },
+    {
+      "text": "It sounds as though …",
+      "spoken": "It sounds as though …",
+      "file": "assets/audio/52d33da5bbfec82d.mp3",
+      "bytes": 11824
+    },
+    {
+      "text": "Make yourself comfortable.",
+      "spoken": "Make yourself comfortable.",
+      "file": "assets/audio/5cfeea07748e23f7.mp3",
+      "bytes": 12451
+    },
+    {
+      "text": "She has a loving relationship with her daughter.",
+      "spoken": "She has a loving relationship with her daughter.",
+      "file": "assets/audio/81b8bec9d1b07ad6.mp3",
+      "bytes": 17937
+    },
+    {
+      "text": "She is an empathetic listener.",
+      "spoken": "She is an empathetic listener.",
+      "file": "assets/audio/bb1fce81dc2a7112.mp3",
+      "bytes": 12765
+    },
+    {
+      "text": "She showed compassion for her friend.",
+      "spoken": "She showed compassion for her friend.",
+      "file": "assets/audio/9706ccda61218a9c.mp3",
+      "bytes": 15586
+    },
+    {
+      "text": "She stayed calm during the difficult conversation.",
+      "spoken": "She stayed calm during the difficult conversation.",
+      "file": "assets/audio/25e7d8fbeb738e82.mp3",
+      "bytes": 21542
+    },
+    {
+      "text": "She was unconscious for a few seconds.",
+      "spoken": "She was unconscious for a few seconds.",
+      "file": "assets/audio/5a2e657013fe2772.mp3",
+      "bytes": 15586
+    },
+    {
+      "text": "The loud noise made me feel frightened.",
+      "spoken": "The loud noise made me feel frightened.",
+      "file": "assets/audio/9a3688d7017d2be7.mp3",
+      "bytes": 15742
+    },
+    {
+      "text": "What are you noticing in your body right now?",
+      "spoken": "What are you noticing in your body right now?",
+      "file": "assets/audio/716b5aed2329f5cd.mp3",
+      "bytes": 16996
+    },
+    {
+      "text": "What changes when you notice that?",
+      "spoken": "What changes when you notice that?",
+      "file": "assets/audio/480474fd3a8957d8.mp3",
+      "bytes": 14332
+    },
+    {
+      "text": "What is happening inside you right now?",
+      "spoken": "What is happening inside you right now?",
+      "file": "assets/audio/95093fdead09a7ef.mp3",
+      "bytes": 16526
+    },
+    {
+      "text": "What is it like for you to say that out loud?",
+      "spoken": "What is it like for you to say that out loud?",
+      "file": "assets/audio/6a55dfd7e3e260b4.mp3",
+      "bytes": 17780
+    },
+    {
+      "text": "What matters to you about that?",
+      "spoken": "What matters to you about that?",
+      "file": "assets/audio/d1bd4e8251475eed.mp3",
+      "bytes": 13078
+    },
+    {
+      "text": "What would be a small next step?",
+      "spoken": "What would be a small next step?",
+      "file": "assets/audio/043f4e1587fa2eea.mp3",
+      "bytes": 14489
+    },
+    {
+      "text": "What would help you right now?",
+      "spoken": "What would help you right now?",
+      "file": "assets/audio/b4cca9669e07c3b2.mp3",
+      "bytes": 13235
+    },
+    {
+      "text": "What would you like for yourself?",
+      "spoken": "What would you like for yourself?",
+      "file": "assets/audio/3687adeee4003b84.mp3",
+      "bytes": 13235
+    },
+    {
+      "text": "What would you like to take away from today?",
+      "spoken": "What would you like to take away from today?",
+      "file": "assets/audio/82be5fbe45bc0026.mp3",
+      "bytes": 17780
+    },
+    {
+      "text": "Would you like to pause here?",
+      "spoken": "Would you like to pause here?",
+      "file": "assets/audio/fdfece6c5377c8c5.mp3",
+      "bytes": 12451
+    },
+    {
+      "text": "a feeling of heaviness",
+      "spoken": "a feeling of heaviness",
+      "file": "assets/audio/23415e33f43f0cca.mp3",
+      "bytes": 10100
+    },
+    {
+      "text": "a knot in your stomach",
+      "spoken": "a knot in your stomach",
+      "file": "assets/audio/834ede5c397ee774.mp3",
+      "bytes": 9473
+    },
+    {
+      "text": "a lump in the throat",
+      "spoken": "a lump in the throat",
+      "file": "assets/audio/855ead6d0dc7ee87.mp3",
+      "bytes": 9316
+    },
+    {
+      "text": "a recent example",
+      "spoken": "a recent example",
+      "file": "assets/audio/b0f21fd09566632c.mp3",
+      "bytes": 10257
+    },
+    {
+      "text": "abandoned",
+      "spoken": "abandoned",
+      "file": "assets/audio/20e7f550122ee415.mp3",
+      "bytes": 6809
+    },
+    {
+      "text": "affection",
+      "spoken": "affection",
+      "file": "assets/audio/14c67414e0dfb1ff.mp3",
+      "bytes": 6809
+    },
+    {
+      "text": "afraid",
+      "spoken": "afraid",
+      "file": "assets/audio/180366dd3b2cc124.mp3",
+      "bytes": 6182
+    },
+    {
+      "text": "angry",
+      "spoken": "angry",
+      "file": "assets/audio/0a96f1960786d85f.mp3",
+      "bytes": 5711
+    },
+    {
+      "text": "annoyed",
+      "spoken": "annoyed",
+      "file": "assets/audio/72e850d1104314c7.mp3",
+      "bytes": 6025
+    },
+    {
+      "text": "anxious",
+      "spoken": "anxious",
+      "file": "assets/audio/faef616df2ec2442.mp3",
+      "bytes": 6338
+    },
+    {
+      "text": "ashamed",
+      "spoken": "ashamed",
+      "file": "assets/audio/b6d9e56c88ad4362.mp3",
+      "bytes": 6495
+    },
+    {
+      "text": "awake",
+      "spoken": "awake",
+      "file": "assets/audio/f245940166d1611d.mp3",
+      "bytes": 5555
+    },
+    {
+      "text": "calm",
+      "spoken": "calm",
+      "file": "assets/audio/2b4b2eadf7b2aece.mp3",
+      "bytes": 5711
+    },
+    {
+      "text": "cancellation policy",
+      "spoken": "cancellation policy",
+      "file": "assets/audio/64b31f4aa2c59539.mp3",
+      "bytes": 11040
+    },
+    {
+      "text": "caring",
+      "spoken": "caring",
+      "file": "assets/audio/e49a417471c3aaa3.mp3",
+      "bytes": 6025
+    },
+    {
+      "text": "compassion",
+      "spoken": "compassion",
+      "file": "assets/audio/b260e1abb566eb8b.mp3",
+      "bytes": 7279
+    },
+    {
+      "text": "confidential",
+      "spoken": "confidential",
+      "file": "assets/audio/3151084286f59511.mp3",
+      "bytes": 8533
+    },
+    {
+      "text": "connected",
+      "spoken": "connected",
+      "file": "assets/audio/12a7bd86e0a43032.mp3",
+      "bytes": 7122
+    },
+    {
+      "text": "content",
+      "spoken": "to feel content",
+      "file": "assets/audio/ed7002b439e9ac84.mp3",
+      "bytes": 9630
+    },
+    {
+      "text": "contented",
+      "spoken": "contented",
+      "file": "assets/audio/2d013703fc875ef8.mp3",
+      "bytes": 7592
+    },
+    {
+      "text": "curious",
+      "spoken": "curious",
+      "file": "assets/audio/a9e7a8af89a3e21f.mp3",
+      "bytes": 6338
+    },
+    {
+      "text": "desperate",
+      "spoken": "desperate",
+      "file": "assets/audio/5d3082f6a1fd718c.mp3",
+      "bytes": 6338
+    },
+    {
+      "text": "disappointed",
+      "spoken": "disappointed",
+      "file": "assets/audio/364d78e6fc3db786.mp3",
+      "bytes": 8062
+    },
+    {
+      "text": "drowsy",
+      "spoken": "drowsy",
+      "file": "assets/audio/8978c132949a4dba.mp3",
+      "bytes": 5555
+    },
+    {
+      "text": "embarrassed",
+      "spoken": "embarrassed",
+      "file": "assets/audio/f12e1aedc45deb77.mp3",
+      "bytes": 6495
+    },
+    {
+      "text": "empathetic",
+      "spoken": "empathetic",
+      "file": "assets/audio/8303367283d76324.mp3",
+      "bytes": 7436
+    },
+    {
+      "text": "empathic",
+      "spoken": "empathic",
+      "file": "assets/audio/e48633f99e396fda.mp3",
+      "bytes": 6809
+    },
+    {
+      "text": "empty inside",
+      "spoken": "empty inside",
+      "file": "assets/audio/3e84f623893918a8.mp3",
+      "bytes": 9160
+    },
+    {
+      "text": "empty on the inside",
+      "spoken": "empty on the inside",
+      "file": "assets/audio/f9c7e6020ab25293.mp3",
+      "bytes": 10570
+    },
+    {
+      "text": "envious",
+      "spoken": "envious",
+      "file": "assets/audio/74c4a5de72fc1bba.mp3",
+      "bytes": 6338
+    },
+    {
+      "text": "excited",
+      "spoken": "excited",
+      "file": "assets/audio/8d1c8a7a12c3739b.mp3",
+      "bytes": 7122
+    },
+    {
+      "text": "exhausted",
+      "spoken": "exhausted",
+      "file": "assets/audio/ea4c55ca1f43fc93.mp3",
+      "bytes": 7592
+    },
+    {
+      "text": "frightened",
+      "spoken": "frightened",
+      "file": "assets/audio/1d0dbd158cf29a72.mp3",
+      "bytes": 6338
+    },
+    {
+      "text": "frustrated",
+      "spoken": "frustrated",
+      "file": "assets/audio/6afb642998f6a61b.mp3",
+      "bytes": 7749
+    },
+    {
+      "text": "grateful",
+      "spoken": "grateful",
+      "file": "assets/audio/8652b6b8e1b1f912.mp3",
+      "bytes": 6025
+    },
+    {
+      "text": "guilty",
+      "spoken": "guilty",
+      "file": "assets/audio/51997f8a8db2530e.mp3",
+      "bytes": 5555
+    },
+    {
+      "text": "happy",
+      "spoken": "happy",
+      "file": "assets/audio/489f719cadf91909.mp3",
+      "bytes": 5555
+    },
+    {
+      "text": "hate",
+      "spoken": "hate",
+      "file": "assets/audio/f2e9a23ac36c4b22.mp3",
+      "bytes": 5241
+    },
+    {
+      "text": "hatred",
+      "spoken": "hatred",
+      "file": "assets/audio/15b45021ccf8ed60.mp3",
+      "bytes": 6495
+    },
+    {
+      "text": "helpless",
+      "spoken": "helpless",
+      "file": "assets/audio/eef98a799e12234c.mp3",
+      "bytes": 6652
+    },
+    {
+      "text": "hopeful",
+      "spoken": "hopeful",
+      "file": "assets/audio/0ad2e0351be5fbd4.mp3",
+      "bytes": 6338
+    },
+    {
+      "text": "hopeless",
+      "spoken": "hopeless",
+      "file": "assets/audio/b12b89c7bba2b22a.mp3",
+      "bytes": 6338
+    },
+    {
+      "text": "hurt",
+      "spoken": "hurt",
+      "file": "assets/audio/49002d515d1605d8.mp3",
+      "bytes": 5241
+    },
+    {
+      "text": "indifferent",
+      "spoken": "indifferent",
+      "file": "assets/audio/37825ceb9b7e3e1d.mp3",
+      "bytes": 6652
+    },
+    {
+      "text": "insecure",
+      "spoken": "insecure",
+      "file": "assets/audio/1d92dae504a70fbc.mp3",
+      "bytes": 7749
+    },
+    {
+      "text": "jealous",
+      "spoken": "jealous",
+      "file": "assets/audio/b2f5e2e21758c5c2.mp3",
+      "bytes": 5398
+    },
+    {
+      "text": "lonely",
+      "spoken": "lonely",
+      "file": "assets/audio/1cb0f5a9e3a8e4dd.mp3",
+      "bytes": 5555
+    },
+    {
+      "text": "longing",
+      "spoken": "longing",
+      "file": "assets/audio/29f47f4b1acd0473.mp3",
+      "bytes": 5711
+    },
+    {
+      "text": "loving",
+      "spoken": "loving",
+      "file": "assets/audio/6cc29d46cdc848d3.mp3",
+      "bytes": 5868
+    },
+    {
+      "text": "moved",
+      "spoken": "moved",
+      "file": "assets/audio/5edd1832df25e2f1.mp3",
+      "bytes": 5868
+    },
+    {
+      "text": "numbness",
+      "spoken": "numbness",
+      "file": "assets/audio/1ec9d846b3930ffb.mp3",
+      "bytes": 6025
+    },
+    {
+      "text": "optimistic",
+      "spoken": "optimistic",
+      "file": "assets/audio/65ee89092efbf78a.mp3",
+      "bytes": 8062
+    },
+    {
+      "text": "overwhelmed",
+      "spoken": "overwhelmed",
+      "file": "assets/audio/8a175349bfeda3eb.mp3",
+      "bytes": 7592
+    },
+    {
+      "text": "powerless",
+      "spoken": "powerless",
+      "file": "assets/audio/3d5d5ba737e9aa52.mp3",
+      "bytes": 6495
+    },
+    {
+      "text": "present-moment experience",
+      "spoken": "present-moment experience",
+      "file": "assets/audio/9740ee8a92d7e72b.mp3",
+      "bytes": 13391
+    },
+    {
+      "text": "relaxed",
+      "spoken": "relaxed",
+      "file": "assets/audio/acd85c97bf4d40bd.mp3",
+      "bytes": 6338
+    },
+    {
+      "text": "relieved",
+      "spoken": "relieved",
+      "file": "assets/audio/4469b61507b9c6fa.mp3",
+      "bytes": 6182
+    },
+    {
+      "text": "resentful",
+      "spoken": "resentful",
+      "file": "assets/audio/6f978eea4ed07287.mp3",
+      "bytes": 7122
+    },
+    {
+      "text": "restless",
+      "spoken": "restless",
+      "file": "assets/audio/ba94d567a4afc0be.mp3",
+      "bytes": 6338
+    },
+    {
+      "text": "sad",
+      "spoken": "sad",
+      "file": "assets/audio/45c9a6614fccd4f9.mp3",
+      "bytes": 5398
+    },
+    {
+      "text": "safe and secure",
+      "spoken": "safe and secure",
+      "file": "assets/audio/64cab6157d501939.mp3",
+      "bytes": 10100
+    },
+    {
+      "text": "scared",
+      "spoken": "scared",
+      "file": "assets/audio/67f711e800796d61.mp3",
+      "bytes": 6025
+    },
+    {
+      "text": "secure and safe",
+      "spoken": "secure and safe",
+      "file": "assets/audio/0338ff68111a3468.mp3",
+      "bytes": 9943
+    },
+    {
+      "text": "self-judgment",
+      "spoken": "self-judgment",
+      "file": "assets/audio/9abe772ea533800b.mp3",
+      "bytes": 8846
+    },
+    {
+      "text": "self-regulation",
+      "spoken": "self-regulation",
+      "file": "assets/audio/41b9b2d380d245bd.mp3",
+      "bytes": 9787
+    },
+    {
+      "text": "shame",
+      "spoken": "shame",
+      "file": "assets/audio/bf197ff3615054b0.mp3",
+      "bytes": 5868
+    },
+    {
+      "text": "sleepy",
+      "spoken": "sleepy",
+      "file": "assets/audio/e74ca13b4c0a61dc.mp3",
+      "bytes": 5711
+    },
+    {
+      "text": "tender",
+      "spoken": "tender",
+      "file": "assets/audio/a9eba7c405ea67a1.mp3",
+      "bytes": 6182
+    },
+    {
+      "text": "tense",
+      "spoken": "tense",
+      "file": "assets/audio/deb8cc25f01429d6.mp3",
+      "bytes": 5868
+    },
+    {
+      "text": "thankful",
+      "spoken": "thankful",
+      "file": "assets/audio/74a1e0449315b6f0.mp3",
+      "bytes": 6652
+    },
+    {
+      "text": "the fee",
+      "spoken": "the fee",
+      "file": "assets/audio/52b573fc34deaa84.mp3",
+      "bytes": 5711
+    },
+    {
+      "text": "the nervous system",
+      "spoken": "the nervous system",
+      "file": "assets/audio/2e38077deb31aaff.mp3",
+      "bytes": 9473
+    },
+    {
+      "text": "tightness",
+      "spoken": "tightness",
+      "file": "assets/audio/f42cede9e63414ab.mp3",
+      "bytes": 6495
+    },
+    {
+      "text": "tightness in the chest",
+      "spoken": "tightness in the chest",
+      "file": "assets/audio/54e71671823d6b62.mp3",
+      "bytes": 10100
+    },
+    {
+      "text": "tired",
+      "spoken": "tired",
+      "file": "assets/audio/c405760daf9bc32b.mp3",
+      "bytes": 5868
+    },
+    {
+      "text": "to be angry at someone",
+      "spoken": "to be angry at someone",
+      "file": "assets/audio/a926c2aa59562c30.mp3",
+      "bytes": 11040
+    },
+    {
+      "text": "to be angry with someone",
+      "spoken": "to be angry with someone",
+      "file": "assets/audio/e13429d551f1b98e.mp3",
+      "bytes": 11197
+    },
+    {
+      "text": "to be curious about something",
+      "spoken": "to be curious about something",
+      "file": "assets/audio/502202c37335b0b7.mp3",
+      "bytes": 13235
+    },
+    {
+      "text": "to be hard on yourself",
+      "spoken": "to be hard on yourself",
+      "file": "assets/audio/578e0eeb9e30d2c4.mp3",
+      "bytes": 11354
+    },
+    {
+      "text": "to be kinder to yourself",
+      "spoken": "to be kinder to yourself",
+      "file": "assets/audio/789bd34b68c34341.mp3",
+      "bytes": 11981
+    },
+    {
+      "text": "to feel ashamed",
+      "spoken": "to feel ashamed",
+      "file": "assets/audio/d6a244bf9a591b08.mp3",
+      "bytes": 9316
+    },
+    {
+      "text": "to feel hurt",
+      "spoken": "to feel hurt",
+      "file": "assets/audio/8bd8e99fe2c95ff0.mp3",
+      "bytes": 8062
+    },
+    {
+      "text": "to feel the ground beneath your feet",
+      "spoken": "to feel the ground beneath your feet",
+      "file": "assets/audio/1ac5921350463f75.mp3",
+      "bytes": 14332
+    },
+    {
+      "text": "to feel uneasy",
+      "spoken": "to feel uneasy",
+      "file": "assets/audio/bb1cef2515417b4c.mp3",
+      "bytes": 8533
+    },
+    {
+      "text": "to find your way to the practice",
+      "spoken": "to find your way to the practice",
+      "file": "assets/audio/6c993d0466fa0174.mp3",
+      "bytes": 14332
+    },
+    {
+      "text": "to gloss over something",
+      "spoken": "to gloss over something",
+      "file": "assets/audio/f82b0659fc3c157e.mp3",
+      "bytes": 11354
+    },
+    {
+      "text": "to interrupt someone briefly",
+      "spoken": "to interrupt someone briefly",
+      "file": "assets/audio/c4b961b7a5257b06.mp3",
+      "bytes": 13078
+    },
+    {
+      "text": "to judge yourself",
+      "spoken": "to judge yourself",
+      "file": "assets/audio/9bbf3d7d6dcbc1df.mp3",
+      "bytes": 9787
+    },
+    {
+      "text": "to long for connection",
+      "spoken": "to long for connection",
+      "file": "assets/audio/7bcd309b8f5f5e54.mp3",
+      "bytes": 10884
+    },
+    {
+      "text": "to make sure I understand correctly",
+      "spoken": "to make sure I understand correctly",
+      "file": "assets/audio/a5e240db95d79154.mp3",
+      "bytes": 15899
+    },
+    {
+      "text": "to make yourself comfortable",
+      "spoken": "to make yourself comfortable",
+      "file": "assets/audio/90647704d83cd66c.mp3",
+      "bytes": 13235
+    },
+    {
+      "text": "to miss",
+      "spoken": "to miss",
+      "file": "assets/audio/86292dfaf8328465.mp3",
+      "bytes": 6025
+    },
+    {
+      "text": "to notice",
+      "spoken": "to notice",
+      "file": "assets/audio/e185db7d6b3cc1b8.mp3",
+      "bytes": 6809
+    },
+    {
+      "text": "to notice the impact of words",
+      "spoken": "to notice the impact of words",
+      "file": "assets/audio/5eeec51d2adf1743.mp3",
+      "bytes": 14018
+    },
+    {
+      "text": "to picture someone",
+      "spoken": "to picture someone",
+      "file": "assets/audio/f5d0b912b5c5389c.mp3",
+      "bytes": 10100
+    },
+    {
+      "text": "to reschedule an appointment",
+      "spoken": "to reschedule an appointment",
+      "file": "assets/audio/52a9c113fade11a0.mp3",
+      "bytes": 12451
+    },
+    {
+      "text": "to resonate with someone",
+      "spoken": "to resonate with someone",
+      "file": "assets/audio/14cd2f9455a23785.mp3",
+      "bytes": 11824
+    },
+    {
+      "text": "to schedule another appointment",
+      "spoken": "to schedule another appointment",
+      "file": "assets/audio/3235e19a41706c0d.mp3",
+      "bytes": 13862
+    },
+    {
+      "text": "to schedule the next appointment",
+      "spoken": "to schedule the next appointment",
+      "file": "assets/audio/817124212ac57c2f.mp3",
+      "bytes": 14645
+    },
+    {
+      "text": "to shut down emotionally",
+      "spoken": "to shut down emotionally",
+      "file": "assets/audio/ecbbd5389643e0a7.mp3",
+      "bytes": 10727
+    },
+    {
+      "text": "to slow down",
+      "spoken": "to slow down",
+      "file": "assets/audio/1d12b6c9085544ba.mp3",
+      "bytes": 8376
+    },
+    {
+      "text": "to speak up",
+      "spoken": "to speak up",
+      "file": "assets/audio/53839972ef2ee3f8.mp3",
+      "bytes": 7906
+    },
+    {
+      "text": "to stay with something",
+      "spoken": "to stay with something",
+      "file": "assets/audio/3a2e861b8ef9f574.mp3",
+      "bytes": 10884
+    },
+    {
+      "text": "to take something away from a session",
+      "spoken": "to take something away from a session",
+      "file": "assets/audio/31fcf5c174c278e9.mp3",
+      "bytes": 15742
+    },
+    {
+      "text": "to treat a friend with compassion",
+      "spoken": "to treat a friend with compassion",
+      "file": "assets/audio/4a2c220257aba70f.mp3",
+      "bytes": 14489
+    },
+    {
+      "text": "to try a small experiment",
+      "spoken": "to try a small experiment",
+      "file": "assets/audio/3b26816666c64ef2.mp3",
+      "bytes": 13078
+    },
+    {
+      "text": "to walk on eggshells",
+      "spoken": "to walk on eggshells",
+      "file": "assets/audio/c5d38525eec2f283.mp3",
+      "bytes": 10570
+    },
+    {
+      "text": "to want something for yourself",
+      "spoken": "to want something for yourself",
+      "file": "assets/audio/40f5e1e9aacb2f46.mp3",
+      "bytes": 14489
+    },
+    {
+      "text": "to withdraw",
+      "spoken": "to withdraw",
+      "file": "assets/audio/ff95cb8e96ef78db.mp3",
+      "bytes": 7122
+    },
+    {
+      "text": "to work on a self-pay basis",
+      "spoken": "to work on a self-pay basis",
+      "file": "assets/audio/0adbd48e28c9abd9.mp3",
+      "bytes": 14175
+    },
+    {
+      "text": "to wrap up a session",
+      "spoken": "to wrap up a session",
+      "file": "assets/audio/621ea80d5ebb6e6f.mp3",
+      "bytes": 9943
+    },
+    {
+      "text": "to yearn for connection",
+      "spoken": "to yearn for connection",
+      "file": "assets/audio/57337ae49c354b4b.mp3",
+      "bytes": 11040
+    },
+    {
+      "text": "to zone out",
+      "spoken": "to zone out",
+      "file": "assets/audio/fc24b561ddac4177.mp3",
+      "bytes": 7749
+    },
+    {
+      "text": "touched",
+      "spoken": "touched",
+      "file": "assets/audio/2f2cd146e5e4c62f.mp3",
+      "bytes": 5868
+    },
+    {
+      "text": "unconscious",
+      "spoken": "unconscious",
+      "file": "assets/audio/30bc67a73501de3d.mp3",
+      "bytes": 7279
+    },
+    {
+      "text": "vulnerable",
+      "spoken": "vulnerable",
+      "file": "assets/audio/f2b826b18b9de866.mp3",
+      "bytes": 7122
+    },
+    {
+      "text": "wide awake",
+      "spoken": "wide awake",
+      "file": "assets/audio/7eef67b3585dadcb.mp3",
+      "bytes": 7436
+    },
+    {
+      "text": "yearning",
+      "spoken": "yearning",
+      "file": "assets/audio/09e35bf85d1c4a33.mp3",
+      "bytes": 6025
+    }
+  ]
+}

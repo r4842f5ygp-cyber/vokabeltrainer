@@ -1,18 +1,47 @@
 /* All synthesis starts synchronously inside a user tap, including on iOS. */
-let activeSpeech=null,speechAttempt=0,speechTimer=null,englishVoices=[];
+let activeSpeech=null,speechAttempt=0,speechTimer=null,englishVoices=[],activeLocalAudio=null,lastAudioRequest=null;
+function stopAudio(){
+  speechAttempt++;clearTimeout(speechTimer);
+  if(activeLocalAudio){activeLocalAudio.pause();activeLocalAudio=null;}
+  const synth=window.speechSynthesis;
+  if(synth&&(synth.speaking||synth.pending||activeSpeech))synth.cancel();
+  activeSpeech=null;speechStatus('');
+}
+function speakEnglish(text,rate=.95){
+  if(!text||!text.trim())return;
+  lastAudioRequest={text,rate};
+  const key=(text||'').toLowerCase().replace(/\s+/g,' ').trim();
+  const file=typeof VOCAB_AUDIO==='object'?VOCAB_AUDIO[key]:null;
+  if(!file||typeof Audio!=='function')return speakBrowserEnglish(text,rate);
+  stopAudio();stopSpeechRecognition();
+  const attempt=++speechAttempt;
+  try{
+    const player=new Audio(file);activeLocalAudio=player;
+    player.preload='auto';player.volume=1;player.playbackRate=rate<.9?.75:1;player.preservesPitch=true;
+    const current=()=>attempt===speechAttempt&&activeLocalAudio===player;
+    const failed=()=>{if(!current())return;clearTimeout(speechTimer);player.pause();activeLocalAudio=null;speechStatus('Audio konnte nicht abgespielt werden. Tippe auf „Gerätestimme“ oder versuche es online erneut.');};
+    player.onplaying=()=>{if(current()){clearTimeout(speechTimer);speechStatus('Wiedergabe läuft.');}};
+    player.onended=()=>{if(current()){clearTimeout(speechTimer);activeLocalAudio=null;speechStatus('');}};
+    player.onerror=failed;
+    speechStatus('Audio wird geladen …');
+    speechTimer=setTimeout(()=>{if(current())speechStatus('Audio braucht länger. Du kannst erneut auf „Anhören“ oder auf „Gerätestimme“ tippen.');},7000);
+    // Keep play inside the user gesture; no preceding fetch or voice-loading await.
+    const started=player.play();if(started?.catch)started.catch(failed);
+  }catch{if(attempt===speechAttempt){clearTimeout(speechTimer);activeLocalAudio=null;speechStatus('Audio konnte nicht gestartet werden. Bitte auf „Gerätestimme“ tippen.');}}
+}
 function speechStatus(message){const el=document.getElementById('speech-status');if(el)el.textContent=message;}
 function refreshSpeechVoices(){
   try{englishVoices=window.speechSynthesis.getVoices().filter(v=>/^en[-_]/i.test(v.lang)).sort((a,b)=>Number(b.localService)-Number(a.localService)||Number(b.default)-Number(a.default));}catch{englishVoices=[];}
 }
-function speakEnglish(text,rate=.95){
+function speakBrowserEnglish(text,rate=.95){
   const synth=window.speechSynthesis;
   if(!synth || typeof SpeechSynthesisUtterance==='undefined'){speechStatus('Dieser Browser bietet keine Sprachausgabe. Bitte in Safari versuchen.');return;}
   if(!text || !text.trim())return;
+  stopAudio();
   stopSpeechRecognition();
   const attempt=++speechAttempt;clearTimeout(speechTimer);
   refreshSpeechVoices();
   try{
-    if(synth.speaking || synth.pending)synth.cancel();
     if(synth.paused)synth.resume();
     const utter=new SpeechSynthesisUtterance(text);
     activeSpeech=utter;utter.lang='en-US';utter.rate=rate;utter.volume=1;

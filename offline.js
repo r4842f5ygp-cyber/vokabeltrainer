@@ -1,4 +1,5 @@
 let offlineRegistration=null;
+document.getElementById('app-version').textContent='Version '+APP_RELEASE.slice(0,8);
 function applyUpdate(){
   if(offlineRegistration?.waiting){saveRoundDraft();offlineRegistration.waiting.postMessage('ACTIVATE');}
 }

@@ -27,7 +27,7 @@
     </div>
   </header>
 
-  <div class="status-strip"><details id="status-details"><summary><span id="connection-summary">Lokal</span> · Status</summary><div class="status-popover"><div id="global-sync-status" role="status" aria-live="polite">Lade Daten …</div><div id="offline-status" role="status"></div><p class="help">Audio und Spracheingabe können Internet benötigen.</p></div></details><div id="update-notice" class="hidden"><button class="text-btn" onclick="applyUpdate()">Aktualisieren</button></div></div>
+  <div class="status-strip"><details id="status-details"><summary><span id="connection-summary">Lokal</span> · Status</summary><div class="status-popover"><div id="global-sync-status" role="status" aria-live="polite">Lade Daten …</div><div id="offline-status" role="status"></div><p id="app-version" class="help">Version wird geprüft …</p><p class="help">Feste Vokabeln haben lokale Audiodateien. Spracheingabe und eigene Karten können Internet benötigen.</p></div></details><div id="update-notice" class="hidden"><button class="text-btn" onclick="applyUpdate()">Aktualisieren</button></div></div>
   <section id="storage-recovery" class="panel hidden" role="alert">
     <p>Deine gespeicherten Daten bleiben unverändert. Lade sie zur Wiederherstellung herunter.</p>
     <button class="btn-secondary" onclick="exportRecovery()">Rohdaten sichern</button>
@@ -39,38 +39,49 @@
 
       <h1 id="home-title">Deine kleine Praxisrunde</h1>
       <p id="home-detail" class="home-detail"></p>
+      <div id="welcome-back" class="welcome-back hidden"><p>Schön, dass Du wieder da bist. Eine kleine Runde reicht.</p><button id="gentle-round" class="btn-secondary" onclick="startGentleRound()">Mit bis zu 3 Aufgaben einsteigen</button></div>
       <label id="study-label" for="study-module">Heute üben</label><select id="study-module" onchange="renderStudy()"><option value="">Alle Themen</option></select>
+      <label id="focus-label" for="study-focus">Auswahl</label><select id="study-focus" onchange="renderStudy()"><option value="all">Alle fälligen Wörter</option><option value="difficult">Schwierige Wörter wiederholen</option></select>
       <button id="start-round" data-write class="btn-primary" onclick="startRound()">Kurze Runde starten</button>
       <button id="resume-round" class="btn-primary hidden" onclick="resumeRound()">Meine Runde fortsetzen</button>
       <p id="round-message" role="status"></p>
-      <details class="learning-info"><summary>So übst Du</summary><p class="help">Bis zu sechs Aufgaben. Höchstens fünf neue Karten am Tag. Pausen sind jederzeit möglich.</p></details>
+      <details class="learning-info"><summary>So übst Du</summary><p class="help">Drei, fünf oder sechs Aufgaben pro Runde. Höchstens fünf neue Karten am Tag. Schwierige Wörter erscheinen zu ihrem nächsten Wiederholungstermin. Pausen sind jederzeit möglich.</p></details>
+      <details id="preferences-panel" class="learning-info"><summary>Mein Lernrhythmus</summary>
+        <label for="round-size">Aufgaben pro Runde</label><select id="round-size" onchange="savePreferences()"><option value="3">3 · ganz klein</option><option value="5">5 · eine kurze Runde</option><option value="6" selected>6 · etwas mehr</option></select>
+        <label class="check-label"><input id="show-images" type="checkbox" checked onchange="savePreferences()"> Optionale Bildhinweise anbieten</label>
+        <label class="check-label"><input id="allow-motion" type="checkbox" onchange="savePreferences()"> Sanfte Bewegungen erlauben</label>
+        <p class="help">Bilder erscheinen erst, wenn Du sie öffnest. Es gibt keine automatischen Töne. Einstellungen gelten für dieses Gerät.</p><p id="preferences-message" role="status"></p>
+      </details>
       <div id="empty-study" class="empty-state hidden"><p>Wähle ein Themenpaket oder füge eigene Vokabeln ein.</p><button class="btn-secondary" onclick="switchView('manage');openPasteDialog()">Eigene Vokabeln einfügen</button></div>
       <details class="pack-section"><summary>Neue Themen entdecken</summary><div id="pack-list" class="pack-grid"></div><p id="pack-message" role="status"></p></details>
     </section>
     <section id="round-complete" class="home-card hidden" aria-labelledby="completion-title">
       <span class="completion-mark" aria-hidden="true">✓</span><p class="eyebrow">EIN GUTER MOMENT ZUM AUFHÖREN</p>
-      <h1 id="completion-title">Deine Runde ist geschafft.</h1><p id="completion-detail"></p><p id="completion-next" class="help"></p>
+      <h1 id="completion-title" tabindex="-1">Deine Runde ist geschafft.</h1><p id="completion-detail"></p><p id="completion-next" class="help"></p>
       <div class="btn-row"><button class="btn-primary" onclick="finishRound()">Für jetzt fertig</button><button class="btn-secondary" onclick="finishRound();startRound()">Noch eine Runde</button></div>
     </section>
     <div id="round-top" class="hidden"><div class="round-meta"><span id="round-position" role="status" aria-live="polite"></span><button class="text-btn" onclick="pauseRound()">Pause</button></div><progress id="round-progress" max="6" value="0" aria-label="Fortschritt dieser Runde"></progress></div>
     <div class="card-container hidden" id="study-card">
       <p id="card-topic" class="topic-pill"></p>
       <div id="card-content">
-        <div class="card-label">Wie würdest Du das auf Englisch sagen?</div><div class="card-front" id="front-text"></div>
-        <p class="help">Denk kurz nach oder sprich Deine Antwort laut aus.</p>
+        <div class="card-label">Wie heißt das auf Englisch?</div><div class="card-front" id="front-text" tabindex="-1"></div>
+        <details id="image-hint" class="image-hint hidden" ontoggle="showImageHint()"><summary>Bildhinweis zeigen</summary><figure><div id="emotion-image" role="img" aria-labelledby="image-caption"></div><figcaption id="image-caption"></figcaption></figure></details>
+        <p class="help question-help">Denk kurz nach oder sprich Deine Antwort laut aus.</p>
         <details id="typing-details"><summary>Antwort tippen oder einsprechen</summary><div class="answer-input-wrapper" id="input-wrapper">
           <input type="text" id="user-answer" class="answer-input" aria-label="Deine englische Antwort" oninput="saveRoundDraft()" placeholder="Deine englische Antwort …" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
           <button type="button" id="mic-btn" class="mic-btn" onclick="toggleSpeechRecognition()" title="Antwort einsprechen (Englisch)" aria-label="Englische Antwort einsprechen">🎙️</button>
         </div></details>
         <div id="answer-section" class="hidden"><div class="card-divider"></div><div id="check-feedback" class="check-feedback hidden"></div>
-          <div class="card-label">Eine passende Formulierung</div><div class="card-back"><button class="speak-btn" aria-label="Englische Lösung vorlesen" onclick="speakCurrent()">🔊</button><span id="back-text"></span></div>
-          <button class="text-btn" onclick="speakCurrent(0.7)">Langsam anhören</button><p id="speech-status" class="help" role="status" aria-live="polite"></p><div id="notes-text" class="card-notes hidden"></div>
-          <section id="alternatives-section"><h3>Auch passend</h3><div id="alternatives-list"></div></section>
+          <div class="card-label">Eine passende Formulierung</div><div class="card-back"><span id="back-text" lang="en"></span></div>
+          <div class="audio-controls"><button class="btn-secondary" aria-label="Englische Lösung vorlesen" onclick="speakCurrent()">🔊 Anhören</button><button class="text-btn" onclick="speakCurrent(0.7)">Langsam</button><button id="stop-audio" class="text-btn" onclick="stopAudio()">Stopp</button></div><button class="text-btn browser-voice" onclick="speakBrowserCurrent()">Gerätestimme verwenden</button><p id="speech-status" class="help" role="status" aria-live="polite"></p>
+          <section id="example-section" class="example-section hidden" aria-label="Beispielsatz"><p id="example-english" lang="en"></p><p id="example-german"></p><div class="audio-controls"><button class="text-btn" onclick="speakExample()">🔊 Beispielsatz</button><button class="text-btn" onclick="speakExample(0.7)">Satz langsam</button></div></section>
+          <details id="meaning-details"><summary>Bedeutung &amp; Nuance</summary><div id="notes-text" class="card-notes hidden"></div></details>
+          <details id="alternatives-details"><summary>Weitere passende Antworten</summary><section id="alternatives-section"><h3>Auch passend</h3><div id="alternatives-list"></div></section>
           <details id="alternative-form"><summary>Alternative ergänzen</summary><p class="help">Speichere eine im Kontext passende vollständige Wendung.</p>
             <label for="alternative-text">Englische Formulierung</label><input id="alternative-text" type="text">
             <label for="alternative-note">Bedeutungsnuance (optional)</label><input id="alternative-note" type="text">
             <div class="btn-row"><button class="btn-secondary" onclick="saveAlternative()">Alternative speichern</button><button id="use-answer" class="text-btn" onclick="useMyAnswer()">Meine Antwort übernehmen</button></div>
-          </details><p id="alternative-message" role="status"></p>
+          </details><p id="alternative-message" role="status"></p></details>
         </div>
       </div>
     </div>
@@ -182,15 +193,21 @@
     <p id="edit-message" role="status"></p><div class="btn-row"><button class="btn-primary" onclick="saveEdit()">Änderungen speichern</button><button class="btn-secondary" onclick="document.getElementById('edit-dialog').close()">Abbrechen</button></div>
   </dialog>
   <script src="core.js"></script>
+  <script src="release.js"></script>
   <script src="data.js"></script>
+  <script src="audio-index.js"></script>
   <script src="speech.js"></script>
   <script src="app.js"></script>
   <script src="packs.js"></script>
   <script src="therapy.js"></script>
+  <script src="feelings.js"></script>
+  <script src="preferences.js"></script>
+  <script src="learning-media.js"></script>
   <script src="alternatives.js"></script>
   <script src="sessions.js"></script>
   <script src="offline.js"></script>
 </body>
 </html>
+
 
 

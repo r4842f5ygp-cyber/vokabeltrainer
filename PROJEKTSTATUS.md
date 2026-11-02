@@ -1,3 +1,9 @@
+# Haupttrainer – Veröffentlichung 2. November 2026
+
+Die geprüfte Vorschau wird auf ausdrücklichen Wunsch des Nutzers in die Haupt-App übernommen. Release 95aeb3550bf598d3. Vorhandene Haupt-App-Speicherschlüssel, core.js und data.js unverändert; Cloud-Sync aktiviert. 55 Gefühle-Karten, optionale Bildhinweise und lokale MP3-Audios enthalten. Keine automatische Änderung persönlicher Kartenbestände. 62 Node-Tests erfolgreich; bestehende Daten und Reviews bleiben beim Hinzufügen des Moduls erhalten. Aktuelle Veröffentlichung und Online-Prüfung werden in PUBLISH_STATE.json im Arbeitsordner dokumentiert.
+
+## Bisheriger Projektverlauf
+
 # Vokabeltrainer – Abschlussstand
 
 Stand: 1. November 2026. Umsetzung der Haupt-App und der isolierten Vorschau fertig vorbereitet.

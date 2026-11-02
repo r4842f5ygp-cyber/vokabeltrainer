@@ -13,3 +13,53 @@ header{margin-top:10px;margin-bottom:4px;gap:12px}.brand-mark{width:34px;height:
 @media(max-width:600px){header{gap:8px;flex-wrap:nowrap;margin:8px auto 2px}.brand{width:auto;gap:0;flex:1;min-width:0}.brand-mark{display:none}.brand strong{font-size:14px;white-space:nowrap}.stats-bar{display:none}.nav-tabs{flex-shrink:0;border-radius:10px}.nav-tabs button{font-size:13px;padding:6px 10px;min-height:44px}.status-strip{margin-bottom:6px;min-height:28px;gap:8px}.status-strip summary,.status-strip .text-btn{min-height:28px}.home-card{padding:20px}.home-card h1{font-size:24px}.home-detail{font-size:14px;margin-bottom:10px}.home-card label{margin-top:6px}.card-container{padding:22px}.card-front{font-size:27px;margin:12px 0}.card-container>.topic-pill{margin-bottom:12px}}
 
 .pack-card strong{display:block}.pack-card .help{margin:6px 0 12px}.pack-card button{width:100%;margin-top:6px}
+
+/* Quiet learning: navigation returns through Pause; storage errors stay visible. */
+body.learning-active header,body.learning-active .status-strip,body.learning-active .preview-banner{display:none}
+body.learning-active .status-strip:has(#status-details[open]){display:flex}
+body.learning-active{padding-top:max(8px,env(safe-area-inset-top))}
+body.learning-active main{max-width:680px;gap:12px}
+body.learning-active #round-top{margin-bottom:4px}
+body.learning-active .card-container{min-height:0;padding:22px 26px;box-shadow:none}
+body.learning-active .topic-pill{margin:0 0 8px;font-size:12px}
+.card-front{font-family:inherit;font-weight:550;line-height:1.25}
+.card-front:focus,.completion-title:focus{outline:none}
+.card-back{font-size:clamp(23px,5vw,30px);font-weight:600}
+.status-strip summary,.status-strip .text-btn,.learning-info summary{min-height:44px;display:flex;align-items:center}
+.status-strip{min-height:44px;margin-bottom:4px}
+.audio-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.audio-controls button{min-height:44px;min-width:44px}
+.browser-voice{font-size:13px}
+#speech-status:empty{display:none}
+.example-section{padding:12px 0 4px;border-top:1px solid var(--border);margin-top:10px}
+.example-section p{margin:6px 0;overflow-wrap:anywhere}
+#example-english{font-size:18px;color:var(--text)}
+#example-german{font-size:15px;color:var(--text-secondary)}
+#meaning-details,#alternatives-details{margin-top:8px}
+#meaning-details summary,#alternatives-details summary{font-size:14px;min-height:44px}
+.card-notes{margin-top:4px;padding:14px;font-size:15px}
+#alternatives-section{margin-top:8px}
+.image-hint{margin:6px 0}
+.image-hint figure{margin:4px 0 12px;display:flex;align-items:center;gap:14px;background:#f4f0e8;color:#233d3d;border-radius:14px;padding:10px}
+#emotion-image{width:132px;height:132px;flex:0 0 132px;background-size:400% 400%;background-repeat:no-repeat;border-radius:10px}
+.image-hint figcaption{font-size:13px;line-height:1.45}
+.check-label{display:flex;gap:10px;align-items:center;min-height:44px;font-size:15px;color:var(--text);cursor:pointer}
+.check-label input{width:22px;height:22px;flex-shrink:0;accent-color:var(--accent)}
+.welcome-back{border-left:3px solid var(--accent);padding:4px 0 12px 14px;margin-bottom:12px}
+.welcome-back p{margin:0 0 10px}
+.answer-visible .question-help{display:none}
+.btn-primary,.btn-secondary,progress::-webkit-progress-value{transition:none}
+@media(prefers-reduced-motion:no-preference){body.allow-motion .btn-primary,body.allow-motion .btn-secondary{transition:background-color .12s ease}body.allow-motion progress::-webkit-progress-value{transition:width .15s ease}}
+@media(max-width:600px){
+ body.learning-active{padding-left:12px;padding-right:12px}
+ body.learning-active .card-container{padding:18px;border-radius:18px}
+ .card-front{font-size:28px;margin:10px 0}
+ .topic-pill{max-width:100%;overflow-wrap:anywhere}
+ .card-label{font-size:11px;letter-spacing:.06em}
+ .image-hint figure{gap:10px;padding:8px}
+ #emotion-image{width:112px;height:112px;flex-basis:112px}
+ .rating-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .rate-btn{min-height:64px}
+ .rate-btn .label{font-size:16px}
+ .action-bar{margin-bottom:max(20px,env(safe-area-inset-bottom))}
+}
