@@ -1,0 +1,12 @@
+const {test}=require('node:test'),assert=require('node:assert/strict'),vm=require('node:vm'),fs=require('node:fs'),path=require('node:path');
+const root=path.resolve(__dirname,'..');
+const expected=[
+ ['müde','tired'],['wach','awake'],['ohnmächtig (bewusstlos)','unconscious'],['ohnmächtig (machtlos)','powerless'],['wütend','angry'],['traurig','sad'],['Mitgefühl','compassion'],['liebevoll','loving'],['Hass','hatred'],['erschöpft','exhausted'],['schläfrig','sleepy'],['hellwach','wide awake'],['entspannt','relaxed'],['gelassen','calm'],['unruhig','restless'],['angespannt','tense'],['ängstlich','anxious'],['verängstigt','frightened'],['unsicher','insecure'],['hilflos','helpless'],['überfordert','overwhelmed'],['verzweifelt','desperate'],['hoffnungslos','hopeless'],['frustriert','frustrated'],['enttäuscht','disappointed'],['verletzt','hurt'],['verletzlich','vulnerable'],['beschämt','ashamed'],['Scham','shame'],['schuldig (sich schuldig fühlen)','guilty'],['einsam','lonely'],['verlassen (sich verlassen fühlen)','abandoned'],['Sehnsucht','longing'],['vermissen','to miss'],['verbunden','connected'],['geborgen','safe and secure'],['Zuneigung','affection'],['zärtlich','tender'],['einfühlsam','empathetic'],['fürsorglich','caring'],['dankbar','grateful'],['erleichtert','relieved'],['zuversichtlich','optimistic'],['hoffnungsvoll','hopeful'],['zufrieden','content'],['glücklich','happy'],['begeistert','excited'],['neugierig','curious'],['eifersüchtig','jealous'],['neidisch','envious'],['gleichgültig','indifferent'],['innerlich leer','empty inside'],['berührt (emotional)','moved'],['überwältigt','overwhelmed'],['wütend auf jemanden sein','to be angry with someone']
+];
+for(const dir of ['','vorschau/'])test(dir+'feelings module matches all 55 requested targets in order with complete examples',()=>{
+ const ctx=vm.createContext({C:require('../core.js'),VOCAB_PACKS:[]});vm.runInContext(fs.readFileSync(path.join(root,dir,'feelings.js'),'utf8'),ctx);
+ const rows=JSON.parse(vm.runInContext('JSON.stringify(FEELINGS_ROWS)',ctx));
+ assert.deepEqual(rows.map(r=>r.slice(0,2)),expected);assert.equal(new Set(rows.map(r=>r[0]+'|'+r[1])).size,55);
+ for(const row of rows){assert.equal(row.length>=5,true);for(const v of row.slice(0,5))assert.equal(typeof v,'string');assert.ok(row[2].endsWith('.'));assert.ok(row[3].endsWith('.'));}
+ assert.equal(vm.runInContext('VOCAB_PACKS.length',ctx),1);
+});

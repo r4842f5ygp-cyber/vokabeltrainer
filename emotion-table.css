@@ -1,0 +1,211 @@
+#view-emotions {
+  max-width: 1240px;
+  gap: 14px;
+}
+
+.emotion-intro {
+  display: block;
+  max-width: none;
+  margin: 12px 0 4px;
+}
+
+.emotion-intro h1 {
+  margin: 0 0 8px;
+  font-size: clamp(27px, 4vw, 42px);
+  line-height: 1.15;
+  letter-spacing: -.025em;
+}
+
+.emotion-intro p {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+[data-emotion-category="love"] { --emotion-accent: #C85A53; }
+[data-emotion-category="joy"] { --emotion-accent: #D9A74A; }
+[data-emotion-category="anger"] { --emotion-accent: #C96A4B; }
+[data-emotion-category="sadness"] { --emotion-accent: #7E6B8F; }
+[data-emotion-category="fear"] { --emotion-accent: #4A7C7C; }
+[data-emotion-category="disgust"] { --emotion-accent: #5B8C5A; }
+
+#emotion-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+#emotion-filters button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+}
+
+#emotion-filters button[aria-pressed="true"] {
+  background: var(--card-bg);
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+  color: var(--text);
+}
+
+#emotion-filters button:not([data-emotion-category="all"])::before {
+  content: "";
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--emotion-accent);
+}
+
+.emotion-grid-help { margin: 0; }
+#view-emotions:has(.emotion-grid-filtered) .emotion-grid-help { display: none; }
+
+.emotion-scroll {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--card-bg);
+}
+
+.emotion-scroll:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.emotion-grid {
+  display: grid;
+  grid-template-columns: repeat(14, minmax(62px, 1fr));
+  grid-template-rows: repeat(7, auto);
+  gap: 6px;
+  min-width: calc(14 * 62px + 13 * 6px + 20px);
+  padding: 10px;
+}
+
+.emotion-grid-filtered {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 128px), 1fr));
+  grid-template-rows: none;
+  min-width: 0;
+  gap: 10px;
+}
+
+.emotion-tile {
+  position: relative;
+  grid-area: var(--emotion-row) / var(--emotion-column);
+  min-width: 0;
+  min-height: 104px;
+  padding: 17px 3px 6px;
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--emotion-accent);
+  border-radius: 10px;
+  background: var(--soft);
+  background: color-mix(in srgb, var(--emotion-accent) 13%, var(--card-bg));
+  color: var(--text);
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.emotion-grid-filtered .emotion-tile {
+  grid-area: auto;
+  min-height: 112px;
+  padding-inline: 8px;
+}
+
+.emotion-grid:not(.emotion-grid-filtered) .emotion-last-row { margin-top: 12px; }
+
+.emotion-tile-level {
+  position: absolute;
+  top: 4px;
+  left: 6px;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.emotion-tile-symbol,
+.emotion-tile-noun,
+.emotion-tile-translation { display: block; }
+
+.emotion-tile-symbol {
+  margin-bottom: 3px;
+  font-size: 25px;
+  font-weight: 650;
+}
+
+.emotion-tile-noun {
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.emotion-tile-translation {
+  margin-top: 4px;
+  font-size: 10px;
+  color: var(--text-secondary);
+}
+
+.emotion-grid-filtered .emotion-tile-noun { font-size: 14px; }
+.emotion-grid-filtered .emotion-tile-translation { font-size: 12px; }
+
+.emotion-tile.in-training::after {
+  content: "";
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--good);
+}
+
+.emotion-tile:hover {
+  background: var(--soft);
+  background: color-mix(in srgb, var(--emotion-accent) 21%, var(--card-bg));
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  body.allow-motion .emotion-tile { transition: background-color .16s ease; }
+}
+
+#emotion-dialog { border-top: 5px solid var(--emotion-accent, var(--accent)); }
+.emotion-detail-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.emotion-detail-heading h2 {
+  margin: 2px 0 10px;
+  overflow-wrap: anywhere;
+}
+
+.emotion-detail-section {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 14px;
+  padding: 12px 0;
+  border-top: 1px solid var(--border);
+}
+
+.emotion-detail-copy { flex: 1 1 190px; }
+.emotion-detail-section h3,
+.emotion-detail-section p,
+.emotion-detail-heading p,
+.emotion-detail-actions p { margin: 0; }
+.emotion-detail-section h3 { font-size: 14px; }
+.emotion-detail-section .help { margin-top: 4px; }
+#emotion-detail-adj { font-weight: 650; }
+#emotion-speech-status:empty,
+#emotion-add-status:empty { display: none; }
+.emotion-detail-actions { margin-top: 10px; }
+.emotion-voice-settings { margin: 0 0 8px; border-top: 1px solid var(--border); }
+
+.card-front.emotion-card-front { white-space: pre-line; }
+
+@media (max-width: 470px) {
+  body > header { flex-wrap: wrap; }
+  .nav-tabs { width: 100%; }
+  .nav-tabs button { flex: 1; padding-inline: 5px; }
+  #emotion-dialog { padding: 18px; }
+}

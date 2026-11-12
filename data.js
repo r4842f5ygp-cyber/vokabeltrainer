@@ -11,7 +11,11 @@ let pasteTimer = null, lastPasteIds = [];
 const uuid = () => crypto.randomUUID();
 const visibleCards = () => state.cards.filter(c => !c.deletedAt).map(C.project);
 
-function refreshCards() { cards = visibleCards(); updateStats(); }
+function refreshCards() {
+  cards = visibleCards();
+  updateStats();
+  if (typeof refreshEmotionTraining === 'function') refreshEmotionTraining();
+}
 function setSyncStatus(kind, message) {
   const brief=document.getElementById('connection-summary');
   if(brief)brief.textContent=kind==='error'?'Speicher / Sync prüfen':kind==='ok'?'Synchronisiert':message.includes('offline')?'Offline':message.includes('nicht verbunden')?'Lokal':'Speichert …';

@@ -99,6 +99,7 @@ function renderStudy() {
   $('round-position').textContent='Aufgabe '+(index+1)+' von '+round.ids.length;
   $('round-progress').max=round.ids.length;$('round-progress').value=index;
   $('card-topic').textContent=moduleOf(currentCard)===FEELINGS_PACK.name?'Gefühle & Emotionen':moduleOf(currentCard);
+  $('front-text').classList.toggle('emotion-card-front', currentCard.module === EMOTION_MODULE);
   $('front-text').textContent=currentCard.front;$('back-text').textContent=currentCard.back;
   $('card-content').classList.remove('hidden');
   $('user-answer').value=round.slot===index?round.answer:'';$('user-answer').disabled=false;

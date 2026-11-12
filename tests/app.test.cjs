@@ -6,9 +6,12 @@ function boot(seed) {
   const [,tag,attrs,id]=match,classes=new Set((attrs.match(/class="([^"]*)"/)?.[1]||'').split(/\s+/));
   els.set(id,{tagName:tag.toUpperCase(),id,value:id.endsWith('delimiter')?'auto':'',textContent:'',disabled:false,style:{},children:[],
    classList:{contains:n=>classes.has(n),add:(...ns)=>ns.forEach(n=>classes.add(n)),remove:(...ns)=>ns.forEach(n=>classes.delete(n)),toggle(n,on){if(on===undefined)on=!classes.has(n);on?classes.add(n):classes.delete(n);}},
-   focus(){},blur(){},append(...items){this.children.push(...items);},appendChild(item){this.children.push(item);},replaceChildren(){this.children=[];},showModal(){this.open=true;},close(){this.open=false;},click(){},remove(){}});
+   attributes:{},dataset:{},setAttribute(name,value){this.attributes[name]=value;},focus(){},blur(){},append(...items){this.children.push(...items);},appendChild(item){this.children.push(item);},replaceChildren(){this.children=[];},showModal(){this.open=true;},close(){this.open=false;},click(){},remove(){}});
  }
- const document={getElementById(id){assert.ok(els.has(id),'Missing HTML element: '+id);return els.get(id);},activeElement:{id:'',tagName:'BODY'},querySelectorAll:()=>[],addEventListener(){},createElement(){return {append(){},appendChild(){},click(){},remove(){}};},body:{appendChild(){},classList:{add(){},remove(){},toggle(){}}}};
+ const bodyClasses=new Set();
+ const document={getElementById(id){assert.ok(els.has(id),'Missing HTML element: '+id);return els.get(id);},activeElement:{id:'',tagName:'BODY'},querySelectorAll:()=>[],addEventListener(){},createElement(){return {attributes:{},dataset:{},children:[],style:{setProperty(){}},
+  classList:{toggle(){}},setAttribute(name,value){this.attributes[name]=value;},
+  append(...items){this.children.push(...items);},appendChild(item){this.children.push(item);},click(){},remove(){}};},body:{appendChild(){},classList:{add:n=>bodyClasses.add(n),remove:n=>bodyClasses.delete(n),contains:n=>bodyClasses.has(n),toggle(n,on){on?bodyClasses.add(n):bodyClasses.delete(n);}}}};
  const c=vm.createContext({console,crypto:require('node:crypto').webcrypto,Date,JSON,structuredClone,AbortController,TextDecoder,Uint8Array,Blob,URL,
    navigator:{onLine:true},matchMedia:()=>({matches:false}),document,localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v)},
    setTimeout:()=>1,clearTimeout(){},alert(){},confirm:()=>true,fetch:()=>{throw new Error('No external network permitted in this test');},
@@ -130,7 +133,237 @@ test('therapy review preserves personal notes and can add the full corrected col
  const clean=boot();clean.run('applyTherapyRevision(true)');assert.equal(clean.run('cards.length'),41);
  clean.run('applyTherapyRevision(true)');assert.equal(clean.run('cards.length'),41);
 });
-test('production keeps existing reviews while adding all 55 feelings cards once',()=>{
- const h=boot(seedCards(2,3)),before=h.run('JSON.stringify(state.cards)');h.run('addPack(FEELINGS_PACK.name);addPack(FEELINGS_PACK.name)');assert.equal(h.run('cards.length'),57);assert.equal(h.run('packCards(FEELINGS_PACK).length'),55);for(const c of JSON.parse(before))assert.deepEqual(JSON.parse(h.run('JSON.stringify(state.cards.find(c=>c.id==='+JSON.stringify(c.id)+'))')),c);assert.ok(h.store.get('wesentlich_vocab_before_import_v2'));assert.equal(h.run('STATE_KEY'),'wesentlich_vocab_state_v2');assert.equal(h.run('ROUND_KEY'),'wesentlich_vocab_round_v1');
+
+test('feelings module adds all 55 targets without altering existing cards or legacy backup',()=>{
+ const h=boot(seedCards(2,3));h.run('addPack("Gefühle unterscheiden")');
+ const before=h.run('JSON.stringify(state.cards)'),legacy=h.store.get('wesentlich_vocab_cards_v1');
+ h.run('addPack(FEELINGS_PACK.name)');
+ assert.equal(h.run('packCards(FEELINGS_PACK).length'),55);
+ assert.equal(h.run('cards.length'),63);
+ for(const old of JSON.parse(before))assert.deepEqual(JSON.parse(h.run('JSON.stringify(state.cards.find(c=>c.id==='+JSON.stringify(old.id)+'))')),old);
+ assert.equal(JSON.stringify(JSON.parse(h.store.get('wesentlich_vocab_before_import_v2')).cards),before);
+ assert.equal(h.store.get('wesentlich_vocab_cards_v1'),legacy);
+ h.run('addPack(FEELINGS_PACK.name)');assert.equal(h.run('cards.length'),63);
+ assert.equal(JSON.stringify(JSON.parse(h.store.get('wesentlich_vocab_before_import_v2')).cards),before);
 });
-test('production has all learning targets, examples and matching local audio',()=>{const h=boot();assert.equal(h.run('FEELINGS_ROWS.length'),55);assert.ok(h.run('FEELINGS_ROWS.every(r=>r[2]&&r[3]&&r[4]&&VOCAB_AUDIO[r[1].toLowerCase()]&&VOCAB_AUDIO[r[2].toLowerCase()])'));assert.equal(h.run('typeof api'),'function');});
+test('feelings pack availability is scoped to the new module and practice excludes unrelated new cards',()=>{
+ const h=boot();h.run('addPack("Gefühle unterscheiden")');
+ assert.equal(h.run('packCards(FEELINGS_PACK).length'),0);
+ h.run('addPack(FEELINGS_PACK.name);studyPack(FEELINGS_PACK.name)');
+ assert.equal(h.run('round.ids.length'),5);
+ assert.ok(h.run('round.ids.every(id=>state.cards.find(c=>c.id===id).module===FEELINGS_PACK.name)'));
+ assert.ok(h.els.get('study-module').children.some(x=>x.value===h.run('FEELINGS_PACK.name')));
+ h.run('pauseRound();switchView("manage")');h.els.get('manage-module').value=h.run('FEELINGS_PACK.name');h.run('renderCardList()');
+ assert.equal(h.els.get('card-list').children.length,55);
+});
+test('all 55 feelings render, accept canonical and alternative answers, route normal/slow audio and persist ratings',()=>{
+ const h=boot(seedCards(1,3));h.run('addPack(FEELINGS_PACK.name)');
+ h.run('var spoken=[];function SpeechSynthesisUtterance(text){this.text=text;} window.speechSynthesis={getVoices:()=>[{lang:"en-US",localService:true}],speak:u=>spoken.push(u),cancel(){},resume(){}};');
+ const ids=JSON.parse(h.run('JSON.stringify(packCards(FEELINGS_PACK).map(c=>c.id))'));
+ ids.forEach((id,i)=>{
+  h.run('startRound([cards.find(c=>c.id==='+JSON.stringify(id)+')])');
+  assert.equal(h.els.get('front-text').textContent,h.run('currentCard.front'));
+  assert.ok(h.els.get('example-english').textContent);assert.ok(h.els.get('example-german').textContent);assert.ok(h.els.get('notes-text').textContent);
+  h.els.get('user-answer').value=h.run('currentCard.back');h.run('revealAnswer()');
+  assert.match(h.els.get('check-feedback').textContent,/Treffer/);
+  assert.ok(h.run('currentCard.alternatives.every(a=>checkUserAnswer(a.text,currentCard.back,currentCard.alternatives).isMatch)'));
+  h.run('speakCurrent();spoken.at(-1).onend();speakCurrent(.7);spoken.at(-1).onend()');
+  assert.equal(h.run('spoken.at(-2).text'),h.run('currentCard.back'));
+  assert.equal(h.run('spoken.at(-2).rate'),.95);assert.equal(h.run('spoken.at(-1).rate'),.7);
+  h.run('rateCard('+(i%4)+');finishRound()');
+ });
+ assert.equal(h.run('spoken.length'),110);
+ const re=boot(h.store);
+ assert.equal(re.run('packCards(FEELINGS_PACK).length'),55);
+ assert.ok(re.run('packCards(FEELINGS_PACK).every(c=>c.reviews.length===1&&Number.isFinite(c.due))'));
+ const saved=re.run('JSON.stringify(state)');re.run('addPack(FEELINGS_PACK.name)');assert.equal(re.run('JSON.stringify(state)'),saved);
+});
+test('contrast answers distinguish consciousness, emotional injury, insecurity, envy and word classes',()=>{
+ const h=boot();h.run('addPack(FEELINGS_PACK.name)');
+ for(const [number,wrong]of [[3,'powerless'],[4,'unconscious'],[7,'empathy'],[19,'unsure'],[26,'injured'],[27,'hurt'],[28,'embarrassed'],[29,'ashamed'],[30,'ashamed'],[31,'alone'],[38,'sore'],[40,'careful'],[46,'lucky'],[49,'envious'],[50,'jealous']]){
+  assert.equal(h.run('(()=>{const c=state.cards.find(c=>c.id==="feelings-emotions-v1:'+String(number).padStart(2,'0')+'");return checkUserAnswer('+JSON.stringify(wrong)+',c.back,c.alternatives).isMatch;})()'),false,number+': '+wrong);
+ }
+ const contexts=JSON.parse(h.run('JSON.stringify(FEELINGS_PACK.entries.filter(r=>r[1]==="overwhelmed"))'));
+ assert.equal(contexts.length,2);assert.match(contexts[0][2],/tasks/);assert.match(contexts[1][2],/joy/);
+});
+test('feelings imports on separate devices converge including alternatives and preserve both review events',()=>{
+ const a=boot(),b=boot();a.run('addPack(FEELINGS_PACK.name);studyPack(FEELINGS_PACK.name);revealAnswer();rateCard(2)');
+ b.run('addPack(FEELINGS_PACK.name);studyPack(FEELINGS_PACK.name);revealAnswer();rateCard(1)');
+ const C=require('../core.js'),merged=C.merge(JSON.parse(a.run('JSON.stringify(state)')),JSON.parse(b.run('JSON.stringify(state)')));
+ assert.equal(merged.cards.length,55);
+ assert.equal(merged.cards[0].reviews.length,2);
+ for(const c of merged.cards)assert.equal(new Set(c.alternatives.map(a=>a.text)).size,c.alternatives.length);
+ assert.deepEqual(C.validate(JSON.parse(JSON.stringify(merged))),merged);
+});
+test('re-adding a deleted feelings card preserves tombstone and all other progress; personal edits survive repeat imports',()=>{
+ const h=boot();h.run('addPack(FEELINGS_PACK.name);studyPack(FEELINGS_PACK.name);revealAnswer();rateCard(2);finishRound()');
+ const reviews=h.run('JSON.stringify(state.cards.find(c=>c.id==="feelings-emotions-v1:01").reviews)');
+ h.run('editCard("feelings-emotions-v1:02")');h.els.get('edit-notes').value='My own example';h.run('saveEdit();addPack(FEELINGS_PACK.name)');
+ assert.equal(h.run('state.cards.find(c=>c.id==="feelings-emotions-v1:02").notes'),'My own example');
+ h.run('deleteCard("feelings-emotions-v1:03");addPack(FEELINGS_PACK.name)');
+ assert.equal(h.run('packCards(FEELINGS_PACK).length'),55);
+ assert.ok(h.run('state.cards.find(c=>c.id==="feelings-emotions-v1:03").deletedAt>0'));
+ assert.equal(h.run('JSON.stringify(state.cards.find(c=>c.id==="feelings-emotions-v1:01").reviews)'),reviews);
+ h.run('addPack(FEELINGS_PACK.name)');assert.equal(h.run('cards.length'),55);
+});
+
+test('round-size preferences persist across restart without changing existing cards or a paused round',()=>{
+ const h=boot(seedCards(10,2)),before=h.run('JSON.stringify(state)');
+ h.els.get('round-size').value='3';h.els.get('show-images').checked=false;h.els.get('allow-motion').checked=true;h.run('savePreferences();startRound()');
+ assert.equal(h.run('round.ids.length'),3);assert.equal(h.run('JSON.stringify(state)'),before);
+ h.run('pauseRound()');const re=boot(h.store);
+ assert.equal(re.run('preferences.roundSize'),3);assert.equal(re.run('preferences.images'),false);assert.equal(re.run('preferences.motion'),true);
+ re.els.get('round-size').value='6';re.run('savePreferences();resumeRound()');assert.equal(re.run('round.ids.length'),3);
+ for(const size of [3,5,6]){const p=boot(seedCards(10,2));p.els.get('round-size').value=String(size);p.run('savePreferences();startRound()');assert.equal(p.run('round.ids.length'),size);}
+});
+test('focus mode hides navigation only during active learning and restores it on pause and completion',()=>{
+ const h=boot(seedCards(1,2));h.run('startRound()');assert.equal(h.run('document.body.classList.contains("learning-active")'),true);
+ h.run('revealAnswer()');assert.equal(h.run('document.body.classList.contains("answer-visible")'),true);
+ h.run('pauseRound()');assert.equal(h.run('document.body.classList.contains("learning-active")'),false);
+ h.run('resumeRound();rateCard(2)');assert.equal(h.run('document.body.classList.contains("learning-active")'),false);
+});
+test('image hints stay unloaded until requested, can be disabled and distinguish both overwhelmed contexts',()=>{
+ const h=boot();h.run('addPack(FEELINGS_PACK.name);startRound([cards.find(c=>c.front==="überfordert")])');
+ assert.equal(h.els.get('emotion-image').style.backgroundImage,'none');
+ assert.equal(h.els.get('image-hint').classList.contains('hidden'),false);
+ h.els.get('image-hint').open=true;h.run('showImageHint()');assert.match(h.els.get('emotion-image').style.backgroundImage,/assets\/emotions.jpg/);
+ const negative=h.els.get('emotion-image').style.backgroundPosition;
+ h.run('pauseRound();finishRound();startRound([cards.find(c=>c.front==="überwältigt")])');
+ h.els.get('image-hint').open=true;h.run('showImageHint()');assert.notEqual(h.els.get('emotion-image').style.backgroundPosition,negative);
+ assert.match(h.els.get('image-caption').textContent,/Freude/);
+ h.run('pauseRound()');h.els.get('show-images').checked=false;h.run('savePreferences();resumeRound()');
+ assert.equal(h.els.get('image-hint').classList.contains('hidden'),true);assert.equal(h.els.get('emotion-image').style.backgroundImage,'none');
+});
+test('difficult-word filter respects due dates and daily new-card limit and does not alter the schedule',()=>{
+ const h=boot(seedCards(3,2));h.run('state.cards[0].reviews.push({id:"hard",rating:1,at:Date.now()-5*86400000});state.cards[1].reviews.push({id:"easy",rating:3,at:Date.now()-9*86400000});refreshCards()');
+ const before=h.run('JSON.stringify(state)');h.els.get('study-focus').value='difficult';
+ assert.equal(h.run('availableCards().length'),1);assert.equal(h.run('availableCards()[0].id'),'0');
+ assert.equal(h.run('JSON.stringify(state)'),before);
+ h.run('state.cards[0].reviews.push({id:"later",rating:1,at:Date.now()});refreshCards();renderStudy()');
+ assert.equal(h.run('availableCards().length'),0);assert.match(h.els.get('home-detail').textContent,/keine schwierigen Wörter fällig/);
+});
+test('a return after seven days offers a gentle due-only round and a new review clears the return prompt',()=>{
+ const h=boot(seedCards(8,2));h.store.set('wesentlich_vocab_last_practice_v1',String(Date.now()-8*86400000));h.run('renderStudy()');
+ assert.equal(h.els.get('welcome-back').classList.contains('hidden'),false);
+ h.run('startGentleRound()');assert.equal(h.run('round.ids.length'),3);
+ h.run('revealAnswer();rateCard(2);pauseRound();finishRound()');assert.equal(h.els.get('welcome-back').classList.contains('hidden'),true);
+});
+test('a storage error while saving preferences preserves the previous settings and vocabulary',()=>{
+ const h=boot(seedCards(2,2));const before=h.run('JSON.stringify(state)');h.els.get('round-size').value='3';
+ h.run('localStorage.setItem=()=>{throw new Error("quota")};savePreferences()');
+ assert.equal(h.run('preferences.roundSize'),6);assert.equal(h.run('JSON.stringify(state)'),before);assert.match(h.els.get('preferences-message').textContent,/nicht gespeichert/);
+});
+
+test('an existing same-word card in another module does not block editing notes in the feelings module',()=>{
+ const h=boot();h.run('addPack("Gefühle unterscheiden");addPack(FEELINGS_PACK.name);editCard("feelings-emotions-v1:31")');
+ h.els.get('edit-notes').value='My personal example';h.run('saveEdit()');
+ assert.equal(h.run('state.cards.find(c=>c.id==="feelings-emotions-v1:31").notes'),'My personal example');
+ assert.equal(h.run('cards.length'),61);
+});
+
+test('browser-voice fallback repeats the requested example and speed and resets for the next card',()=>{
+ const h=boot();h.run('addPack(FEELINGS_PACK.name);startRound([cards.find(c=>c.front==="müde"),cards.find(c=>c.front==="wach")]);revealAnswer()');
+ h.run('var spoken=[];function SpeechSynthesisUtterance(text){this.text=text;}window.speechSynthesis={getVoices:()=>[{lang:"en-US",localService:true}],speak:u=>spoken.push(u),cancel(){},resume(){}};speakExample(.7);speakBrowserCurrent()');
+ assert.equal(h.run('spoken.at(-1).text'),h.els.get('example-english').textContent);assert.equal(h.run('spoken.at(-1).rate'),.7);
+ h.run('rateCard(2);revealAnswer();speakBrowserCurrent()');
+ assert.equal(h.run('spoken.at(-1).text'),'awake');assert.equal(h.run('spoken.at(-1).rate'),.95);
+});
+
+test('emotion table uses every supplied position and category and offers complete details', () => {
+  const h = boot();
+  const layout = [
+    'Lo@1 Fe@14',
+    'Em@1 Ne@13 Dr@14',
+    'Se@1 Te@2 Jo@3 Ho@4 Su@5 It@6 Ag@7 Rb@8 Sa@9 Bo@10 Sh@11 In@12 Ss@14',
+    'Co@1 Sy@2 St@3 Pl@4 Ec@5 An@6 Re@7 Hs@8 Ln@9 Ab@10 Cf@11 Sp@12 Sb@14',
+    'Gr@1 Ts@2 En@3 Ea@4 Op@5 Ht@6 Fr@7 Ir@8 Gf@9 No@10 Tr@11 Sm@12 Di@14',
+    'Ad@1 Pr@2 Eu@3 De@4 Ha@5 Ra@6 Je@7 Ev@8 Id@9 Hp@10 Rs@11 Me@12 Ct@14',
+    'Ds@9 We@10 Pe@11',
+  ];
+  const entries = JSON.parse(h.run('JSON.stringify(EMOTION_ELEMENTS)'));
+  assert.equal(entries.length, 60);
+  assert.equal(new Set(entries.map(entry => entry.noun)).size, 60);
+  assert.deepEqual(layout, layout.map((_, index) => entries
+    .filter(entry => entry.r === index + 1).map(entry => entry.sym + '@' + entry.c).join(' ')));
+  for (const entry of entries) {
+    for (const field of ['adj', 'de', 'client', 'context', 'narm']) assert.ok(entry[field]?.trim(), entry.sym + ':' + field);
+  }
+  h.run("switchView('emotions')");
+  assert.equal(h.els.get('view-study').classList.contains('hidden'), true);
+  assert.equal(h.els.get('tab-emotions').attributes['aria-current'], 'page');
+  assert.equal(h.els.get('emotion-filters').children.length, 7);
+  assert.equal(h.els.get('emotion-grid').children.length, 60);
+  h.run("emotionFilters.get('disgust').onclick()");
+  assert.equal(h.els.get('emotion-grid').children.length, 2);
+  h.els.get('emotion-grid').children[0].onclick();
+  assert.equal(h.els.get('emotion-dialog').open, true);
+  assert.equal(h.els.get('emotion-detail-title').textContent, 'disgust');
+});
+
+test('emotion cards survive reload, use the existing scheduler and can be re-added after deletion', () => {
+  const h = boot([{id:'old',front:'Enge',back:'tightness',reps:3,interval:5,ease:2.5,due:1}]);
+  h.run("switchView('emotions'); openEmotionDetail(EMOTION_ELEMENTS[0]); addEmotionCard(); addEmotionCard()");
+  assert.equal(h.els.get('emotion-add').disabled, true);
+  assert.match(h.els.get('emotion-grid').children[0].attributes['aria-label'], /im Training/);
+  const state = JSON.parse(h.store.get('wesentlich_vocab_state_v2'));
+  assert.equal(state.cards.length, 2);
+  const card = state.cards.find(card => card.id !== 'old');
+  assert.match(card.front, /^Liebe \/ liebevoll\nIch empfinde/);
+  assert.equal(card.back, 'love / loving');
+  assert.match(card.notes, /what do you notice in yourself\?/);
+  assert.equal(state.cards.find(card => card.id === 'old').base.reps, 3);
+
+  const restored = boot(h.store);
+  restored.run("startRound([cards.find(card => card.id !== 'old')]); revealAnswer()");
+  assert.equal(restored.els.get('meaning-details').open, true);
+  assert.equal(restored.els.get('notes-text').textContent, card.notes);
+  restored.run('rateCard(2)');
+  assert.equal(restored.run("state.cards.find(card => card.id !== 'old').reviews.length"), 1);
+  restored.run("switchView('manage'); deleteCard(" + JSON.stringify(card.id) + "); switchView('emotions')");
+  assert.doesNotMatch(restored.els.get('emotion-grid').children[0].attributes['aria-label'], /im Training/);
+  restored.run('openEmotionDetail(EMOTION_ELEMENTS[0]); addEmotionCard()');
+  assert.equal(restored.run("cards.filter(card => card.module === EMOTION_MODULE).length"), 1);
+  assert.equal(restored.run("state.cards.find(card => card.id === " + JSON.stringify(card.id) + ").reviews.length"), 1);
+});
+
+test('all three modal audio actions use the existing Web Speech API and stop when the dialog closes', () => {
+  const h = boot();
+  const spoken = JSON.parse(h.run(`
+    const utterances = [];
+    let cancellations = 0;
+    globalThis.SpeechSynthesisUtterance = function (text) { this.text = text; };
+    window.speechSynthesis = {
+      getVoices: () => [{lang: 'en-GB', localService: true}],
+      speak(utterance) { utterances.push([utterance.text, utterance.lang]); },
+      cancel() { cancellations++; },
+    };
+    openEmotionDetail(EMOTION_ELEMENTS[0]);
+    speakEmotionDetail('family');
+    speakEmotionDetail('client');
+    speakEmotionDetail('narm');
+    $('emotion-dialog').close();
+    closeEmotionDetail();
+    JSON.stringify({utterances, cancellations});
+  `));
+  assert.deepEqual(spoken.utterances, [
+    ['love. loving', 'en-GB'],
+    ['I feel a lot of love for my son.', 'en-GB'],
+    ['As you talk about your son, what do you notice in yourself?', 'en-GB'],
+  ]);
+  assert.equal(spoken.cancellations, 3);
+});
+
+test('the existing therapy CSV export can still be read by the CSV importer', () => {
+  const h = boot();
+  const output = JSON.parse(h.run(`
+    let exported;
+    backupDownload = (content, filename, mime) => { exported = {content, filename, mime}; };
+    exportTherapyCSV();
+    const parsed = C.parseImport(exported.content);
+    JSON.stringify({filename: exported.filename, mime: exported.mime, parsed});
+  `));
+  assert.equal(output.filename, 'therapie-vokabeln-redigiert.csv');
+  assert.match(output.mime, /^text\/csv/);
+  assert.equal(output.parsed.entries.length, 41);
+  assert.equal(output.parsed.errors.length, 0);
+});

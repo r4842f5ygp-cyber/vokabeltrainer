@@ -46,7 +46,7 @@ function renderCardExample(){
   document.getElementById('example-german').textContent=example?.german||'';
   document.getElementById('notes-text').textContent=example?.meaning||currentCard.notes;
   document.getElementById('meaning-details').classList.toggle('hidden',!currentCard.notes);
-  document.getElementById('meaning-details').open=false;
+  document.getElementById('meaning-details').open=currentCard.module === EMOTION_MODULE;
   document.getElementById('alternatives-details').open=false;
 }
 function speakExample(rate=.95){const example=cardExample(currentCard);if(example)speakEnglish(example.english,rate);}

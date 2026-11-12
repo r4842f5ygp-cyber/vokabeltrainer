@@ -68,13 +68,16 @@ const STORAGE_KEY = 'wesentlich_preview_vocab_cards_v1';
       stopAudio();
       if(view !== 'study' && round && !round.paused) pauseRound();
       stopSpeechRecognition();
-      document.getElementById('view-study').classList.toggle('hidden', view !== 'study');
-      document.getElementById('view-manage').classList.toggle('hidden', view !== 'manage');
-      document.getElementById('view-sync').classList.toggle('hidden', view !== 'sync');
-      document.getElementById('tab-study').classList.toggle('active', view === 'study');
-      document.getElementById('tab-manage').classList.toggle('active', view === 'manage');
-      document.getElementById('tab-sync').classList.toggle('active', view === 'sync');
-      if (view === 'study') renderStudy(); else if (view === 'manage') renderCardList();
+      for (const name of ['study', 'manage', 'emotions', 'sync']) {
+        const active = view === name;
+        document.getElementById('view-' + name).classList.toggle('hidden', !active);
+        const tab = document.getElementById('tab-' + name);
+        tab.classList.toggle('active', active);
+        tab.setAttribute('aria-current', active ? 'page' : 'false');
+      }
+      if (view === 'study') renderStudy();
+      else if (view === 'manage') renderCardList();
+      else if (view === 'emotions') showEmotionTable();
     }
 
     function addCard() {

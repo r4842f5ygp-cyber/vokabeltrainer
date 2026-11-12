@@ -11,6 +11,7 @@
   <link rel="apple-touch-icon" href="icon.svg">
   <meta name="theme-color" content="#246166">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="emotion-table.css">
 </head>
 <body><aside class="preview-banner">Vorschau · Eigene Testdaten, Cloud-Sync ausgeschaltet.</aside>
 
@@ -21,8 +22,9 @@
       <span>Gesamt: <b id="total-count">0</b></span>
     </div>
     <div class="nav-tabs">
-      <button id="tab-study" class="active" onclick="switchView('study')">Lernen</button>
+      <button id="tab-study" class="active" aria-current="page" onclick="switchView('study')">Lernen</button>
       <button id="tab-manage" onclick="switchView('manage')">Karten</button>
+      <button id="tab-emotions" onclick="switchView('emotions')">Emotionen</button>
       <button style="display:none" id="tab-sync" onclick="switchView('sync')">Sync</button>
     </div>
   </header>
@@ -172,6 +174,59 @@
     </div>
   </main>
 
+  <main id="view-emotions" class="hidden" aria-labelledby="emotion-title">
+    <header class="emotion-intro">
+      <h1 id="emotion-title">Periodic Table of Emotions</h1>
+      <p>Wähle eine Emotion für englische Wortformen, einen Beispielsatz und eine mögliche Frage fürs Gespräch.</p>
+    </header>
+    <div id="emotion-filters" role="group" aria-label="Emotionen filtern"></div>
+    <p class="help emotion-grid-help">Im Periodensystem kannst Du seitlich scrollen. Mit einem Filter siehst Du die Karten der jeweiligen Gruppe.</p>
+    <div id="emotion-scroll" class="emotion-scroll" role="region" aria-label="Periodensystem der Emotionen" tabindex="0">
+      <div id="emotion-grid" class="emotion-grid"></div>
+    </div>
+  </main>
+
+  <dialog id="emotion-dialog" aria-labelledby="emotion-detail-title" onclose="closeEmotionDetail()">
+    <div class="emotion-detail-heading">
+      <div><p id="emotion-detail-category" class="help"></p><h2 id="emotion-detail-title" lang="en"></h2></div>
+      <form method="dialog"><button class="text-btn" autofocus>Schließen</button></form>
+    </div>
+    <section class="emotion-detail-section" aria-label="Wortfamilie">
+      <div class="emotion-detail-copy">
+        <p id="emotion-detail-adj" lang="en"></p>
+        <p id="emotion-detail-de" class="help"></p>
+      </div>
+      <button type="button" class="btn-secondary" onclick="speakEmotionDetail('family')">Wortfamilie anhören</button>
+    </section>
+    <section class="emotion-detail-section" aria-labelledby="emotion-client-label">
+      <div class="emotion-detail-copy">
+        <h3 id="emotion-client-label">Klienten-Satz</h3>
+        <p id="emotion-detail-client" lang="en"></p>
+        <p id="emotion-detail-context" class="help"></p>
+      </div>
+      <button type="button" class="btn-secondary" onclick="speakEmotionDetail('client')">Satz anhören</button>
+    </section>
+    <section class="emotion-detail-section" aria-labelledby="emotion-narm-label">
+      <div class="emotion-detail-copy">
+        <h3 id="emotion-narm-label">NARM-inspirierte Intervention</h3>
+        <p id="emotion-detail-narm" lang="en"></p>
+      </div>
+      <button type="button" class="btn-secondary" onclick="speakEmotionDetail('narm')">Intervention anhören</button>
+    </section>
+    <details class="emotion-voice-settings">
+      <summary>Englische Stimme</summary>
+      <label for="emotion-voice">Stimme für dieses Gerät</label>
+      <select id="emotion-voice" onchange="chooseSpeechVoice(this.value)" aria-describedby="emotion-voice-help"></select>
+      <p id="emotion-voice-help" class="help">Eine ausgewählte Stimme gilt auch beim Lernen. Automatisch nutzt vorhandene Audiodateien bei Lernkarten.</p>
+      <button type="button" class="btn-secondary" onclick="previewSpeechVoice()">Hörprobe</button>
+    </details>
+    <p id="emotion-speech-status" class="help" role="status"></p>
+    <div class="btn-row emotion-detail-actions">
+      <button type="button" id="emotion-add" class="btn-primary" data-write onclick="addEmotionCard()">In meinen Vokabeltrainer übernehmen</button>
+      <p id="emotion-add-status" class="help" role="status"></p>
+    </div>
+  </dialog>
+
   <dialog id="paste-dialog" aria-labelledby="paste-title">
     <h2 id="paste-title">Vokabeln einfügen</h2>
     <p class="help" id="paste-help">Kopiere zwei oder drei Spalten aus einer Tabelle oder Text im Format Deutsch;Englisch;Notiz. Nach dem Einfügen werden gültige Karten automatisch gespeichert. Dubletten werden übersprungen.</p>
@@ -204,6 +259,8 @@
   <script src="preferences.js"></script>
   <script src="learning-media.js"></script>
   <script src="alternatives.js"></script>
+  <script src="emotion-table-data.js"></script>
+  <script src="emotion-table.js"></script>
   <script src="sessions.js"></script>
   <script src="offline.js"></script>
 </body>
