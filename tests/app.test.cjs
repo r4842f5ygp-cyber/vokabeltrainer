@@ -293,6 +293,13 @@ test('emotion table uses every supplied position and category and offers complet
   assert.equal(h.els.get('tab-emotions').attributes['aria-current'], 'page');
   assert.equal(h.els.get('emotion-filters').children.length, 7);
   assert.equal(h.els.get('emotion-grid').children.length, 60);
+  const headings = h.els.get('emotion-columns');
+  assert.equal(headings.children.length, 14);
+  headings.children[13].onclick();
+  assert.match(h.els.get('emotion-column-status').textContent, /Bedrohung & Abwehr/);
+  assert.equal(h.els.get('emotion-grid').children.length, 6);
+  h.run("emotionFilters.get('all').onclick()");
+  assert.equal(h.els.get('emotion-grid').children.length, 60);
   h.run("emotionFilters.get('disgust').onclick()");
   assert.equal(h.els.get('emotion-grid').children.length, 2);
   h.els.get('emotion-grid').children[0].onclick();

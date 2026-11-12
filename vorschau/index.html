@@ -177,13 +177,29 @@
   <main id="view-emotions" class="hidden" aria-labelledby="emotion-title">
     <header class="emotion-intro">
       <h1 id="emotion-title">Periodic Table of Emotions</h1>
-      <p>Wähle eine Emotion für englische Wortformen, einen Beispielsatz und eine mögliche Frage fürs Gespräch.</p>
+      <p>Gefühle genauer benennen, ihre Unterschiede verstehen und leichter darüber sprechen.</p>
     </header>
-    <div id="emotion-filters" role="group" aria-label="Emotionen filtern"></div>
-    <p class="help emotion-grid-help">Im Periodensystem kannst Du seitlich scrollen. Mit einem Filter siehst Du die Karten der jeweiligen Gruppe.</p>
+    <section class="emotion-reading" aria-label="So liest Du das Periodensystem">
+      <div><strong>↕ Spalten · verwandte Themen</strong><p>In einer Spalte stehen Begriffe mit einem gemeinsamen Thema. Tippe auf die Überschrift, um sie untereinander zu vergleichen.</p></div>
+      <div><strong>↔ Zeilen · Stufen 1–7</strong><p>Die Zeilen zeigen die Stufen der Vorlage. Weiter unten stehen oft intensivere oder komplexere Zustände. Die Zahlen sind keine Messwerte.</p></div>
+      <div><strong>⇄ Von links nach rechts</strong><p>Links stehen eher Verbundenheit und Freude, rechts eher belastende Gefühle wie Angst oder Ekel. Dazwischen liegen Übergänge.</p></div>
+    </section>
+    <div id="emotion-filters" role="group" aria-label="Farblegende und Filter für Gefühlsfamilien"></div>
+    <p class="help emotion-grid-help">Auf kleinen Displays seitlich wischen. Die Farben zeigen Gefühlsfamilien, auch wenn eine Spalte mehrere Farben enthält.</p>
+    <p id="emotion-column-status" class="help emotion-column-status" role="status"></p>
     <div id="emotion-scroll" class="emotion-scroll" role="region" aria-label="Periodensystem der Emotionen" tabindex="0">
+      <div id="emotion-columns" class="emotion-columns" role="group" aria-label="Thematische Spalten"></div>
       <div id="emotion-grid" class="emotion-grid"></div>
     </div>
+    <details class="emotion-purpose">
+      <summary>Wie hilft mir das im Gespräch?</summary>
+      <ul>
+        <li><strong>Genauer benennen:</strong> Bin ich traurig, einsam oder enttäuscht?</li>
+        <li><strong>Besser verstehen:</strong> Was löst das Gefühl aus, und was ist mir dabei wichtig?</li>
+        <li><strong>Bewusster reagieren:</strong> Ein Gefühl zu benennen kann helfen, kurz innezuhalten und eine Reaktion zu wählen.</li>
+        <li><strong>Verständlicher sprechen:</strong> „Ich bin enttäuscht, weil ich gehofft hatte, dass Du kommst“ sagt mehr als „Mir geht’s schlecht“.</li>
+      </ul>
+    </details>
   </main>
 
   <dialog id="emotion-dialog" aria-labelledby="emotion-detail-title" onclose="closeEmotionDetail()">

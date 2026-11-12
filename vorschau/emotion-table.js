@@ -1,6 +1,14 @@
 const EMOTION_MODULE = 'Periodensystem der Emotionen';
 const emotionTiles = new Map();
 const emotionFilters = new Map();
+// Reading aids for this layout. A column may contain more than one color family.
+const emotionColumnTopics = [
+  'Verbundenheit', 'Nähe & Selbstbild', 'Freude & Lebendigkeit',
+  'Hoffnung & Leichtigkeit', 'Überraschung & Hochgefühl', 'Wut & Antrieb',
+  'Reibung & Eifersucht', 'Widerstand & Vergleich', 'Trauer & Kränkung',
+  'Verlust & Erschöpfung', 'Rückzug & Alarm', 'Unsicherheit & Scham',
+  'Nervosität', 'Bedrohung & Abwehr',
+];
 let emotionFilter = 'all';
 let selectedEmotion = null;
 
@@ -50,6 +58,14 @@ function showEmotionTable() {
       emotionFilters.set(filter, button);
       $('emotion-filters').append(button);
     }
+    for (const [index, topic] of emotionColumnTopics.entries()) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'emotion-column-button';
+      button.textContent = (index + 1) + ' · ' + topic;
+      button.onclick = () => renderEmotionGrid('column-' + (index + 1));
+      $('emotion-columns').append(button);
+    }
     renderEmotionGrid(emotionFilter);
   } else {
     refreshEmotionTraining();
@@ -58,17 +74,23 @@ function showEmotionTable() {
 
 function renderEmotionGrid(filter) {
   emotionFilter = filter;
+  const column = filter.startsWith('column-') ? Number(filter.slice(7)) : 0;
+  $('emotion-columns').classList.toggle('hidden', filter !== 'all');
+  $('emotion-column-status').textContent = column
+    ? 'Spalte ' + column + ' · ' + emotionColumnTopics[column - 1] + '. Mit „Alle“ kommst Du zurück zur Übersicht.'
+    : '';
   for (const [category, button] of emotionFilters) {
     button.setAttribute('aria-pressed', String(category === filter));
   }
   const grid = $('emotion-grid');
   grid.classList.toggle('emotion-grid-filtered', filter !== 'all');
+  grid.classList.toggle('emotion-grid-column', column > 0);
   $('emotion-scroll').scrollLeft = 0;
   grid.replaceChildren();
   emotionTiles.clear();
 
   for (const emotion of EMOTION_ELEMENTS) {
-    if (filter !== 'all' && emotion.cat !== filter) continue;
+    if (column ? emotion.c !== column : filter !== 'all' && emotion.cat !== filter) continue;
     const tile = document.createElement('button');
     tile.type = 'button';
     tile.className = 'emotion-tile';

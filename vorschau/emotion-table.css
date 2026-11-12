@@ -209,3 +209,61 @@
   .nav-tabs button { flex: 1; padding-inline: 5px; }
   #emotion-dialog { padding: 18px; }
 }
+
+.emotion-reading {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--border);
+}
+.emotion-reading > div { padding: 10px 14px; background: var(--card-bg); }
+.emotion-reading p { margin: 4px 0 0; font-size: 13px; color: var(--text-secondary); }
+.emotion-columns,
+.emotion-grid:not(.emotion-grid-filtered) {
+  grid-template-columns: repeat(14, minmax(72px, 1fr));
+  min-width: calc(14 * 72px + 13 * 6px + 20px);
+}
+.emotion-columns {
+  display: grid;
+  gap: 6px;
+  padding: 10px 10px 0;
+}
+.emotion-column-button {
+  min-height: 54px;
+  padding: 5px 3px;
+  border: 1px solid var(--border);
+  border-bottom: 2px solid var(--accent);
+  border-radius: 8px;
+  background: var(--soft);
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+.emotion-grid:not(.emotion-grid-filtered) .emotion-tile {
+  background: color-mix(in srgb, var(--emotion-accent) 24%, var(--card-bg));
+}
+.emotion-grid:not(.emotion-grid-filtered) .emotion-tile:hover {
+  background: color-mix(in srgb, var(--emotion-accent) 36%, var(--card-bg));
+}
+.emotion-column-status { margin: 0; }
+.emotion-column-status:empty { display: none; }
+.emotion-purpose { margin: 0; }
+.emotion-purpose li + li { margin-top: 5px; }
+
+@media (max-width: 650px) {
+  .emotion-reading { grid-template-columns: 1fr; }
+  .emotion-reading > div { padding-block: 7px; }
+}
+
+.emotion-grid.emotion-grid-column {
+  grid-template-columns: minmax(0, 420px);
+  justify-content: center;
+}
+.emotion-grid-column .emotion-tile {
+  min-height: 88px;
+}
